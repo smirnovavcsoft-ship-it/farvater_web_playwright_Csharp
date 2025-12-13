@@ -18,16 +18,21 @@ namespace FarvaterWeb.Pages.Common
         // Поля для учетных данных (если используются)
         // В C# часто используют статический класс для хранения конфига
         // Здесь для примера используем System.Environment
-        protected string Username => Environment.GetEnvironmentVariable("USER_LOGIN");
-        protected string Password => Environment.GetEnvironmentVariable("PASSWORD");
+        //protected string Username => Environment.GetEnvironmentVariable("USER_LOGIN");
+        //protected string Password => Environment.GetEnvironmentVariable("PASSWORD");
+
+        protected string Username { get; }
+        protected string Password { get; }
 
         // Счетчик скриншотов
         private int _screenshotCounter = 0;
 
         // В конструктор всегда передается объект IPage
-        public BasePage(IPage page, string baseUrl)
+        public BasePage(IPage page, string baseUrl, string username, string password)
         {
             Page = page;
+            Username = username; // Сохраняем переданные данные
+            Password = password;
         }
 
         // --- НАВИГАЦИЯ ---

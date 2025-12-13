@@ -29,7 +29,7 @@ namespace FarvaterWeb.Pages
 
 
         // 3. Конструктор
-        public NewLegalPage(IPage page, string baseUrl) : base(page, baseUrl)
+        public NewLegalPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
         {
         }
         

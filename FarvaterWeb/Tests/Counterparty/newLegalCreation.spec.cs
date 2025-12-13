@@ -1,8 +1,9 @@
 ﻿
 // Предполагаемые namespace для Page Objects
-using FarvaterWeb.Pages.Common;
-using Microsoft.Playwright;
 using FarvaterWeb.Pages;
+using FarvaterWeb.Pages.Common;
+using FarvaterWeb.Setup;
+using Microsoft.Playwright;
 // Используем TestOutputHelper для вывода в консоль XUnit
 using Xunit.Abstractions;
 
@@ -24,6 +25,7 @@ namespace FarvaterWeb.Tests.Counterparty
     // --- Класс теста ---
     // Наследуемся от PageTest (если используете фреймворк Playwright.XUnit)
     // или используем IPage в конструкторе, как показано ниже.
+    [Collection("Playwright Test Collection")]
     public class FarvaterLegalCreationTests
     {
         // IPage и ITestOutputHelper внедряются через конструктор XUnit.
@@ -31,10 +33,13 @@ namespace FarvaterWeb.Tests.Counterparty
         private readonly string _baseUrl /*= "https://farvater.mcad.dev/farvater/"*/;
         private readonly ITestOutputHelper _output;
 
-        public FarvaterLegalCreationTests(IPage page, string baseUrl, ITestOutputHelper output)
+        private readonly PlaywrightFixture _fixture;
+
+        public FarvaterLegalCreationTests(PlaywrightFixture fixture, ITestOutputHelper output)
         {
-            _page = page;
-            _baseUrl = baseUrl;
+            _fixture = fixture;
+            _page = fixture.Page;
+            _baseUrl = fixture.BaseUrl;
             _output = output;
         }
 
@@ -43,17 +48,22 @@ namespace FarvaterWeb.Tests.Counterparty
         {
             _output.WriteLine("---Начало тестового сценария: Создание нового юр. лица---");
 
+            string login = _fixture.GlobalUsername;
+            string password = _fixture.GlobalPassword;
+
             //--- Инициализация Page Objects ----
-            var signInPage = new SignInPage(_page, _baseUrl);
-            var dashboardPage = new DashboardPage(_page, _baseUrl);
-            var counterpartyPage = new CounterpartyPage(_page, _baseUrl);
-            var newLegalPage = new NewLegalPage(_page, _baseUrl);
+            var signInPage = new SignInPage(_page, _baseUrl, login, password);
+            var dashboardPage = new DashboardPage(_page, _baseUrl, login, password);
+            var counterpartyPage = new CounterpartyPage(_page, _baseUrl, login, password);
+            var newLegalPage = new NewLegalPage(_page, _baseUrl, login, password);
 
             string createdLegalId = null;
 
             // 1. Вход в систему и проверка URL
             _output.WriteLine("1. Вход в систему и проверка URL");
-            await signInPage.NavigateAsync();
+            //await signInPage.NavigateAsync();
+            await signInPage.LoginAsync();
+            Assert.Contains("dashboard", _page.Url);
 
             // Проверка URL в XUnit с использованием Asser.Contains
             Assert.Contains("signin", _page.Url);

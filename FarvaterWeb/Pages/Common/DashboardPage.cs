@@ -28,7 +28,7 @@ namespace FarvaterWeb.Pages.Common
             public const string AssignmentsAccordion = "//div[@data-signature='accordion-wrapper']//span[text()='Поручения']";
         }
 
-        public DashboardPage(IPage page, string baseUrl) : base(page, baseUrl)
+        public DashboardPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
         {
             // Конструктор инициализирует родительский класс BasePage.
         }

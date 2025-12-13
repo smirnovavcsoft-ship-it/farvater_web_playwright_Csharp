@@ -20,8 +20,9 @@ namespace FarvaterWeb.Pages.Common
         // В данном случае лучше оставить их строками для простоты.
         private readonly string UsernameInput = "//*[@id=\"root\"]/div/div[2]/form/div/div[1]/input";
         private readonly string PasswordInput = "//*[@id=\"root\"]/div/div[2]/form/div/div[2]/div/input";
+        private const string LoginButtonLocator = "//button[.//span[text()='Войти']]";
 
-        public SignInPage(IPage page, string baseUrl) : base(page, baseUrl)
+        public SignInPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
         {
             // Конструктор инициализирует родительский класс BasePage
             // и получает доступ к Page, Username, Password.
@@ -53,16 +54,24 @@ namespace FarvaterWeb.Pages.Common
 
             // 3. Вводим пароль.
             // Получаем ILocator для поля пароля.
-            var passwordLocator = Page.Locator(PasswordInput);
+            //var passwordLocator = Page.Locator(PasswordInput);
+            await FillFieldAsync(PasswordInput, pass, "Ввод пароля");
 
-            // a) Вводим пароль
+            await ClickAsync(
+            LoginButtonLocator,
+            "Кнопка 'Войти' (Отправка формы)",
+            expectedUrlPart: "dashboard" // <--- BasePage теперь ждет этот URL
+             );
+
+
+            /*// a) Вводим пароль
             await passwordLocator.FillAsync(pass);
             Console.WriteLine($"В поле пароля введено '{pass}'.");
 
             // b) Нажимаем Enter, чтобы отправить форму.
             // Playwright .NET использует PressAsync.
             await passwordLocator.PressAsync("Enter");
-            Console.WriteLine("Нажат Enter для отправки формы.");
+            Console.WriteLine("Нажат Enter для отправки формы.");*/
 
             // Делаем скриншот после отправки
             await TakeScreenshotAsync("Login_Form_Submitted");

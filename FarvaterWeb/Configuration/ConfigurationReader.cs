@@ -36,5 +36,15 @@ namespace FarvaterWeb.Configuration
         public static bool Headless => bool.Parse(_configuration["PlaywrightSettings:Headless"]!);
 
         // Здесь можно добавить другие настройки, например, тайм-ауты.
+
+        /// <summary>
+        /// Получает имя пользователя из секции UserCredentials
+        /// </summary>
+        public static string Username => _configuration["UserCredentials:Username"]!;
+
+        /// <summary>
+        /// Получает пароль из секции UserCredentials
+        /// </summary>
+        public static string Password => _configuration["UserCredentials:Password"]!;
     }
 }

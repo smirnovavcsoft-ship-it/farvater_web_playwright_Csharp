@@ -15,6 +15,9 @@ namespace FarvaterWeb.Setup
         public IPage Page { get; private set; } = null!;
         public string BaseUrl { get; private set; } = null!;
 
+        public string GlobalUsername { get; private set; } = null!;
+        public string GlobalPassword { get; private set; } = null!;
+
         /// <summary>
         /// Метод выполняется перед запуском всех тестов в классе.
         /// Инициализирует Playwright, запускает браузер и создает новую страницу.
@@ -25,6 +28,9 @@ namespace FarvaterWeb.Setup
             BaseUrl = ConfigurationReader.BaseUrl;
             string browserType = ConfigurationReader.BrowserType;
             bool headless = ConfigurationReader.Headless;
+
+            GlobalUsername = ConfigurationReader.Username;
+            GlobalPassword = ConfigurationReader.Password;
 
             // 2. Запуск Playwright
             _playwright = await Playwright.CreateAsync();
@@ -56,6 +62,13 @@ namespace FarvaterWeb.Setup
             // Закрываем браузер, затем закрываем сам Playwright
             await _browser.CloseAsync();
             _playwright.Dispose();
+        }
+
+        // Configuration/UserCredentials.cs (Новый класс)
+        public class UserCredentials
+        {
+            public string Username { get; set; } = null!;
+            public string Password { get; set; } = null!;
         }
     }
 }

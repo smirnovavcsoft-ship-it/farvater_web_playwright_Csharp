@@ -24,7 +24,7 @@ namespace FarvaterWeb.Pages
 
         // 3. Конструктор
         // Принимает IPage и BaseUrl, передавая их в базовый класс
-        public CounterpartyPage(IPage page, string baseUrl) : base(page, baseUrl)
+        public CounterpartyPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
         {
             // Здесь можно добавить дополнительную инициализацию, если требуется
         }

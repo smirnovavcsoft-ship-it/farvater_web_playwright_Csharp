@@ -61,7 +61,7 @@ namespace FarvaterWeb.Tests.Counterparty
 
             // 1. Вход в систему и проверка URL
             _output.WriteLine("1. Вход в систему и проверка URL");
-            //await signInPage.NavigateAsync();
+            await signInPage.NavigateAsync();
             await signInPage.LoginAsync();
             Assert.Contains("dashboard", _page.Url);
 

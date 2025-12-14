@@ -18,8 +18,8 @@ namespace FarvaterWeb.Pages.Common
 
         // В Playwright for .NET локаторы хранятся как string или ILocator. 
         // В данном случае лучше оставить их строками для простоты.
-        private readonly string UsernameInput = "//*[@id=\"root\"]/div/div[2]/form/div/div[1]/input";
-        private readonly string PasswordInput = "//*[@id=\"root\"]/div/div[2]/form/div/div[2]/div/input";
+        private readonly string UsernameInput = "//input[@data-signature='auth-user-name-input']";
+        private readonly string PasswordInput = "//input[@data-signature='password-input']";
         private const string LoginButtonLocator = "//button[.//span[text()='Войти']]";
 
         public SignInPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
@@ -45,6 +45,12 @@ namespace FarvaterWeb.Pages.Common
          */
         public async Task LoginAsync(string username = null, string password = null)
         {
+            await Page.WaitForSelectorAsync(UsernameInput, new PageWaitForSelectorOptions
+            {
+                State = Microsoft.Playwright.WaitForSelectorState.Visible,
+                Timeout = 15000 // Ждем до 15 секунд
+            });
+
             // 1. Определяем учетные данные
             string login = username ?? Username;
             string pass = password ?? Password;

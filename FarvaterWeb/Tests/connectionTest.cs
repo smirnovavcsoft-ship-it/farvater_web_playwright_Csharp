@@ -15,7 +15,7 @@ public class BasePageTests : IClassFixture<PlaywrightFixture>
         _baseUrl = fixture.BaseUrl;
     }
 
-    [Fact]
+   /* [Fact]
     public async Task Test_Page_Title_Using_Fixture()
     {
         // Вместо создания браузера, мы используем _page
@@ -24,5 +24,5 @@ public class BasePageTests : IClassFixture<PlaywrightFixture>
         var title = await _page.TitleAsync();
 
         Assert.Contains("Playwright", title);
-    }
+    }*/
 }

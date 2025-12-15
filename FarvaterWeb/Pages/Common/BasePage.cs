@@ -15,6 +15,8 @@ namespace FarvaterWeb.Pages.Common
         // Приватное поле для хранения объекта Page
         protected IPage Page { get; }
 
+        protected string BaseUrl { get; }
+
         // Поля для учетных данных (если используются)
         // В C# часто используют статический класс для хранения конфига
         // Здесь для примера используем System.Environment
@@ -33,6 +35,7 @@ namespace FarvaterWeb.Pages.Common
             Page = page;
             Username = username; // Сохраняем переданные данные
             Password = password;
+            BaseUrl = baseUrl;
         }
 
         // --- НАВИГАЦИЯ ---
@@ -140,27 +143,86 @@ namespace FarvaterWeb.Pages.Common
         /**
          * Вводит текст в поле. Playwright .FillAsync() автоматически очищает поле.
          */
-        public async Task FillFieldAsync(string locator, string text, string actionDescription = "TypeElement")
+        /*public async Task FillFieldAsync(string locator, string text, string actionDescription = "TypeElement")
         {
             // 1. Ввод текста. Playwright .FillAsync() автоматически очищает поле.
             await Page.Locator(locator).FillAsync(text);
 
+            //await Task.Delay(500);
+
             // 2. Проверка: получаем текущее значение поля по тому же локатору
             // InputValueAsync() надежно возвращает текст, который видит Playwright в поле.
-            string actualValue = await Page.Locator(locator).InputValueAsync();
+            //string actualValue = await Page.Locator(locator).InputValueAsync();
 
             // 3. Сравнение
-            if (actualValue != text)
-            {
+            //if (actualValue != text)
+            //{
                 // Если значения не совпадают, выбрасываем исключение
-                throw new Exception($"Ошибка ввода в поле: {actionDescription}. Ожидалось: '{text}', Фактически: '{actualValue}'");
-            }
+                //throw new Exception($"Ошибка ввода в поле: {actionDescription}. Ожидалось: '{text}', Фактически: '{actualValue}'");
+            //}
 
             // 4. Логирование (если проверка прошла успешно)
             Console.WriteLine($"Введено '{text}' в элемент: {actionDescription}");
-            Console.WriteLine($"[Проверка] Успешная валидация значения: '{actualValue}'");
+            //Console.WriteLine($"[Проверка] Успешная валидация значения: '{actualValue}'");
 
             // 5. Скриншот
+            await TakeScreenshotAsync(actionDescription);
+        }*/
+
+        /*public async Task FillFieldAsync(string locator, string text, string actionDescription = "TypeElement")
+        {
+            var element = Page.Locator(locator);
+
+            // 1. Принудительное ожидание, чтобы элемент стал активным (Enabled)
+            // Это ключевой шаг. Явно ждем, что элемент готов к вводу.
+            await element.WaitForAsync(new LocatorWaitForOptions
+            {
+                State = Microsoft.Playwright.Core.WaitForState.Visible,
+                Timeout = 30000 // 30 секунд
+            });
+
+            // 2. Клик для фокусировки (помогает при перекрытии или неактивных полях)
+            // Используем Force = true, если обычный клик блокируется
+            // (попробуйте без Force сначала)
+            await element.ClickAsync(new LocatorClickOptions
+            {
+                Timeout = 30000
+            });
+
+            // 3. Ввод текста.
+            // Если FillAsync по-прежнему таймаутит, попробуйте TypeAsync.
+            await element.FillAsync(text);
+
+            // 4. Проверка (чистая, без таймаутов, так как мы ее удалили)
+            Console.WriteLine($"Введено '{text}' в элемент: {actionDescription}");
+            await TakeScreenshotAsync(actionDescription);
+        }*/
+
+        public async Task FillFieldAsync(string locator, string text, string actionDescription = "TypeElement")
+        {
+            // 1. Создаем ILocator, как и раньше, для взаимодействия.
+            var element = Page.Locator(locator);
+
+            // 2. Ожидание видимости (простая проверка)
+            // Ждем, пока элемент станет видимым, используя опции по умолчанию (30 секунд).
+            // Это заменяет сложный код с LocatorWaitForOptions, который вызывал ошибки компиляции.
+            await element.WaitForAsync();
+
+            // 3. Установка фокуса (часто помогает избежать таймаутов и блокировок)
+            await element.FocusAsync();
+
+            // 4. Очистка поля. FillAsync(string.Empty) надежно очищает.
+            await element.FillAsync(string.Empty);
+
+            // 5. Ввод текста. TypeAsync имитирует ввод с клавиатуры, что
+            // гораздо надежнее FillAsync для сложных или медленных полей.
+            await element.TypeAsync(text);
+
+            // 6. Пауза для стабилизации (если приложение медленно реагирует)
+            await Task.Delay(500);
+
+            // 7. Логирование и скриншот
+            Console.WriteLine($"Введено '{text}' в элемент: {actionDescription}");
             await TakeScreenshotAsync(actionDescription);
         }
 

@@ -14,7 +14,8 @@ namespace FarvaterWeb.Configuration
             // Установка базового пути к каталогу, где находится appsettings.json
             _configuration = new ConfigurationBuilder()
                 // Устанавливаем текущий каталог как базу
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppContext.BaseDirectory)
+                //.SetBasePath(Directory.GetCurrentDirectory())
                 // Добавляем appsettings.json; optional: false означает, что файл обязателен
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();

@@ -62,16 +62,18 @@ namespace FarvaterWeb.Tests.Counterparty
             // 1. Вход в систему и проверка URL
             _output.WriteLine("1. Вход в систему и проверка URL");
             await signInPage.NavigateAsync();
+            Assert.Contains("signin", _page.Url);
             await signInPage.LoginAsync();
             Assert.Contains("dashboard", _page.Url);
 
             // Проверка URL в XUnit с использованием Asser.Contains
-            Assert.Contains("signin", _page.Url);
+            //Assert.Contains("signin", _page.Url);
 
             // 2. Авторизация и проверка перехода на Главную
+            
             _output.WriteLine("2. Авторизация и проверка перехода на Главную");
-            await signInPage.LoginAsync();
-            Assert.Contains("dashboard", _page.Url);
+            //await signInPage.LoginAsync();
+            //Assert.Contains("dashboard", _page.Url);
 
             // 3. Переход на вкладку "Контрагенты"
             _output.WriteLine("3. Переход на вкладку 'Контрагенты' и проверка URL");

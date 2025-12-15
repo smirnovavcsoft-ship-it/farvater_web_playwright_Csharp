@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Playwright.Core; // Может потребоваться для некоторых расширений
 using System; // Для исключений
+using FarvaterWeb.Components;
 
 
 namespace FarvaterWeb.Pages.Common
@@ -12,18 +13,23 @@ namespace FarvaterWeb.Pages.Common
     public class SignInPage : BasePage
     {
         // Относительный путь к странице
-        private readonly string _path = "signin";
+        private readonly string _path = "https://farvater.mcad.dev/farvater/signin";
 
         // --- Локаторы Playwright (XPath) ---
 
         // В Playwright for .NET локаторы хранятся как string или ILocator. 
         // В данном случае лучше оставить их строками для простоты.
-        private readonly string UsernameInput = "//input[@data-signature='auth-user-name-input']";
+        private readonly string UsernameInput = "//input[@data-signature='auth-user-name-input']"; //input[@data-signature='auth-user-name-input']
+        //private readonly string UsernameInput = "div[@class = '_row_239t9_51']/input[@data - signature = 'auth-user-name-input']";
+        //private readonly string UsernameInput =
+        //"xpath=//div[@class='_row_239t9_51']/input[@data-signature='auth-user-name-input']";
+
         private readonly string PasswordInput = "//input[@data-signature='password-input']";
         private const string LoginButtonLocator = "//button[.//span[text()='Войти']]";
 
         public SignInPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
         {
+            var usernameField = new InputFieldComponent(page, "Имя пользователя");
             // Конструктор инициализирует родительский класс BasePage
             // и получает доступ к Page, Username, Password.
         }
@@ -45,11 +51,11 @@ namespace FarvaterWeb.Pages.Common
          */
         public async Task LoginAsync(string username = null, string password = null)
         {
-            await Page.WaitForSelectorAsync(UsernameInput, new PageWaitForSelectorOptions
+            /*await Page.WaitForSelectorAsync(UsernameInput, new PageWaitForSelectorOptions
             {
                 State = Microsoft.Playwright.WaitForSelectorState.Visible,
                 Timeout = 15000 // Ждем до 15 секунд
-            });
+            });*/
 
             // 1. Определяем учетные данные
             string login = username ?? Username;

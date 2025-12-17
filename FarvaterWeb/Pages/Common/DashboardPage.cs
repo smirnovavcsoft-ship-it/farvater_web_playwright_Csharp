@@ -1,9 +1,9 @@
 ﻿using Microsoft.Playwright;
-using FarvaterWeb.Pages.Common; // Предполагаем, что BasePage находится здесь
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Playwright.Core; // Может потребоваться для некоторых расширений
-using System; // Для исключений
+using System;
+using FarvaterWeb.Base; // Для исключений
 
 
 namespace FarvaterWeb.Pages.Common

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Playwright;
 using System.Threading.Tasks;
-using FarvaterWeb.Pages.Common; // Убедитесь, что здесь указано пространство имен для BasePage
-using FarvaterWeb.Tests.Counterparty; // Используем record LegalDetails из тестового файла
+using FarvaterWeb.Tests.Counterparty;
+using FarvaterWeb.Base; // Используем record LegalDetails из тестового файла
 
 namespace FarvaterWeb.Pages
 {

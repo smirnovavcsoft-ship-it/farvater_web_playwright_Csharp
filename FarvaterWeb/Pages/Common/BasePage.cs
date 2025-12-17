@@ -1,8 +1,9 @@
 ﻿using Microsoft.Playwright;
+using Microsoft.Playwright.Core; // Может потребоваться для некоторых расширений
+using Serilog;
+using System; // Для исключений
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Playwright.Core; // Может потребоваться для некоторых расширений
-using System; // Для исключений
 
 
 
@@ -40,7 +41,7 @@ namespace FarvaterWeb.Pages.Common
 
         // --- НАВИГАЦИЯ ---
 
-        public async Task GoToUrl(string url, string expectedUrlPart, float timeout = 15000)
+        /*public async Task GoToUrl(string url, string expectedUrlPart, float timeout = 15000)
         {
             // 1. Выполняем навигацию
             // Playwright for .NET использует метод GoToAsync
@@ -71,6 +72,48 @@ namespace FarvaterWeb.Pages.Common
 
             // 5. Снимаем скриншот после успешного перехода
             await TakeScreenshotAsync($"GoTo_{expectedUrlPart.Replace("/", "_")}");
+        }*/
+
+        public async Task GoToUrl(string url, string expectedUrlPart)
+        {
+            Log.Information("[Navigation] Переход на {Url}. Ожидаем часть пути: '{Part}'", url, expectedUrlPart);
+
+            try
+            {
+                // 1. Пытаемся перейти по ссылке
+                var response = await Page.GotoAsync(url);
+
+                // Критическая проверка: если сервер ответил ошибкой (4xx или 5xx)
+                if (response != null && !response.Ok)
+                {
+                    Log.Warning("[Navigation] Сервер вернул код ошибки: {Status}", response.Status);
+                }
+
+                // 2. Ждем, когда URL станет нужным
+                // Мы полагаемся на стандартный таймаут Playwright
+                await Page.WaitForURLAsync($"**{expectedUrlPart}**");
+
+                Log.Information("[Navigation] Успешно достигнут URL: {CurrentUrl}", Page.Url);
+            }
+            catch (Exception ex)
+            {
+                string currentUrl = Page.Url;
+
+                // Логика проверки редиректа: если мы здесь, значит WaitForURLAsync упал.
+                // Проверяем, не занесло ли нас на какую-то другую (ошибочную) страницу.
+                if (!currentUrl.Contains(expectedUrlPart))
+                {
+                    Log.Error("[Navigation] РЕДИРЕКТ ИЛИ ОШИБКА. Ожидали '{Part}', но оказались на '{Actual}'",
+                              expectedUrlPart, currentUrl);
+                }
+                else
+                {
+                    Log.Error(ex, "[Navigation] Ошибка при загрузке страницы '{Part}'", expectedUrlPart);
+                }
+
+                await TakeScreenshotAsync($"Error_Nav_{expectedUrlPart.Replace("/", "_")}");
+                throw;
+            }
         }
 
         // --- ДЕЙСТВИЯ С ЭЛЕМЕНТАМИ ---

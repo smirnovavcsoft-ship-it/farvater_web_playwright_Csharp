@@ -1,7 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Serilog;
 
-namespace MyProject.Base;
+namespace FarvaterWeb.Base;
 
 public abstract class BaseComponent
 {

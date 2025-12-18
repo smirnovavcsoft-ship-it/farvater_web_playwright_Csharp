@@ -1,96 +1,34 @@
-﻿using Microsoft.Playwright;
-using System.Threading.Tasks;
-using System.IO;
-using Microsoft.Playwright.Core; // Может потребоваться для некоторых расширений
-using System; // Для исключений
-using FarvaterWeb.Components;
-using FarvaterWeb.Base;
-
+﻿using FarvaterWeb.Base;
+using Microsoft.Playwright;
+using Serilog;
 
 namespace FarvaterWeb.Pages.Common
 {
-    // Класс страницы входа
     public class SignInPage : BasePage
     {
-        // Относительный путь к странице
         private readonly string _path = "https://farvater.mcad.dev/farvater/signin";
 
-        // --- Локаторы Playwright (XPath) ---
+        // Локаторы теперь ILocator для чистоты кода
+        private ILocator UsernameInput => Page.Locator("//input[@data-signature='auth-user-name-input']");
+        private ILocator PasswordInput => Page.Locator("//input[@data-signature='password-input']");
+        private ILocator LoginButton => Page.Locator("//button[.//span[text()='Войти']]");
 
-        // В Playwright for .NET локаторы хранятся как string или ILocator. 
-        // В данном случае лучше оставить их строками для простоты.
-        private readonly string UsernameInput = "//input[@data-signature='auth-user-name-input']"; //input[@data-signature='auth-user-name-input']
-        //private readonly string UsernameInput = "div[@class = '_row_239t9_51']/input[@data - signature = 'auth-user-name-input']";
-        //private readonly string UsernameInput =
-        //"xpath=//div[@class='_row_239t9_51']/input[@data-signature='auth-user-name-input']";
+        public SignInPage(IPage page, Serilog.ILogger logger) : base(page, logger) { }
 
-        private readonly string PasswordInput = "//input[@data-signature='password-input']";
-        private const string LoginButtonLocator = "//button[.//span[text()='Войти']]";
+        public async Task NavigateAsync() => await GoToUrl(_path, "signin");
 
-        public SignInPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
+        public async Task LoginAsync(string username, string password)
         {
-            var usernameField = new InputFieldComponent(page, "Имя пользователя");
-            // Конструктор инициализирует родительский класс BasePage
-            // и получает доступ к Page, Username, Password.
-        }
+            // 1. Ввод данных (с маскировкой пароля в логах)
+            await DoFill(UsernameInput, "Имя пользователя", username);
+            await DoFill(PasswordInput, "Пароль", password);
 
-        // --- ДЕЙСТВИЯ ---
+            // 2. Клик и ожидание перехода на Dashboard
+            await DoClick(LoginButton, "Кнопка 'Войти'");
 
-        /**
-         * Переходит на страницу входа.
-         */
-        public async Task NavigateAsync()
-        {
-            // Используем метод GoToUrlAsync из BasePage
-            await GoToUrl(_path, "signin");
-        }
-
-        /**
-         * Выполняет вход в систему, используя учетные данные.
-         * Если логин/пароль не переданы, берутся из полей BasePage (Environment.GetEnvironmentVariable).
-         */
-        public async Task LoginAsync(string username = null, string password = null)
-        {
-            /*await Page.WaitForSelectorAsync(UsernameInput, new PageWaitForSelectorOptions
-            {
-                State = Microsoft.Playwright.WaitForSelectorState.Visible,
-                Timeout = 15000 // Ждем до 15 секунд
-            });*/
-
-            // 1. Определяем учетные данные
-            string login = username ?? Username;
-            string pass = password ?? Password;
-
-            // 2. Вводим логин. Используем FillFieldAsync из BasePage.
-            await FillFieldAsync(UsernameInput, login, "Ввод логина");
-
-            // 3. Вводим пароль.
-            // Получаем ILocator для поля пароля.
-            //var passwordLocator = Page.Locator(PasswordInput);
-            await FillFieldAsync(PasswordInput, pass, "Ввод пароля");
-
-            await ClickAsync(
-            LoginButtonLocator,
-            "Кнопка 'Войти' (Отправка формы)",
-            expectedUrlPart: "dashboard" // <--- BasePage теперь ждет этот URL
-             );
-
-
-            /*// a) Вводим пароль
-            await passwordLocator.FillAsync(pass);
-            Console.WriteLine($"В поле пароля введено '{pass}'.");
-
-            // b) Нажимаем Enter, чтобы отправить форму.
-            // Playwright .NET использует PressAsync.
-            await passwordLocator.PressAsync("Enter");
-            Console.WriteLine("Нажат Enter для отправки формы.");*/
-
-            // Делаем скриншот после отправки
-            await TakeScreenshotAsync("Login_Form_Submitted");
-
-            // Ждем успешного перехода (например, на дашборд)
-            // Используем метод проверки URL из BasePage.
-            await IsUrlContainsAsync("dashboard");
+            // Проверка успешности входа через URL
+            await Page.WaitForURLAsync("**/dashboard**");
+            Log.Information("[SignInPage] Вход выполнен успешно, открыт Dashboard");
         }
     }
 }

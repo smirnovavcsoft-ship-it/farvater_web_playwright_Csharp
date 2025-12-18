@@ -1,64 +1,74 @@
 ﻿using Microsoft.Playwright;
 using Xunit;
 using Serilog;
+using Xunit.Abstractions;
+
+namespace FarvaterWeb.Base; // Убедитесь, что namespace совпадает с папкой
 
 public abstract class BaseTest : IAsyncLifetime
 {
-    protected IBrowser Browser;
-    protected IBrowserContext Context;
-    protected IPage Page;
-    protected ILogger Log;
+    // Используем null!, чтобы убрать предупреждения CS8618
+    protected IBrowser Browser = null!;
+    protected IBrowserContext Context = null!;
+    protected IPage Page = null!;
+    protected ILogger Log = null!;
 
-    // В xUnit нет встроенного TestContext.CurrentContext.Result как в NUnit.
-    // Для определения статуса теста обычно используются обертки или кастомные атрибуты,
-    // но самый простой способ для видео — сохранять его всегда, либо удалять вручную.
     private bool _testFailed = true;
 
-    public BaseTest()
+    // В xUnit конструктор — это место для инициализации логгера через ITestOutputHelper
+    protected BaseTest(ITestOutputHelper output)
     {
-        // Инициализируем логгер (Serilog)
+        // Настраиваем Serilog на вывод прямо в консоль xUnit
+        // Для работы .WriteTo.TestOutput(output) нужен пакет Serilog.Sinks.XUnit
+        Serilog.Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.TestOutput(output)
+            .CreateLogger();
+
         Log = Serilog.Log.Logger;
     }
 
-    // Заменяет [SetUp]
     public async Task InitializeAsync()
     {
         var playwright = await Playwright.CreateAsync();
-        Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+
+        // Поставим Headless = false, чтобы при локальном запуске видеть браузер
+        Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = false
+        });
 
         Context = await Browser.NewContextAsync(new BrowserNewContextOptions
         {
-            RecordVideoDir = "videos/"
+            RecordVideoDir = "videos/",
+            ViewportSize = new ViewportSize { Width = 1920, Height = 1080 }
         });
 
         Page = await Context.NewPageAsync();
-        Log.Information("--- Запуск теста: инициализация браузера и контекста ---");
+        Log.Information("--- Начало теста: {TestName} ---", GetType().Name);
     }
 
-    // Заменяет [TearDown]
     public async Task DisposeAsync()
     {
-        // В xUnit сложно узнать результат теста прямо внутри DisposeAsync без сторонних библиотек.
-        // Обычно видео сохраняют для всех тестов, а CI/CD чистит их, либо используют перехват исключений.
-
-        var video = Page.Video;
+        // Получаем путь к видео ДО закрытия контекста
         string? videoPath = null;
-
-        if (video != null)
+        if (Page != null && Page.Video != null)
         {
-            videoPath = await video.PathAsync();
+            videoPath = await Page.Video.PathAsync();
         }
 
-        await Page.CloseAsync();
-        await Context.DisposeAsync();
-        await Browser.DisposeAsync();
+        // Закрываем всё по порядку
+        if (Page != null) await Page.CloseAsync();
+        if (Context != null) await Context.DisposeAsync();
+        if (Browser != null) await Browser.DisposeAsync();
 
         if (videoPath != null)
         {
-            Log.Information("[Video] Запись завершена. Файл: {Path}", videoPath);
+            Log.Information("[Video] Тест завершен. Видео сохранено: {Path}", videoPath);
         }
+
+        Log.Information("--- Завершение работы браузера ---");
     }
 
-    // Метод для пометки, что тест прошел успешно (вызывать в конце теста)
     protected void MarkTestAsPassed() => _testFailed = false;
 }

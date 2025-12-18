@@ -1,57 +1,46 @@
-﻿using Microsoft.Playwright;
-using System.Threading.Tasks;
-using System.IO;
-using Microsoft.Playwright.Core; // Может потребоваться для некоторых расширений
-using System;
-using FarvaterWeb.Base; // Для исключений
+﻿using FarvaterWeb.Base;
+using Microsoft.Playwright;
+using FarvaterWeb.Base;
+using Serilog;
 
 namespace FarvaterWeb.Pages
 {
-    // Класс CounterpartyPage наследуется от нашего BasePage (который мы ранее обсуждали)
     public class CounterpartyPage : BasePage
     {
-        // 1. Определение относительного пути (если нужно)
-        private const string RelativePath = "counterparty";
+        // 1. Локаторы как свойства ILocator (ленивая инициализация)
+        // Кнопка "Добавить"
+        private ILocator AddButton => Page.Locator("//button[.//span[text()='Добавить']]");
 
-        // 2. Инкапсуляция Локаторов (как свойства ILocator)
+        // Пункт "Юр. лицо" в выпадающем списке
+        private ILocator NewLegalOption => Page.Locator("//div[text()='Юр. лицо']");
 
-        // Локатор для кнопки "Добавить" (используем GetByRole для лучшей устойчивости, если возможно)
-        // В данном случае, используем CSS или XPath, чтобы сохранить исходный локатор
-        private ILocator AddButtonLocator => Page.Locator("//button[.//span[text()=\"Добавить\"]]");
-
-        // Локатор для триггера выпадающего списка "Юр. лицо"
-        private ILocator NewLegalDropdownTrigger => Page.Locator("//div[text()=\"Юр. лицо\"]");
-
-        // 3. Конструктор
-        // Принимает IPage и BaseUrl, передавая их в базовый класс
-        public CounterpartyPage(IPage page, string baseUrl, string username, string password) : base(page, baseUrl, username, password)
+        // 2. Конструктор (теперь только Page и Logger)
+        public CounterpartyPage(IPage page, Serilog.ILogger logger) : base(page, logger)
         {
-            // Здесь можно добавить дополнительную инициализацию, если требуется
         }
 
-        // 4. Методы действий
-
         /// <summary>
-        /// Выполняет клик по кнопке "Добавить" и затем выбирает "Юр. лицо".
+        /// Переход на страницу создания Юр. Лица через кнопку "Добавить"
         /// </summary>
         public async Task SelectPersonTypeAsync()
         {
-            // Используем метод ClickAsync() на ILocator
-            await AddButtonLocator.ClickAsync();
+            // Используем DoClick из BaseComponent (авто-логирование и стабильность)
+            await DoClick(AddButton, "Кнопка 'Добавить'");
 
-            // В C# для логирования лучше использовать ILogger, но для простоты оставим Console.WriteLine
-            Console.WriteLine("Кнопка \"Добавить\" успешно нажата.");
+            // Выбираем тип контрагента
+            await DoClick(NewLegalOption, "Пункт меню 'Юр. лицо'");
 
-            await NewLegalDropdownTrigger.ClickAsync();
-            Console.WriteLine("Выбран пункт \"Юр. лицо\".");
+            // Ждем перехода на страницу создания, чтобы тест не бежал вперед паровоза
+            await Page.WaitForURLAsync("**/counterparty/newlegal**");
+            Log.Information("[CounterpartyPage] Переход в форму создания нового Юр. лица выполнен");
         }
 
         /// <summary>
-        /// Переходит на страницу контрагентов.
+        /// Прямой переход на страницу контрагентов (если нужно для теста)
         /// </summary>
-        public async Task GotoCounterpartyPage()
+        public async Task Open()
         {
-            await GoToUrl(RelativePath, RelativePath);
+            await GoToUrl("https://farvater.mcad.dev/farvater/counterparty", "counterparty");
         }
     }
 }

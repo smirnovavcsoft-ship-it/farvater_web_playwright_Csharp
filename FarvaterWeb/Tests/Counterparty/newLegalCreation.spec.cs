@@ -1,16 +1,14 @@
 ﻿
-// Предполагаемые namespace для Page Objects
+using FarvaterWeb.Base; // Путь к вашему BaseTest и моделям
 using FarvaterWeb.Pages;
 using FarvaterWeb.Pages.Common;
-using FarvaterWeb.Setup;
 using Microsoft.Playwright;
-// Используем TestOutputHelper для вывода в консоль XUnit
+using Xunit;
 using Xunit.Abstractions;
-
 
 namespace FarvaterWeb.Tests.Counterparty
 {
-    // --- Вспомогательный класс для данных ---
+    // Модель данных (record) остается, это отличная практика
     public record LegalDetails(
         string Inn,
         string ShortName,
@@ -22,74 +20,45 @@ namespace FarvaterWeb.Tests.Counterparty
         string Email
     );
 
-    // --- Класс теста ---
-    // Наследуемся от PageTest (если используете фреймворк Playwright.XUnit)
-    // или используем IPage в конструкторе, как показано ниже.
-    [Collection("Playwright Test Collection")]
-    public class FarvaterLegalCreationTests
+    // Мы наследуем BaseTest, который берет на себя:
+    // 1. Создание Browser, Context, Page
+    // 2. Инициализацию Serilog
+    // 3. Запись Видео и Скриншотов при падении
+    public class FarvaterLegalCreationTests : BaseTest
     {
-        // IPage и ITestOutputHelper внедряются через конструктор XUnit.
-        private readonly IPage _page;
-        private readonly string _baseUrl /*= "https://farvater.mcad.dev/farvater/"*/;
-        private readonly ITestOutputHelper _output;
 
-        private readonly PlaywrightFixture _fixture;
-
-        public FarvaterLegalCreationTests(PlaywrightFixture fixture, ITestOutputHelper output)
+        // Конструктор ОБЯЗАТЕЛЬНО должен принимать output и отдавать его в base
+        public FarvaterLegalCreationTests(ITestOutputHelper output) : base(output)
         {
-            _fixture = fixture;
-            _page = fixture.Page;
-            _baseUrl = fixture.BaseUrl;
-            _output = output;
         }
 
         [Fact(DisplayName = "Проверка успешного создания нового юридического лица")]
         public async Task ShouldSuccessfullyCreateANewLegal()
         {
-            _output.WriteLine("---Начало тестового сценария: Создание нового юр. лица---");
+            Log.Information("--- Запуск сценария: Создание нового юр. лица ---");
 
-            string login = _fixture.GlobalUsername;
-            string password = _fixture.GlobalPassword;
+            // Данные берем из переменных окружения или конфига (через BaseTest если нужно)
+            string login = Environment.GetEnvironmentVariable("LOGIN") ?? "SYSADMIN";
+            string password = Environment.GetEnvironmentVariable("PASS") ?? "";
 
-            //--- Инициализация Page Objects ----
-            var signInPage = new SignInPage(_page, _baseUrl, login, password);
-            var dashboardPage = new DashboardPage(_page, _baseUrl, login, password);
-            var counterpartyPage = new CounterpartyPage(_page, _baseUrl, login, password);
-            var newLegalPage = new NewLegalPage(_page, _baseUrl, login, password);
+            // 1. Инициализация Page Objects
+            // Передаем Page и Log, которые достались нам от BaseTest
+            var signInPage = new SignInPage(Page, Log);
+            var dashboardPage = new DashboardPage(Page, Log);
+            var counterpartyPage = new CounterpartyPage(Page, Log);
+            var newLegalPage = new NewLegalPage(Page, Log);
 
-            string createdLegalId = null;
-
-            // 1. Вход в систему и проверка URL
-            _output.WriteLine("1. Вход в систему и проверка URL");
+            // 2. Шаги теста
             await signInPage.NavigateAsync();
-            Assert.Contains("signin", _page.Url);
-            await signInPage.LoginAsync();
-            Assert.Contains("dashboard", _page.Url);
+            await signInPage.LoginAsync(login, password);
 
-            // Проверка URL в XUnit с использованием Asser.Contains
-            //Assert.Contains("signin", _page.Url);
 
-            // 2. Авторизация и проверка перехода на Главную
-            
-            _output.WriteLine("2. Авторизация и проверка перехода на Главную");
-            //await signInPage.LoginAsync();
-            //Assert.Contains("dashboard", _page.Url);
+            await dashboardPage.NavigateToCounterparty();
 
-            // 3. Переход на вкладку "Контрагенты"
-            _output.WriteLine("3. Переход на вкладку 'Контрагенты' и проверка URL");
-            await dashboardPage.NavigateToCounterpartyAsync();
-            Assert.Contains("counterparty", _page.Url);
-
-            // 4. Открытие выпадающего списка выбора типа контрагента
-            _output.WriteLine("4. Открытие выпадающего списка выбора типа контрагента");
+            // Клик по "Добавить" -> "Юр. лицо"
             await counterpartyPage.SelectPersonTypeAsync();
-            _output.WriteLine("Тип контрагента успешно выбран.");
-            Assert.Contains("newlegal", _page.Url);
-            await newLegalPage.WaitForFormToLoadAsync();
 
-            // 5. Заполнение полей нового контрагента
-            _output.WriteLine("5. Заполнение полей нового контрагента");
-
+            // 3. Подготовка данных
             var newLegalDetails = new LegalDetails(
                 Inn: "7703010336",
                 ShortName: "ООО «Вектор»",
@@ -101,15 +70,17 @@ namespace FarvaterWeb.Tests.Counterparty
                 Email: "info@vektor.ru"
             );
 
-            await newLegalPage.FillNewLegalDetailsAsync(newLegalDetails);
-            var filledDetails = await newLegalPage.GetNewLegalDetailsAsync();
+            // 4. Заполнение и проверка
+            await newLegalPage.FillForm(newLegalDetails);
 
-            // Проверка полей
-            Assert.Equal(newLegalDetails.Inn, filledDetails.Inn);
-            Assert.Equal(newLegalDetails.ShortName, filledDetails.ShortName);
-            // ... добавьте Assert.Equal для всех остальных полей
+            // Используем встроенные ассерты Playwright (они умеют ждать и делают скриншоты при ошибке)
+            await Assertions.Expect(Page.Locator("input[name='inn']")).ToHaveValueAsync(newLegalDetails.Inn);
+            await Assertions.Expect(Page.Locator("input[name='shorttitle']")).ToHaveValueAsync(newLegalDetails.ShortName);
 
-            _output.WriteLine("Проверка заполненных данных завершена.");
+            Log.Information("Тест успешно завершен.");
+
+            // Если мы дошли до сюда без исключений, помечаем для BaseTest, что видео можно удалить (опционально)
+            MarkTestAsPassed();
         }
     }
 }

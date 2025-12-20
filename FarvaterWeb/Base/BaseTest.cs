@@ -7,6 +7,7 @@ namespace FarvaterWeb.Base; // Убедитесь, что namespace совпад
 
 public abstract class BaseTest : IAsyncLifetime
 {
+    public static string ScreenshotsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestResults", "Screenshots");
     // Используем null!, чтобы убрать предупреждения CS8618
     protected IBrowser Browser = null!;
     protected IBrowserContext Context = null!;
@@ -30,6 +31,24 @@ public abstract class BaseTest : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        //var absolutePath = Path.GetFullPath(ScreenshotsPath);
+        Log.Information("[Setup] Подготовка папки скриншотов: {Path}", ScreenshotsPath);
+
+        if (Directory.Exists(ScreenshotsPath))
+        {
+            foreach (var file in Directory.GetFiles(ScreenshotsPath))
+            {
+                try { File.Delete(file); } catch { /* пропуск заблокированных */ }
+            }
+        }
+        else
+        {
+            Directory.CreateDirectory(ScreenshotsPath);
+        }
+
+        // 2. Сбрасываем счетчик в компонентах
+        BaseComponent.ResetCounter();
+
         var playwright = await Playwright.CreateAsync();
 
         // Поставим Headless = false, чтобы при локальном запуске видеть браузер
@@ -46,6 +65,11 @@ public abstract class BaseTest : IAsyncLifetime
 
         Page = await Context.NewPageAsync();
         Log.Information("--- Начало теста: {TestName} ---", GetType().Name);
+
+        if (Directory.Exists("screenshots"))
+        {
+            Directory.Delete("screenshots", true); // Удаляет старые скриншоты перед новым запуском
+        }
     }
 
     public async Task DisposeAsync()

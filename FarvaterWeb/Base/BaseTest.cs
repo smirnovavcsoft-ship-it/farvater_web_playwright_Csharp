@@ -2,12 +2,23 @@
 using Xunit;
 using Serilog;
 using Xunit.Abstractions;
+using AventStack.ExtentReports;
+using AventStack.ExtentReports.Reporter;
 
 namespace FarvaterWeb.Base; // Убедитесь, что namespace совпадает с папкой
 
 public abstract class BaseTest : IAsyncLifetime
 {
-    public static string ScreenshotsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestResults", "Screenshots");
+    public static string ScreenshotsPath = Path.Combine(
+    Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName,
+    "TestResults",
+    "Screenshots");
+
+    public static string VideoPath = Path.Combine(
+    Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName,
+    "TestResults",
+    "Videos");
+
     // Используем null!, чтобы убрать предупреждения CS8618
     protected IBrowser Browser = null!;
     protected IBrowserContext Context = null!;
@@ -31,9 +42,9 @@ public abstract class BaseTest : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        //var absolutePath = Path.GetFullPath(ScreenshotsPath);
         Log.Information("[Setup] Подготовка папки скриншотов: {Path}", ScreenshotsPath);
 
+        // 1. Очистка скриншотов
         if (Directory.Exists(ScreenshotsPath))
         {
             foreach (var file in Directory.GetFiles(ScreenshotsPath))
@@ -46,30 +57,30 @@ public abstract class BaseTest : IAsyncLifetime
             Directory.CreateDirectory(ScreenshotsPath);
         }
 
-        // 2. Сбрасываем счетчик в компонентах
+        // 2. Проверка папки для видео (без удаления файлов)
+        if (!Directory.Exists(VideoPath))
+        {
+            Directory.CreateDirectory(VideoPath);
+        }
+
+        // 3. Сброс счетчика шагов
         BaseComponent.ResetCounter();
 
+        // 4. Запуск Playwright и браузера
         var playwright = await Playwright.CreateAsync();
+        Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
 
-        // Поставим Headless = false, чтобы при локальном запуске видеть браузер
-        Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = false
-        });
-
+        // 5. Создание контекста (ТОЛЬКО ОДИН РАЗ с правильным путем для видео)
         Context = await Browser.NewContextAsync(new BrowserNewContextOptions
         {
-            RecordVideoDir = "videos/",
+            RecordVideoDir = VideoPath,
             ViewportSize = new ViewportSize { Width = 1920, Height = 1080 }
         });
 
+        // 6. Открытие страницы
         Page = await Context.NewPageAsync();
-        Log.Information("--- Начало теста: {TestName} ---", GetType().Name);
 
-        if (Directory.Exists("screenshots"))
-        {
-            Directory.Delete("screenshots", true); // Удаляет старые скриншоты перед новым запуском
-        }
+        Log.Information("--- Начало теста: {TestName} ---", GetType().Name);
     }
 
     public async Task DisposeAsync()

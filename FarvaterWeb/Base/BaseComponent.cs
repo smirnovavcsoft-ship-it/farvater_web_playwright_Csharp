@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Serilog;
 using System.Xml.Linq;
+using AventStack.ExtentReports;
 
 
 namespace FarvaterWeb.Base;
@@ -11,6 +12,7 @@ public abstract class BaseComponent
     protected readonly ILogger Log;
     protected readonly ILocator? Root;
     protected readonly string _componentName;
+    protected readonly ExtentTest _extentTest;
 
     private static int _stepCounter = 0;
 
@@ -19,10 +21,11 @@ public abstract class BaseComponent
         _stepCounter = 0;
     }
 
-    protected BaseComponent(IPage page, ILogger logger, ILocator? root = null)
+    protected BaseComponent(IPage page, ILogger logger, ExtentTest extentTest, ILocator? root = null)
     {
         Page = page;
         Log = logger;
+        _extentTest = extentTest;
         Root = root;
         _componentName = GetType().Name; // Автоматически берет имя класса (например, "LoginForm")
     }
@@ -117,17 +120,36 @@ public abstract class BaseComponent
     {
         if (!MakeStepScreenshots) return;
         _stepCounter++;
-        // Генерируем имя: НомерШага_Компонент_Действие.png
-        // Для простоты используем временную метку
-        var fileName = $"step_{DateTime.Now:HHmmss}_{_componentName}_{actionName}.png";
-        //var path = Path.Combine("screenshots", fileName);
-        //var projectRoot = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
-        //var path = Path.Combine(projectRoot, "TestResults", "Screenshots", fileName);
-        var path = Path.Combine(BaseTest.ScreenshotsPath, fileName); // Используем общую переменную из BaseTest
 
-        Directory.CreateDirectory("screenshots");
-        await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
-        //Log.Information("[AutoScreenshot] Сохранен шаг: {Path}", path);
-        Log.Information("[AutoScreenshot] Шаг {Step} сохранен: {FullPath}", _stepCounter, Path.GetFullPath(path));
+        // 1. Формируем имя и путь (используем ТОЛЬКО ScreenshotsPath)
+        var fileName = $"step_{_stepCounter:D3}_{_componentName}_{actionName}.png";
+        var path = Path.Combine(BaseTest.ScreenshotsPath, fileName);
+
+        try
+        {
+            // 2. Создаем нужную директорию (TestResults/Screenshots)
+            Directory.CreateDirectory(BaseTest.ScreenshotsPath);
+
+            // 3. Сохраняем скриншот
+            await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
+
+            // ПУТЬ ДЛЯ HTML: отчет лежит в TestReports/, а скрины в Screenshots/
+            // Чтобы HTML увидел картинку, нужно выйти из своей папки и зайти в соседнюю
+            var relativePath = $"../Screenshots/{fileName}";
+
+            // Добавляем в отчет текст и скриншот
+            _extentTest.Info($"Шаг {_stepCounter}: {actionName}",
+                MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
+
+            Log.Information("[AutoScreenshot] Шаг {Step} сохранен в отчет", _stepCounter);
+
+            // 4. Логируем результат
+            Log.Information("[AutoScreenshot] Шаг {Step} сохранен: {FullPath}", _stepCounter, path);
+        }
+        catch (Exception ex)
+        {
+            // Если скриншот не создался, вы увидите это в Output
+            Log.Error("[AutoScreenshot] Критическая ошибка сохранения: {Message}", ex.Message);
+        }
     }
 }

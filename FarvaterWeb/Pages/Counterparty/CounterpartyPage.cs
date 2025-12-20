@@ -1,7 +1,8 @@
 ﻿using FarvaterWeb.Base;
 using Microsoft.Playwright;
-using FarvaterWeb.Base;
 using Serilog;
+using AventStack.ExtentReports;
+using FarvaterWeb.Tests.Counterparty;
 
 namespace FarvaterWeb.Pages
 {
@@ -15,7 +16,7 @@ namespace FarvaterWeb.Pages
         private ILocator NewLegalOption => Page.Locator("//div[text()='Юр. лицо']");
 
         // 2. Конструктор (теперь только Page и Logger)
-        public CounterpartyPage(IPage page, Serilog.ILogger logger) : base(page, logger)
+        public CounterpartyPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest)
         {
         }
 

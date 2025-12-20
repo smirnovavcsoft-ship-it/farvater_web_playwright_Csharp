@@ -43,10 +43,10 @@ namespace FarvaterWeb.Tests.Counterparty
 
             // 1. Инициализация Page Objects
             // Передаем Page и Log, которые достались нам от BaseTest
-            var signInPage = new SignInPage(Page, Log);
-            var dashboardPage = new DashboardPage(Page, Log);
-            var counterpartyPage = new CounterpartyPage(Page, Log);
-            var newLegalPage = new NewLegalPage(Page, Log);
+            var signInPage = new SignInPage(Page, Log, _test);
+            var dashboardPage = new DashboardPage(Page, Log, _test);
+            var counterpartyPage = new CounterpartyPage(Page, Log, _test);
+            var newLegalPage = new NewLegalPage(Page, Log, _test);
 
             // 2. Шаги теста
             await signInPage.NavigateAsync();

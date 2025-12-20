@@ -9,15 +9,20 @@ namespace FarvaterWeb.Base; // Убедитесь, что namespace совпад
 
 public abstract class BaseTest : IAsyncLifetime
 {
-    public static string ScreenshotsPath = Path.Combine(
-    Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName,
-    "TestResults",
-    "Screenshots");
+    private static readonly string ProjectRoot = 
+        Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
 
-    public static string VideoPath = Path.Combine(
-    Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName,
-    "TestResults",
-    "Videos");
+    public static string ScreenshotsPath = Path.Combine(ProjectRoot, "TestResults", "Screenshots");
+    public static string VideoPath = Path.Combine(ProjectRoot, "TestResults", "Videos");
+    public static string ReportsPath = Path.Combine(ProjectRoot, "TestResults", "TestReports");
+    //public static string ReportFile = Path.Combine(ReportsPath, "Index.html");
+    // Генерируем имя файла один раз при старте приложения
+    // Формат: Run_20251220_1430.html
+    public static readonly string ReportFile = Path.Combine(ReportsPath,
+        $"Run_{DateTime.Now:yyyyMMdd_HHmm}.html");
+
+    private static ExtentReports _extent = null!;
+    protected ExtentTest _test = null!; // Тест для текущего прогона
 
     // Используем null!, чтобы убрать предупреждения CS8618
     protected IBrowser Browser = null!;
@@ -27,6 +32,22 @@ public abstract class BaseTest : IAsyncLifetime
 
     private bool _testFailed = true;
 
+
+
+    // 1. Статический конструктор для инициализации ExtentReports (1 раз на все тесты)
+    static BaseTest()
+    {
+        Directory.CreateDirectory(ScreenshotsPath);
+        Directory.CreateDirectory(VideoPath);
+        Directory.CreateDirectory(ReportsPath);
+
+        var spark = new ExtentSparkReporter(ReportFile);
+        _extent = new ExtentReports();
+        _extent.AttachReporter(spark);
+    }
+
+
+    // 2. Обычный конструктор для Serilog и создания записи теста
     // В xUnit конструктор — это место для инициализации логгера через ITestOutputHelper
     protected BaseTest(ITestOutputHelper output)
     {
@@ -38,6 +59,8 @@ public abstract class BaseTest : IAsyncLifetime
             .CreateLogger();
 
         Log = Serilog.Log.Logger;
+        // Создаем ветку в отчете для конкретного тест-класса
+        _test = _extent.CreateTest(GetType().Name);
     }
 
     public async Task InitializeAsync()
@@ -96,6 +119,8 @@ public abstract class BaseTest : IAsyncLifetime
         if (Page != null) await Page.CloseAsync();
         if (Context != null) await Context.DisposeAsync();
         if (Browser != null) await Browser.DisposeAsync();
+
+        _extent.Flush();
 
         if (videoPath != null)
         {

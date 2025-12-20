@@ -2,6 +2,7 @@
 using Microsoft.Playwright;
 using FarvaterWeb.Base;
 using Serilog;
+using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages
 {
@@ -14,7 +15,7 @@ namespace FarvaterWeb.Pages
         private ILocator SaveButton => Page.Locator("//button[.//span[text()='Сохранить']]");
         private ILocator ContactsAccordion => Page.Locator("//div[@role='button'][.//span[text()='Контакты']]");
 
-        public NewLegalPage(IPage page, Serilog.ILogger logger) : base(page, logger) { }
+        public NewLegalPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
 
         public async Task FillForm(LegalDetails details)
         {

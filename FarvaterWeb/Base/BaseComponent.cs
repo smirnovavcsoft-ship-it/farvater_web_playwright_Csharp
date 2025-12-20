@@ -141,10 +141,10 @@ public abstract class BaseComponent
             _extentTest.Info($"Шаг {_stepCounter}: {actionName}",
                 MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
 
-            Log.Information("[AutoScreenshot] Шаг {Step} сохранен в отчет", _stepCounter);
+            //Log.Information("[AutoScreenshot] Шаг {Step} сохранен в отчет", _stepCounter);
 
             // 4. Логируем результат
-            Log.Information("[AutoScreenshot] Шаг {Step} сохранен: {FullPath}", _stepCounter, path);
+            //Log.Information("[AutoScreenshot] Шаг {Step} сохранен: {FullPath}", _stepCounter, path);
         }
         catch (Exception ex)
         {

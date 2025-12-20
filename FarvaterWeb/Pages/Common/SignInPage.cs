@@ -1,6 +1,7 @@
 ﻿using FarvaterWeb.Base;
 using Microsoft.Playwright;
 using Serilog;
+using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages.Common
 {
@@ -13,7 +14,7 @@ namespace FarvaterWeb.Pages.Common
         private ILocator PasswordInput => Page.Locator("//input[@data-signature='password-input']");
         private ILocator LoginButton => Page.Locator("//button[.//span[text()='Войти']]");
 
-        public SignInPage(IPage page, Serilog.ILogger logger) : base(page, logger) { }
+        public SignInPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
 
         public async Task NavigateAsync() => await GoToUrl(_path, "signin");
 

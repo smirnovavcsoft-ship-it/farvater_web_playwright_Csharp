@@ -1,5 +1,6 @@
 ﻿using Microsoft.Playwright;
 using FarvaterWeb.Base;
+using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages.Common
 {
@@ -11,7 +12,7 @@ namespace FarvaterWeb.Pages.Common
         private ILocator UserDropdown => Page.Locator("//div[starts-with(@class, '_user_name_')]");
         private ILocator LogoutItem => Page.Locator("//div[@data-signature='dropdown-menu-item' and .//div[text()='Выйти']]");
 
-        public DashboardPage(IPage page, Serilog.ILogger logger) : base(page, logger) { }
+        public DashboardPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
 
         public async Task NavigateToCounterparty()
         {

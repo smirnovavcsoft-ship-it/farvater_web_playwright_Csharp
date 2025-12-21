@@ -37,6 +37,14 @@ public abstract class BaseTest : IAsyncLifetime
     // 1. Статический конструктор для инициализации ExtentReports (1 раз на все тесты)
     static BaseTest()
     {
+        if (Directory.Exists(ScreenshotsPath))
+        {
+            foreach (var file in Directory.GetFiles(ScreenshotsPath))
+            {
+                try { File.Delete(file); } catch { }
+            }
+        }
+
         Directory.CreateDirectory(ScreenshotsPath);
         Directory.CreateDirectory(VideoPath);
         Directory.CreateDirectory(ReportsPath);
@@ -68,17 +76,17 @@ public abstract class BaseTest : IAsyncLifetime
         Log.Information("[Setup] Подготовка папки скриншотов: {Path}", ScreenshotsPath);
 
         // 1. Очистка скриншотов
-        if (Directory.Exists(ScreenshotsPath))
-        {
-            foreach (var file in Directory.GetFiles(ScreenshotsPath))
-            {
-                try { File.Delete(file); } catch { /* пропуск заблокированных */ }
-            }
-        }
-        else
-        {
-            Directory.CreateDirectory(ScreenshotsPath);
-        }
+        //if (Directory.Exists(ScreenshotsPath))
+        //{
+            //foreach (var file in Directory.GetFiles(ScreenshotsPath))
+            //{
+                //try { File.Delete(file); } catch { /* пропуск заблокированных */ }
+            //}
+        //}
+        //else
+        //{
+            //Directory.CreateDirectory(ScreenshotsPath);
+        //}
 
         // 2. Проверка папки для видео (без удаления файлов)
         if (!Directory.Exists(VideoPath))
@@ -108,27 +116,61 @@ public abstract class BaseTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        // Получаем путь к видео ДО закрытия контекста
+        // 1. ОБРАБОТКА ОШИБКИ (Вставляем в самое начало)
+        // Если флаг _testFailed остался true, значит MarkTestAsPassed() не был вызван
+        if (_testFailed && Page != null)
+        {
+            try
+            {
+                var fileName = $"ERROR_{GetType().Name}_{DateTime.Now:HHmmss}.png";
+                var path = Path.Combine(ScreenshotsPath, fileName);
+
+                // Делаем финальный скриншот
+                await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
+
+                var relativePath = $"../Screenshots/{fileName}";
+
+                // Помечаем в ExtentReports как Fail, прикладываем скрин и вешаем категорию
+                _test.Fail("<b><font color='red'>ТЕСТ ПРЕРВАН ОШИБКОЙ</font></b>",
+                    MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
+
+                _test.AssignCategory("Runtime Failures"); // Категория по умолчанию для упавших тестов
+                Log.Error("[Dispose] Тест упал. Скриншот ошибки сохранен: {Path}", path);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("[Dispose] Не удалось сохранить скриншот ошибки: {Msg}", ex.Message);
+            }
+        }
+
+        // 2. РАБОТА С ВИДЕО (Ваш существующий код)
         string? videoPath = null;
         if (Page != null && Page.Video != null)
         {
             videoPath = await Page.Video.PathAsync();
         }
 
-        // Закрываем всё по порядку
+        // 3. ЗАКРЫТИЕ БРАУЗЕРА
         if (Page != null) await Page.CloseAsync();
         if (Context != null) await Context.DisposeAsync();
         if (Browser != null) await Browser.DisposeAsync();
 
+        // 4. СОХРАНЕНИЕ ОТЧЕТА
         _extent.Flush();
 
         if (videoPath != null)
         {
             Log.Information("[Video] Тест завершен. Видео сохранено: {Path}", videoPath);
+            // Опционально: можно добавить ссылку на видео в отчет
+            _test.Info($"<a href='file:///{videoPath}'>Запись видео теста</a>");
         }
 
         Log.Information("--- Завершение работы браузера ---");
     }
 
-    protected void MarkTestAsPassed() => _testFailed = false;
+    protected void MarkTestAsPassed()
+    {
+        _testFailed = false; // Мы подтверждаем, что тест дошел до конца без ошибок
+        _test.Pass("Тест завершен успешно"); // Отмечаем в ExtentReports
+    }
 }

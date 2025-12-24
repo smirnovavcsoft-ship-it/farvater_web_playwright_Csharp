@@ -33,6 +33,15 @@ public abstract class BaseComponent
     // --- Вспомогательный метод для поиска локаторов внутри компонента ---
     protected ILocator GetLocator(ILocator locator) => Root ?? locator;
 
+    //Компоненты для элементов
+
+    protected ILocator GetInputByLabel(string labelText)
+    {
+        // Этот XPath ищет input, который находится внутри того же контейнера, что и текст заголовка
+        // Или input, на который ссылается тег <label>
+        return Page.Locator($"//div[contains(text(), '{labelText}')]/following-sibling::input | //label[contains(text(), '{labelText}')]/..//input");
+    }
+
     // --- Действия с текстом ---
     protected async Task DoFill(ILocator locator, string name, string text, bool maskText = false)
     {
@@ -40,6 +49,15 @@ public abstract class BaseComponent
         Log.Information("[{Component}] Ввод '{Value}' в поле '{Name}'", _componentName, logValue, name);
         await locator.FillAsync(text);
         await AutoScreenshot($"Fill_{name.Replace(" ", "_")}");
+    }
+
+    protected async Task DoFillByLabel(string label, string text)
+    {
+        // Находим локатор динамически
+        var locator = GetInputByLabel(label);
+
+        // Используем ваш существующий метод логирования и скриншотов
+        await DoFill(locator, label, text);
     }
 
     protected async Task<string> DoGetText(ILocator locator, string name)

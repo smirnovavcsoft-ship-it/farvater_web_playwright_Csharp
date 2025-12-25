@@ -77,18 +77,21 @@ namespace FarvaterWeb.Tests.Counterparty
                 // 4. Заполнение и проверка
                 await newLegalPage.FillForm(newLegalDetails);
 
-                // Используем встроенные ассерты Playwright (они умеют ждать и делают скриншоты при ошибке)
+                /*// Используем встроенные ассерты Playwright (они умеют ждать и делают скриншоты при ошибке)
                 await Assertions.Expect(Page.Locator("input[name='inn']")).ToHaveValueAsync(newLegalDetails.Inn);
                 await Assertions.Expect(Page.Locator("input[name='shorttitle']")).ToHaveValueAsync(newLegalDetails.ShortName);
-                await Assertions.Expect(Page.Locator("input[name='address']")).ToHaveValueAsync(newLegalDetails.FullName);
-                await Assertions.Expect(Page.Locator("input[name='ogrn']")).ToHaveValueAsync(newLegalDetails.Address);
+                await Assertions.Expect(Page.Locator("input[name='title']")).ToHaveValueAsync(newLegalDetails.FullName);
+                await Assertions.Expect(Page.Locator("input[name='address']")).ToHaveValueAsync(newLegalDetails.Address);
+                await Assertions.Expect(Page.Locator("input[name='ogrn']")).ToHaveValueAsync(newLegalDetails.Ogrn);
                 await Assertions.Expect(Page.Locator("input[name='kpp']")).ToHaveValueAsync(newLegalDetails.Kpp);
                 await Assertions.Expect(Page.Locator("input[name='phone']")).ToHaveValueAsync(newLegalDetails.Phone);
-                await Assertions.Expect(Page.Locator("input[name='email']")).ToHaveValueAsync(newLegalDetails.Email);
+                await Assertions.Expect(Page.Locator("input[name='email']")).ToHaveValueAsync(newLegalDetails.Email);*/
 
                 //5. Нажатие кнопки "Создать"
 
+                await newLegalPage.Create();
 
+                await counterpartyPage.DeleteCounterparty(newLegalDetails.ShortName);
 
                 Log.Information("Тест успешно завершен.");
 

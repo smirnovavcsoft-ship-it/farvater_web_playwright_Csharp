@@ -35,11 +35,52 @@ public abstract class BaseComponent
 
     //Компоненты для элементов
 
-    protected ILocator GetInputByLabel(string labelText)
+    /*protected ILocator GetInputByLabel(string labelText)
     {
         // Этот XPath ищет input, который находится внутри того же контейнера, что и текст заголовка
         // Или input, на который ссылается тег <label>
         return Page.Locator($"//div[contains(text(), '{labelText}')]/following-sibling::input | //label[contains(text(), '{labelText}')]/..//input");
+    }*/
+
+    protected ILocator GetInputByLabel(string labelText)
+    {
+        // Приводим искомый текст к нижнему регистру для сравнения
+        string lowerLabel = labelText.ToLower().Trim();
+
+        // Алфавиты для замены (кириллица + латиница)
+        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+        string lower = "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+
+        // XPath, который:
+        // 1. Ищет элемент, содержащий текст (span, label, div)
+        // 2. Очищает его от лишних пробелов
+        // 3. Переводит в нижний регистр
+        // 4. Находит ближайший input
+        string xpath = $@"
+        (//*[translate(normalize-space(text()), '{chars}', '{lower}') = '{lowerLabel}']
+        /ancestor::div[1]//input | 
+        //*[translate(normalize-space(text()), '{chars}', '{lower}') = '{lowerLabel}']
+        /following-sibling::input |
+        //label[translate(normalize-space(string(.)), '{chars}', '{lower}') = '{lowerLabel}']//input)[1]";
+
+        return Page.Locator(xpath);
+    }
+
+    protected ILocator GetButtonByText(string buttonText)
+    {
+        string lowerButton = buttonText.ToLower().Trim();
+        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+        string lower = "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+
+        // Ищем любой элемент, который выглядит как кнопка или ссылка, 
+        // чей текст после очистки пробелов совпадает с искомым (в нижнем регистре)
+        string xpath = $@"
+        ( //button[translate(normalize-space(.), '{chars}', '{lower}') = '{lowerButton}'] | 
+          //input[(@type='button' or @type='submit') and translate(normalize-space(@value), '{chars}', '{lower}') = '{lowerButton}'] |
+          //*[(@role='button' or contains(@class, 'btn')) and translate(normalize-space(.), '{chars}', '{lower}') = '{lowerButton}'] 
+        )[1]";
+
+        return Page.Locator(xpath);
     }
 
     // --- Действия с текстом ---
@@ -82,6 +123,122 @@ public abstract class BaseComponent
         await locator.DblClickAsync();
         await AutoScreenshot($"DoubleClick_{name.Replace(" ", "_")}");
     }
+
+    /*protected async Task DoClickByText(string buttonText)
+    {
+        Log.Information("[{Component}] Нажатие на кнопку '{Text}'", _componentName, buttonText);
+
+        var locator = GetButtonByText(buttonText);
+
+        // Ждем, чтобы кнопка стала видимой и доступной для клика
+        await Assertions.Expect(locator).ToBeVisibleAsync(new() { Timeout = 5000 });
+        await Assertions.Expect(locator).ToBeEnabledAsync();
+
+        await locator.ClickAsync();
+
+        // Делаем скриншот ПОСЛЕ клика, чтобы увидеть результат действия
+        await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
+    }*/
+
+    /*protected async Task DoClickByText(string buttonText)
+    {
+        Log.Information("[{Component}] Нажатие на кнопку '{Text}'", _componentName, buttonText);
+
+        // 1. Подготовка переменных для XPath
+        string lowerLabel = buttonText.ToLower().Trim(); // Вот она, потеряшка!
+        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+        string lower = "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+
+        // Формируем XPath для "всеядного" поиска
+        //string xpathSelector = $"xpath=(//button|//a|//*[@role='button']|//input[@type='submit' or @type='button'])[translate(normalize-space(.), '{chars}', '{lower}') = '{lowerLabel}' or translate(normalize-space(@value), '{chars}', '{lower}') = '{lowerLabel}']";
+        string xpathSelector = $"xpath=(//button|//a|//*[@role='button']|//input[@type='submit' or @type='button'])[contains(translate(., '{chars}', '{lower}'), '{lowerLabel}') or contains(translate(@value, '{chars}', '{lower}'), '{lowerLabel}')]";
+
+        // 2. Инициализация локаторов
+        var roleLocator = Page.GetByRole(AriaRole.Button, new() { Name = buttonText });
+
+        // Объединяем: ищем либо по роли, либо по нашему хитрому XPath
+        // Добавляем фильтр >> visible=true, чтобы не кликать по скрытым элементам
+        var combinedLocator = Page.Locator(xpathSelector).Or(roleLocator).Filter(new() { Visible = true }).First;
+
+        try
+        {
+            // 3. Ожидание и клик
+            await Assertions.Expect(combinedLocator).ToBeVisibleAsync(new() { Timeout = 5000 });
+            await combinedLocator.ClickAsync();
+
+            await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error("[{Component}] Не удалось кликнуть по кнопке '{Text}': {Error}", _componentName, buttonText, ex.Message);
+            throw; // Пробрасываем ошибку в тест
+        }
+    }*/
+
+    protected async Task DoClickByText(string buttonText)
+    {
+        Log.Information("[{Component}] Нажатие на кнопку '{Text}'", _componentName, buttonText);
+
+        string lowerLabel = buttonText.ToLower().Trim();
+        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+        string lower = "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+
+        // 1. Формируем локатор
+        string xpathSelector = $"xpath=(//button|//a|//*[@role='button']|//input[@type='submit' or @type='button'])[contains(translate(., '{chars}', '{lower}'), '{lowerLabel}') or contains(translate(@value, '{chars}', '{lower}'), '{lowerLabel}')]";
+        var roleLocator = Page.GetByRole(AriaRole.Button, new() { Name = buttonText });
+        var combinedLocator = Page.Locator(xpathSelector).Or(roleLocator).First;
+
+        // 2. Улучшенная логика взаимодействия
+        try
+        {
+            // Сначала пробуем проскроллить
+            try
+            {
+                await combinedLocator.ScrollIntoViewIfNeededAsync(new() { Timeout = 2000 });
+            }
+            catch { /* Если не скроллится, возможно элемент уже в области видимости */ }
+
+            // Ждем видимости
+            await Assertions.Expect(combinedLocator).ToBeVisibleAsync(new() { Timeout = 7000 });
+
+            // Кликаем (добавим Force, чтобы игнорировать возможные невидимые перекрытия)
+            await combinedLocator.ClickAsync(new() { Force = true });
+
+            await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Не удалось кликнуть по кнопке '{Text}': {Error}", buttonText, ex.Message);
+            throw;
+        }
+    }
+
+    /*protected async Task DoClickByText(string buttonText)
+    {
+        Log.Information("[{Component}] Нажатие на кнопку (GetByRole) '{Text}'", _componentName, buttonText);
+
+        // Ищем строго по роли кнопки с учетом имени (регистронезависимо по умолчанию)
+        var locator = Page.GetByRole(AriaRole.Button, new() { Name = buttonText }).First;
+
+        try
+        {
+            // Ждем, чтобы кнопка стала видимой (стандартные 5-7 секунд)
+            await locator.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 7000 });
+
+            // Кликаем с параметром Force, чтобы пробить возможные невидимые перекрытия
+            await locator.ClickAsync(new() { Force = true });
+
+            await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error("GetByRole не смог найти или кликнуть по кнопке '{Text}': {Error}", buttonText, ex.Message);
+
+            // Если упало, сделаем диагностический скриншот сразу
+            await AutoScreenshot($"ERROR_Click_{buttonText.Replace(" ", "_")}");
+            throw;
+        }
+    }*/
 
     // --- Мышь и сложные действия ---
     protected async Task DoHover(ILocator locator, string name)

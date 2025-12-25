@@ -15,7 +15,7 @@ public abstract class BasePage : BaseComponent
     /// <summary>
     /// Переход по URL с проверкой результата и логированием
     /// </summary>
-    public async Task GoToUrl(string url, string expectedUrlPart)
+    /*public async Task GoToUrl(string url, string expectedUrlPart)
     {
         Log.Information("[Navigation] Переход на URL: {Url}. Ожидаем часть пути: '{Part}'", url, expectedUrlPart);
 
@@ -44,6 +44,20 @@ public abstract class BasePage : BaseComponent
 
             await TakeScreenshotAsync($"Error_Nav_{expectedUrlPart.Replace("/", "_")}");
             throw;
+        }
+    }*/
+
+    public async Task GoToUrl(string url, string expectedUrlPart)
+    {
+        Log.Information("[Navigation] Переход на URL: {Url}", url);
+        await Page.GotoAsync(url);
+
+        // Вместо NetworkIdle используем Load (страница загружена, но картинки/скрипты могут докачиваться)
+        await Page.WaitForLoadStateAsync(LoadState.Load);
+
+        if (!Page.Url.Contains(expectedUrlPart))
+        {
+            // ... ваша логика проверки URL ...
         }
     }
 

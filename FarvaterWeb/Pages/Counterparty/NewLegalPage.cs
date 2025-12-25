@@ -19,7 +19,7 @@ namespace FarvaterWeb.Pages
         private ILocator EmailInput => Page.Locator("input[name='email'");*/
 
 
-        private ILocator SaveButton => Page.Locator("//button[.//span[text()='Сохранить']]");
+        //private ILocator SaveButton => Page.Locator("//button[.//span[text()='Сохранить']]");
         private ILocator ContactsAccordion => Page.Locator("//div[@role='button'][.//span[text()='Контакты']]");
 
         
@@ -55,10 +55,15 @@ namespace FarvaterWeb.Pages
             await DoFillByLabel("E-mail", details.Email);
         }
 
-        public async Task Save()
+        /*public async Task Save()
         {
             await DoClick(SaveButton, "Кнопка 'Сохранить'");
             // Здесь можно добавить ожидание исчезновения формы или появления уведомления
+        }*/
+
+        public async Task Create()
+        {
+            await DoClickByText("Создать");
         }
     }
 }

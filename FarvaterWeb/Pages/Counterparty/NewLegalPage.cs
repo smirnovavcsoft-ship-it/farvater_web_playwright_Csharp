@@ -65,5 +65,12 @@ namespace FarvaterWeb.Pages
         {
             await DoClickByText("Создать");
         }
+
+        public async Task AddContact()
+        {
+            await DoClickByText("Добавить контакт");
+        }
+
+        
     }
 }

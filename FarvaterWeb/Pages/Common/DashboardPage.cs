@@ -6,24 +6,28 @@ namespace FarvaterWeb.Pages.Common
 {
     public class DashboardPage : BasePage
     {
-        // Локаторы как свойства
-        private ILocator ProjectsTab => Page.Locator("//a[contains(@href, 'projects')]");
-        private ILocator CounterpartyTab => Page.Locator("//a[contains(@href, 'counterparty')]");
+        // Оставляем только те локаторы, которые уникальны (меню пользователя)
         private ILocator UserDropdown => Page.Locator("//div[starts-with(@class, '_user_name_')]");
         private ILocator LogoutItem => Page.Locator("//div[@data-signature='dropdown-menu-item' and .//div[text()='Выйти']]");
 
         public DashboardPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
 
-        public async Task NavigateToCounterparty()
+        // ОДИН метод для всех переходов по меню
+        public async Task OpenSection(string name, string urlPart)
         {
-            await DoClick(CounterpartyTab, "Вкладка 'Контрагенты'");
-            await Page.WaitForURLAsync("**/counterparty**");
+            // Находим ссылку в меню по ее текстовому названию
+            var menuButton = Page.GetByRole(AriaRole.Link, new() { Name = name });
+
+            // Кликаем через базовый метод (с логированием в отчет)
+            await DoClick(menuButton, $"Переход в раздел '{name}'");
+
+            // Ждем, пока URL изменится на нужный
+            await Page.WaitForURLAsync($"**/{urlPart}**");
         }
 
         public async Task Logout()
         {
             await DoClick(UserDropdown, "Меню пользователя");
-            // Наш базовый метод уже умеет ждать и логировать
             await DoClick(LogoutItem, "Пункт 'Выйти'");
             await Page.WaitForURLAsync("**/signin**");
         }

@@ -55,7 +55,7 @@ namespace FarvaterWeb.Tests.Counterparty
                 await signInPage.LoginAsync(login, password);
 
 
-                await dashboardPage.NavigateToCounterparty();
+                await dashboardPage.OpenSection("Контрагенты", "counterparty");
 
                 // Клик по "Добавить" -> "Юр. лицо"
                 await counterpartyPage.SelectPersonTypeAsync();
@@ -90,6 +90,8 @@ namespace FarvaterWeb.Tests.Counterparty
                 //5. Нажатие кнопки "Создать"
 
                 await newLegalPage.Create();
+
+                // Нет создания контактов и дополнительных контактов. Потом допишу. Наверно.
 
                 await counterpartyPage.DeleteCounterparty(newLegalDetails.ShortName);
 

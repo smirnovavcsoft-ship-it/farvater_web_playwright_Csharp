@@ -173,4 +173,23 @@ public abstract class BaseTest : IAsyncLifetime
         _testFailed = false; // Мы подтверждаем, что тест дошел до конца без ошибок
         _test.Pass("Тест завершен успешно"); // Отмечаем в ExtentReports
     }
+
+    protected async Task LoginAsAdmin()
+    {
+        Log.Information("[Setup] Начало авторизации под SYSADMIN");
+
+        // Переход на страницу (BaseUrl можно взять из конфига или задать тут)
+        await Page.GotoAsync("https://vash-sait.ru/signin");
+
+        // Используем простые селекторы или те, что у вас в SignInPage
+        await Page.FillAsync("input[name='login']", "SYSADMIN");
+        await Page.FillAsync("input[name='password']", "ваш_пароль");
+        await Page.ClickAsync("button[type='submit']");
+
+        // Ждем, что мы попали на главную (Dashboard)
+        await Page.WaitForURLAsync("**/dashboard");
+
+        _test.Info("Авторизация выполнена успешно");
+        Log.Information("[Setup] Авторизация успешна");
+    }
 }

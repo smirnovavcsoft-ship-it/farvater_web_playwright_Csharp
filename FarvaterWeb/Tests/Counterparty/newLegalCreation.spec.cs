@@ -5,6 +5,7 @@ using FarvaterWeb.Pages.Common;
 using Microsoft.Playwright;
 using Xunit;
 using Xunit.Abstractions;
+using Allure.Xunit.Attributes;
 
 namespace FarvaterWeb.Tests.Counterparty
 {
@@ -24,6 +25,7 @@ namespace FarvaterWeb.Tests.Counterparty
     // 1. Создание Browser, Context, Page
     // 2. Инициализацию Serilog
     // 3. Запись Видео и Скриншотов при падении
+    [AllureXunit]
     public class FarvaterLegalCreationTests : BaseTest
     {
 

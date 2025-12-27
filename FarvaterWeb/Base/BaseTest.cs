@@ -4,11 +4,11 @@ using Serilog;
 using Xunit.Abstractions;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
-using Allure.Xunit.Attributes;
+
 
 namespace FarvaterWeb.Base; // Убедитесь, что namespace совпадает с папкой
 
-[AllureXunit]
+
 public abstract class BaseTest : IAsyncLifetime
 {
     private static readonly string ProjectRoot = 

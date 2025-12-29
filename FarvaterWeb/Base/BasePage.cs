@@ -1,6 +1,7 @@
-﻿using Microsoft.Playwright;
+﻿using AventStack.ExtentReports;
+using FarvaterWeb.Components;
+using Microsoft.Playwright;
 using Serilog;
-using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Base;
 
@@ -8,6 +9,7 @@ public abstract class BasePage : BaseComponent
 {
     // Конструктор просто пробрасывает зависимости в BaseComponent
     // Мы передаем null в качестве Root, так как у страницы нет родительского локатора
+    public TableComponent Table => new TableComponent(Page);
     protected BasePage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest)
     {
     }

@@ -11,9 +11,15 @@ namespace FarvaterWeb.Pages.Users
     {
         public UsersPage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
 
-        public async Task ClickPositionsTab()
+        public async Task ClickTab(string tabName)
         {
-            await DoClickByText("Должности");
+            Log.Information("[UsersPage] Переход на вкладку: {TabName}", tabName);
+
+            // Используем локатор по тексту
+            await Page.GetByText(tabName, new() { Exact = true }).ClickAsync();
+
+            // Опционально: подождать, пока вкладка станет активной 
+            // (в вашем HTML активная вкладка помечается наличием внутри div класса _switchOutline_)
         }
 
         public async Task ClickCreatePositionButton()
@@ -40,6 +46,14 @@ namespace FarvaterWeb.Pages.Users
         {
             await DoFillByLabel("Наименование", name);
         }
+
+        public async Task CancelAndVerify(string PositionName)
+        {
+            
+            await CancelAction.ExecuteAndVerify(PositionName);
+        }
+
+
 
 
     }

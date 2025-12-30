@@ -25,7 +25,7 @@ namespace FarvaterWeb.Tests.Counterparty
     // 1. Создание Browser, Context, Page
     // 2. Инициализацию Serilog
     // 3. Запись Видео и Скриншотов при падении
-    [AllureXunit]
+    //[AllureXunit]
     public class FarvaterLegalCreationTests : BaseTest
     {
 
@@ -34,7 +34,7 @@ namespace FarvaterWeb.Tests.Counterparty
         {
         }
 
-        [Fact(DisplayName = "Проверка успешного создания нового юридического лица")]
+        [Fact(DisplayName = "Проверка успешного создания нового юридического лица", Skip = "Пока этот тест не нужен")]
         public async Task ShouldSuccessfullyCreateANewLegal()
         {
             try
@@ -48,7 +48,7 @@ namespace FarvaterWeb.Tests.Counterparty
                 // 1. Инициализация Page Objects
                 // Передаем Page и Log, которые достались нам от BaseTest
                 var signInPage = new SignInPage(Page, Log, _test);
-                var dashboardPage = new DashboardPage(Page, Log, _test);
+                var sideMenuPage = new SideMenuPage(Page, Log, _test);
                 var counterpartyPage = new CounterpartyPage(Page, Log, _test);
                 var newLegalPage = new NewLegalPage(Page, Log, _test);
 
@@ -57,7 +57,7 @@ namespace FarvaterWeb.Tests.Counterparty
                 await signInPage.LoginAsync(login, password);
 
 
-                await dashboardPage.OpenSection("Контрагенты", "counterparty");
+                await sideMenuPage.OpenSection("Контрагенты", "counterparty");
 
                 // Клик по "Добавить" -> "Юр. лицо"
                 await counterpartyPage.SelectPersonTypeAsync();

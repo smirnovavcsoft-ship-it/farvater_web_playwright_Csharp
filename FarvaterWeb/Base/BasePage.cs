@@ -10,6 +10,8 @@ public abstract class BasePage : BaseComponent
     // Конструктор просто пробрасывает зависимости в BaseComponent
     // Мы передаем null в качестве Root, так как у страницы нет родительского локатора
     public TableComponent Table => new TableComponent(Page);
+
+    public CancelComponent CancelAction => new CancelComponent(Page);
     protected BasePage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest)
     {
     }

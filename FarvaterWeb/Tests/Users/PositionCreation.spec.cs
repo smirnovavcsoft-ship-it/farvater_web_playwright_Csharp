@@ -9,37 +9,47 @@ using Xunit.Abstractions;
 namespace FarvaterWeb.Tests.Users
 {
     public class PositionCreationTests : BaseTest
-    {
+    {        
+        //private readonly SideMenuPage _sideMenuPage;
+        //private readonly UsersPage _usersPage;
+        private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
+        private UsersPage Users => new UsersPage(Page, Log, _test);
 
-        //var signInPage = new SignInPage(Page, Log, _test);
-        //var dashboardPage = new DashboardPage(Page, Log, _test);
 
-        private readonly DashboardPage _dashboardPage;
-        private readonly UsersPage _usersPage;
 
         public PositionCreationTests(ITestOutputHelper output) : base(output)
         {
-            _dashboardPage = new DashboardPage(Page, Log, _test);
-            _usersPage = new UsersPage(Page, Log, _test);
+            //_sideMenuPage = new SideMenuPage(Page, Log, _test);
+            //_usersPage = new UsersPage(Page, Log, _test);
 
         }
         [Fact]
         public async Task SouldCreateNewPosition()
         {
             await LoginAsAdmin();
-            await _dashboardPage.OpenSection("Пользователи", "users");
+            await SideMenu.OpenSection("Пользователи", "users");
 
             // Клик по вкладке "Должности"
 
-
+            await Users.ClickTab("Должности");
 
             // Клик по кнопке "Создать должность"
 
+            await Users.ClickCreatePositionButton();
+
             // Ввод наименования должности
+
+            string positionName = "Тестовая должность (удалить)";
+
+            await Users.FillPositionName(positionName);
 
             // Клик по кнопке "Отмена"
 
+            await Users.CancelAndVerify(positionName);
+
             // Проверка наличия созданной должности на странице
+
+
 
             // Клик по кнопке "Создать должность"
 

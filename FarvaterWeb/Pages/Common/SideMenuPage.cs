@@ -4,13 +4,18 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages.Common
 {
-    public class DashboardPage : BasePage
+    public class SideMenuPage : BasePage
     {
         // Оставляем только те локаторы, которые уникальны (меню пользователя)
+
+        private readonly IPage _page;
         private ILocator UserDropdown => Page.Locator("//div[starts-with(@class, '_user_name_')]");
         private ILocator LogoutItem => Page.Locator("//div[@data-signature='dropdown-menu-item' and .//div[text()='Выйти']]");
 
-        public DashboardPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
+        public SideMenuPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest)
+        {
+            _page = page;
+        }
 
         // ОДИН метод для всех переходов по меню
         public async Task OpenSection(string name, string urlPart)
@@ -23,6 +28,8 @@ namespace FarvaterWeb.Pages.Common
 
             // Ждем, пока URL изменится на нужный
             await Page.WaitForURLAsync($"**/{urlPart}**");
+
+            Log.Information($"[SideMenu] Переход в раздел {name} выполнен");
         }
 
         public async Task Logout()

@@ -181,12 +181,12 @@ public abstract class BaseTest : IAsyncLifetime
         Log.Information("[Setup] Начало авторизации под SYSADMIN");
 
         // Переход на страницу (BaseUrl можно взять из конфига или задать тут)
-        await Page.GotoAsync("https://vash-sait.ru/signin");
+        await Page.GotoAsync("https://farvater.mcad.dev/farvater/");
 
         // Используем простые селекторы или те, что у вас в SignInPage
-        await Page.FillAsync("input[name='login']", "SYSADMIN");
-        await Page.FillAsync("input[name='password']", "ваш_пароль");
-        await Page.ClickAsync("button[type='submit']");
+        await Page.GetByPlaceholder("Пользователь").FillAsync("SYSADMIN");
+        await Page.GetByPlaceholder("Пароль").FillAsync("");
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Войти" }).ClickAsync();
 
         // Ждем, что мы попали на главную (Dashboard)
         await Page.WaitForURLAsync("**/dashboard");

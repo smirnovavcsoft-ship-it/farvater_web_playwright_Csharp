@@ -4,7 +4,7 @@ using FarvaterWeb.Base;
 using Serilog;
 using AventStack.ExtentReports;
 
-namespace FarvaterWeb.Pages.Counterparty
+namespace FarvaterWeb.Pages
 {
     public class NewLegalPage : BasePage
     {

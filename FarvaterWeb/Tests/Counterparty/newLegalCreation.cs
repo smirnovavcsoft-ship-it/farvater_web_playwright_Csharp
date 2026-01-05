@@ -5,7 +5,10 @@ using FarvaterWeb.Pages.Common;
 using Microsoft.Playwright;
 using Xunit;
 using Xunit.Abstractions;
+using Allure.Xunit;
 using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
+
 
 namespace FarvaterWeb.Tests.Counterparty
 {
@@ -25,6 +28,7 @@ namespace FarvaterWeb.Tests.Counterparty
     // 1. Создание Browser, Context, Page
     // 2. Инициализацию Serilog
     // 3. Запись Видео и Скриншотов при падении
+
     //[AllureXunit]
     public class FarvaterLegalCreationTests : BaseTest
     {
@@ -34,7 +38,13 @@ namespace FarvaterWeb.Tests.Counterparty
         {
         }
 
-        [Fact(DisplayName = "Проверка успешного создания нового юридического лица", Skip = "Пока этот тест не нужен")]
+        [AllureOwner("AlexanderSmirnov")]
+        [AllureSuite("Контрагенты")] // Это будет главная папка в отчете
+        //[AllureXunit(DisplayName = "Проверка успешного создания нового юридического лица")]
+        //[AllureXunit]
+        //[AllureXunit]
+        //[AllureDisplayContext("Создание нового юр. лица")]
+        [Fact(DisplayName = "Проверка успешного создания нового юридического лица")]
         public async Task ShouldSuccessfullyCreateANewLegal()
         {
             try
@@ -112,4 +122,5 @@ namespace FarvaterWeb.Tests.Counterparty
         }
     }
 
+   
 }

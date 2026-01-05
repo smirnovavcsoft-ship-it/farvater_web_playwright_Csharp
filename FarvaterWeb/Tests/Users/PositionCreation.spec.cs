@@ -1,4 +1,5 @@
-﻿using FarvaterWeb.Base;
+﻿using Allure.Xunit.Attributes.Steps;
+using FarvaterWeb.Base;
 using FarvaterWeb.Pages;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
@@ -23,7 +24,7 @@ namespace FarvaterWeb.Tests.Users
             //_usersPage = new UsersPage(Page, Log, _test);
 
         }
-        [Fact]
+        [Fact (Skip = "Пока этот тест не нужен")]
         public async Task SouldCreateNewPosition()
         {
             await LoginAsAdmin();

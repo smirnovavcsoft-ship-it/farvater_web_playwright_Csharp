@@ -4,6 +4,8 @@ using Serilog;
 using Xunit.Abstractions;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
+using Allure.Net.Commons;
+
 
 
 namespace FarvaterWeb.Base; // Убедитесь, что namespace совпадает с папкой
@@ -129,7 +131,7 @@ public abstract class BaseTest : IAsyncLifetime
 
                 // Делаем финальный скриншот
                 await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
-
+                AllureApi.AddAttachment("Скриншот ошибки", "image/png", path);
                 var relativePath = $"../Screenshots/{fileName}";
 
                 // Помечаем в ExtentReports как Fail, прикладываем скрин и вешаем категорию
@@ -165,6 +167,13 @@ public abstract class BaseTest : IAsyncLifetime
             Log.Information("[Video] Тест завершен. Видео сохранено: {Path}", videoPath);
             // Опционально: можно добавить ссылку на видео в отчет
             _test.Info($"<a href='file:///{videoPath}'>Запись видео теста</a>");
+            // --- ДОБАВЛЕНО ДЛЯ ALLURE ---
+            // Ждем полсекунды, чтобы Playwright успел финализировать файл видео на диске
+            await Task.Delay(500);
+            if (File.Exists(videoPath))
+            {
+                AllureApi.AddAttachment("Видео прогона", "video/webm", videoPath);
+            }
         }
 
         Log.Information("--- Завершение работы браузера ---");

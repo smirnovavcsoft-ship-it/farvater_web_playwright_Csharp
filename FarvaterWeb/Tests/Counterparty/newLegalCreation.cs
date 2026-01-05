@@ -41,12 +41,15 @@ namespace FarvaterWeb.Tests.Counterparty
         [AllureOwner("AlexanderSmirnov")]
         [AllureSuite("Контрагенты")] // Это будет главная папка в отчете
         //[AllureXunit(DisplayName = "Проверка успешного создания нового юридического лица")]
-        //[AllureXunit]
+        [AllureXunit]
         //[AllureXunit]
         //[AllureDisplayContext("Создание нового юр. лица")]
         [Fact(DisplayName = "Проверка успешного создания нового юридического лица")]
         public async Task ShouldSuccessfullyCreateANewLegal()
         {
+            var allureResultsPath = AllureLifecycle.Instance.ResultsDirectory;
+            Log.Information($"Allure results path: {allureResultsPath}");
+
             try
             {
                 Log.Information("--- Запуск сценария: Создание нового юр. лица ---");
@@ -118,6 +121,11 @@ namespace FarvaterWeb.Tests.Counterparty
                 _test.Fail($"<b>Критическая ошибка:</b> {ex.Message}<br>StackTrace: {ex.StackTrace}");
                 throw; // Пробрасываем ошибку дальше, чтобы xUnit пометил тест красным
             }
+
+            /*// Это принудительно создаст запись в Allure, даже если атрибут не сработал
+            AllureLifecycle.Instance.WrapInStep(() => {
+                Log.Information("Проверка связи с Allure");
+            }, "Степ-проверка");*/
 
         }
     }

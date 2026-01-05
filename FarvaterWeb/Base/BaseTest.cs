@@ -13,6 +13,8 @@ namespace FarvaterWeb.Base; // Убедитесь, что namespace совпад
 
 public abstract class BaseTest : IAsyncLifetime
 {
+    protected AllureLifecycle Allure => AllureLifecycle.Instance;
+
     private static readonly string ProjectRoot = 
         Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
 
@@ -73,10 +75,17 @@ public abstract class BaseTest : IAsyncLifetime
         Log = Serilog.Log.Logger;
         // Создаем ветку в отчете для конкретного тест-класса
         _test = _extent.CreateTest(GetType().Name);
+        // Явная инициализация Allure
+        Environment.SetEnvironmentVariable("ALLURE_CONFIG",
+            Path.Combine(Directory.GetCurrentDirectory(), "allureConfig.json"));
     }
 
     public async Task InitializeAsync()
     {
+        AllureLifecycle.Instance.CleanupResultDirectory();
+        await Task.CompletedTask;
+
+        
         Log.Information("[Setup] Подготовка папки скриншотов: {Path}", ScreenshotsPath);
 
         // 1. Очистка скриншотов
@@ -120,6 +129,7 @@ public abstract class BaseTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
+        await Task.CompletedTask;
         // 1. ОБРАБОТКА ОШИБКИ (Вставляем в самое начало)
         // Если флаг _testFailed остался true, значит MarkTestAsPassed() не был вызван
         if (_testFailed && Page != null)

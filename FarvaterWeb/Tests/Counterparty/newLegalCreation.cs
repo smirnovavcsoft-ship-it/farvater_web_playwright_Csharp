@@ -10,6 +10,7 @@ using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 
 
+
 namespace FarvaterWeb.Tests.Counterparty
 {
     // Модель данных (record) остается, это отличная практика
@@ -28,7 +29,7 @@ namespace FarvaterWeb.Tests.Counterparty
     // 1. Создание Browser, Context, Page
     // 2. Инициализацию Serilog
     // 3. Запись Видео и Скриншотов при падении
-
+    
     //[AllureXunit]
     public class FarvaterLegalCreationTests : BaseTest
     {
@@ -41,7 +42,7 @@ namespace FarvaterWeb.Tests.Counterparty
         [AllureOwner("AlexanderSmirnov")]
         [AllureSuite("Контрагенты")] // Это будет главная папка в отчете
         //[AllureXunit(DisplayName = "Проверка успешного создания нового юридического лица")]
-        [AllureXunit]
+        //[AllureXunit]
         //[AllureXunit]
         //[AllureDisplayContext("Создание нового юр. лица")]
         [Fact(DisplayName = "Проверка успешного создания нового юридического лица")]

@@ -13,7 +13,7 @@ namespace FarvaterWeb.Base; // Убедитесь, что namespace совпад
 
 public abstract class BaseTest : IAsyncLifetime
 {
-    protected AllureLifecycle Allure => AllureLifecycle.Instance;
+    //rotected AllureLifecycle Allure => AllureLifecycle.Instance;
 
     private static readonly string ProjectRoot = 
         Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
@@ -76,14 +76,14 @@ public abstract class BaseTest : IAsyncLifetime
         // Создаем ветку в отчете для конкретного тест-класса
         _test = _extent.CreateTest(GetType().Name);
         // Явная инициализация Allure
-        Environment.SetEnvironmentVariable("ALLURE_CONFIG",
-            Path.Combine(Directory.GetCurrentDirectory(), "allureConfig.json"));
+        //Environment.SetEnvironmentVariable("ALLURE_CONFIG",
+            //Path.Combine(Directory.GetCurrentDirectory(), "allureConfig.json"));
     }
 
     public async Task InitializeAsync()
     {
-        AllureLifecycle.Instance.CleanupResultDirectory();
-        await Task.CompletedTask;
+        //AllureLifecycle.Instance.CleanupResultDirectory();
+        //await Task.CompletedTask;
 
         
         Log.Information("[Setup] Подготовка папки скриншотов: {Path}", ScreenshotsPath);
@@ -129,7 +129,7 @@ public abstract class BaseTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await Task.CompletedTask;
+        //await Task.CompletedTask;
         // 1. ОБРАБОТКА ОШИБКИ (Вставляем в самое начало)
         // Если флаг _testFailed остался true, значит MarkTestAsPassed() не был вызван
         if (_testFailed && Page != null)
@@ -179,11 +179,11 @@ public abstract class BaseTest : IAsyncLifetime
             _test.Info($"<a href='file:///{videoPath}'>Запись видео теста</a>");
             // --- ДОБАВЛЕНО ДЛЯ ALLURE ---
             // Ждем полсекунды, чтобы Playwright успел финализировать файл видео на диске
-            await Task.Delay(500);
+            /*await Task.Delay(500);
             if (File.Exists(videoPath))
             {
                 AllureApi.AddAttachment("Видео прогона", "video/webm", videoPath);
-            }
+            }*/
         }
 
         Log.Information("--- Завершение работы браузера ---");

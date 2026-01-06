@@ -24,17 +24,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="allureConfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Compile Include="AllureSetup.cs.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Allure.Net.Commons" Version="2.14.1" />
-    <PackageReference Include="Allure.Xunit" Version="2.14.1" />
+    <PackageReference Include="Allure.Net.Commons" Version="2.12.1" />
+    <PackageReference Include="Allure.Xunit" Version="2.12.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="ExtentReports" Version="5.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />

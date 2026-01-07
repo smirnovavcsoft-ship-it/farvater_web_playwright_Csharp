@@ -38,13 +38,14 @@ namespace FarvaterWeb.Tests.Counterparty
         public FarvaterLegalCreationTests(ITestOutputHelper output) : base(output)
         {
         }
-
+        //[Allure.Xunit.Attributes.AllureXunit]
         [AllureOwner("AlexanderSmirnov")]
         [AllureSuite("Контрагенты")] // Это будет главная папка в отчете
         //[AllureXunit(DisplayName = "Проверка успешного создания нового юридического лица")]
         //[AllureXunit]
         //[AllureXunit]
         //[AllureDisplayContext("Создание нового юр. лица")]
+
         [Fact(DisplayName = "Проверка успешного создания нового юридического лица")]
         public async Task ShouldSuccessfullyCreateANewLegal()
         {

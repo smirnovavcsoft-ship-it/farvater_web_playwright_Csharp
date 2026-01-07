@@ -1,0 +1,78 @@
+﻿using Allure.Net.Commons;
+using Allure.Xunit.Attributes;
+using Allure.Xunit.Attributes.Steps;
+using FarvaterWeb.Base;
+using FarvaterWeb.Pages;
+using FarvaterWeb.Pages.Common;
+using FarvaterWeb.Pages.Users;
+using Microsoft.Playwright;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace FarvaterWeb.Tests.Users
+{
+    public class PositionCreationTests : BaseTest
+    {        
+        //private readonly SideMenuPage _sideMenuPage;
+        //private readonly UsersPage _usersPage;
+        private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
+        private UsersPage Users => new UsersPage(Page, Log, _test);
+
+
+
+        public PositionCreationTests(ITestOutputHelper output) : base(output)
+        {
+            //_sideMenuPage = new SideMenuPage(Page, Log, _test);
+            //_usersPage = new UsersPage(Page, Log, _test);
+
+        }
+        [AllureOwner("AlexanderSmirnov")]
+        [AllureSuite("Пользователи")] // Это будет главная папка в отчете
+        [AllureSubSuite("Должности")]
+        [Fact(DisplayName = "Проверка успешного создания новой должности")]
+        public async Task SouldCreateNewPosition()
+        {
+            var allureResultsPath = AllureLifecycle.Instance.ResultsDirectory;
+            Log.Information($"Allure results path: {allureResultsPath}");
+
+            
+            
+                await LoginAsAdmin();
+                await SideMenu.OpenSection("Пользователи", "users");
+
+                // Клик по вкладке "Должности"
+
+                await Users.ClickTab("Должности");
+
+                // Клик по кнопке "Создать должность"
+
+                await Users.ClickCreatePositionButton();
+
+                // Ввод наименования должности
+
+                string positionName = "Тестовая должность (удалить)";
+
+                await Users.FillPositionName(positionName);
+
+                // Клик по кнопке "Отмена"
+
+                await Users.CancelAndVerify(positionName);
+
+                // Проверка наличия созданной должности на странице
+
+
+
+                // Клик по кнопке "Создать должность"
+
+                // Ввод наименования должности
+
+                // Клик по кнопке "Добавить"
+
+                // Проверка наличия созданно должности на странице
+
+                // Удаление должности
+            
+        }
+    }
+
+}

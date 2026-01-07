@@ -69,4 +69,11 @@
 	</None>
   </ItemGroup>
 
+	<Target Name="OpenAllureReport" AfterTargets="VSTest">
+		<Exec Command="allure serve bin\Debug\net8.0\allure-results" IgnoreExitCode="true" />
+	</Target>
+	<Target Name="ClearAllureResults" BeforeTargets="VSTest">
+		<Exec Command="if exist bin\Debug\net8.0\allure-results del /q bin\Debug\net8.0\allure-results\*" />
+	</Target>
+
 </Project>

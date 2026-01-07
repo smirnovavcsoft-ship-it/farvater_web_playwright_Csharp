@@ -5,42 +5,34 @@ using Xunit.Abstractions;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using Allure.Net.Commons;
+using AllureStatus = Allure.Net.Commons.Status; // Алиас для разрешения конфликта
 
-
-
-namespace FarvaterWeb.Base; // Убедитесь, что namespace совпадает с папкой
-
+namespace FarvaterWeb.Base;
 
 public abstract class BaseTest : IAsyncLifetime
 {
-    //rotected AllureLifecycle Allure => AllureLifecycle.Instance;
+    protected AllureLifecycle Allure => AllureLifecycle.Instance;
 
-    private static readonly string ProjectRoot = 
+    private static readonly string ProjectRoot =
         Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
 
     public static string ScreenshotsPath = Path.Combine(ProjectRoot, "TestResults", "Screenshots");
     public static string VideoPath = Path.Combine(ProjectRoot, "TestResults", "Videos");
     public static string ReportsPath = Path.Combine(ProjectRoot, "TestResults", "TestReports");
-    //public static string ReportFile = Path.Combine(ReportsPath, "Index.html");
-    // Генерируем имя файла один раз при старте приложения
-    // Формат: Run_20251220_1430.html
     public static readonly string ReportFile = Path.Combine(ReportsPath,
         $"Run_{DateTime.Now:yyyyMMdd_HHmm}.html");
 
     private static ExtentReports _extent = null!;
-    protected ExtentTest _test = null!; // Тест для текущего прогона
+    protected ExtentTest _test = null!;
 
-    // Используем null!, чтобы убрать предупреждения CS8618
     protected IBrowser Browser = null!;
     protected IBrowserContext Context = null!;
     protected IPage Page = null!;
     protected ILogger Log = null!;
 
     private bool _testFailed = true;
+    private string _allureTestUuid = null!;
 
-
-
-    // 1. Статический конструктор для инициализации ExtentReports (1 раз на все тесты)
     static BaseTest()
     {
         if (Directory.Exists(ScreenshotsPath))
@@ -60,68 +52,95 @@ public abstract class BaseTest : IAsyncLifetime
         _extent.AttachReporter(spark);
     }
 
-
-    // 2. Обычный конструктор для Serilog и создания записи теста
-    // В xUnit конструктор — это место для инициализации логгера через ITestOutputHelper
     protected BaseTest(ITestOutputHelper output)
     {
-        // Настраиваем Serilog на вывод прямо в консоль xUnit
-        // Для работы .WriteTo.TestOutput(output) нужен пакет Serilog.Sinks.XUnit
         Serilog.Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.TestOutput(output)
             .CreateLogger();
 
         Log = Serilog.Log.Logger;
-        // Создаем ветку в отчете для конкретного тест-класса
         _test = _extent.CreateTest(GetType().Name);
-        // Явная инициализация Allure
-        //Environment.SetEnvironmentVariable("ALLURE_CONFIG",
-            //Path.Combine(Directory.GetCurrentDirectory(), "allureConfig.json"));
+
+        // ДИАГНОСТИКА ALLURE
+        Log.Information("=== ALLURE DIAGNOSTICS ===");
+        Log.Information($"Allure Results Directory: {AllureLifecycle.Instance.ResultsDirectory}");
+        Log.Information($"Current Directory: {Directory.GetCurrentDirectory()}");
+        Log.Information($"Base Directory: {AppDomain.CurrentDomain.BaseDirectory}");
+
+        var allureDir = AllureLifecycle.Instance.ResultsDirectory;
+        Log.Information($"Allure Directory Exists: {Directory.Exists(allureDir)}");
+
+        try
+        {
+            Directory.CreateDirectory(allureDir);
+            Log.Information($"Allure Directory Created/Verified: {allureDir}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Failed to create Allure directory: {ex.Message}");
+        }
+
+        var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "allureConfig.json");
+        Log.Information($"Config Path: {configPath}");
+        Log.Information($"Config Exists: {File.Exists(configPath)}");
+
+        if (File.Exists(configPath))
+        {
+            var configContent = File.ReadAllText(configPath);
+            Log.Information($"Config Content: {configContent}");
+        }
     }
 
     public async Task InitializeAsync()
     {
-        //AllureLifecycle.Instance.CleanupResultDirectory();
-        //await Task.CompletedTask;
-
-        
         Log.Information("[Setup] Подготовка папки скриншотов: {Path}", ScreenshotsPath);
 
-        // 1. Очистка скриншотов
-        //if (Directory.Exists(ScreenshotsPath))
-        //{
-            //foreach (var file in Directory.GetFiles(ScreenshotsPath))
-            //{
-                //try { File.Delete(file); } catch { /* пропуск заблокированных */ }
-            //}
-        //}
-        //else
-        //{
-            //Directory.CreateDirectory(ScreenshotsPath);
-        //}
-
-        // 2. Проверка папки для видео (без удаления файлов)
         if (!Directory.Exists(VideoPath))
         {
             Directory.CreateDirectory(VideoPath);
         }
 
-        // 3. Сброс счетчика шагов
         BaseComponent.ResetCounter();
 
-        // 4. Запуск Playwright и браузера
+        // === ЯВНАЯ ИНИЦИАЛИЗАЦИЯ ALLURE ===
+        _allureTestUuid = Guid.NewGuid().ToString();
+        var testName = GetType().Name;
+
+        Log.Information($"Creating Allure test case: {testName} with UUID: {_allureTestUuid}");
+
+        try
+        {
+            var testResult = new TestResult
+            {
+                uuid = _allureTestUuid,
+                name = testName,
+                fullName = GetType().FullName,
+                labels = new List<Label>
+                {
+                    new Label { name = "host", value = Environment.MachineName },
+                    new Label { name = "thread", value = Environment.CurrentManagedThreadId.ToString() }
+                }
+            };
+
+            AllureLifecycle.Instance.StartTestCase(testResult);
+            Log.Information("Allure test case started successfully");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Failed to start Allure test case: {ex.Message}");
+            Log.Error($"Stack trace: {ex.StackTrace}");
+        }
+
         var playwright = await Playwright.CreateAsync();
         Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
 
-        // 5. Создание контекста (ТОЛЬКО ОДИН РАЗ с правильным путем для видео)
         Context = await Browser.NewContextAsync(new BrowserNewContextOptions
         {
             RecordVideoDir = VideoPath,
             ViewportSize = new ViewportSize { Width = 1920, Height = 1080 }
         });
 
-        // 6. Открытие страницы
         Page = await Context.NewPageAsync();
 
         Log.Information("--- Начало теста: {TestName} ---", GetType().Name);
@@ -129,9 +148,72 @@ public abstract class BaseTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        //await Task.CompletedTask;
-        // 1. ОБРАБОТКА ОШИБКИ (Вставляем в самое начало)
-        // Если флаг _testFailed остался true, значит MarkTestAsPassed() не был вызван
+        // === ЗАВЕРШЕНИЕ ALLURE ===
+        if (!string.IsNullOrEmpty(_allureTestUuid))
+        {
+            try
+            {
+                Log.Information($"Finalizing Allure test case: {_allureTestUuid}");
+
+                // Получаем TestResultContainer напрямую
+                var testResultContainer = new TestResultContainer
+                {
+                    uuid = Guid.NewGuid().ToString()
+                };
+
+                // Обновляем тест напрямую через файл
+                var allureDir = AllureLifecycle.Instance.ResultsDirectory;
+                var testResultFile = Path.Combine(allureDir, $"{_allureTestUuid}-result.json");
+
+                // Проверяем, создан ли файл результата
+                if (File.Exists(testResultFile))
+                {
+                    Log.Information($"Test result file found: {testResultFile}");
+
+                    // Читаем существующий результат
+                    var json = File.ReadAllText(testResultFile);
+                    var testResult = System.Text.Json.JsonSerializer.Deserialize<TestResult>(json);
+
+                    if (testResult != null)
+                    {
+                        // Обновляем статус
+                        testResult.status = _testFailed ? AllureStatus.failed : AllureStatus.passed;
+                        testResult.statusDetails = _testFailed
+                            ? new StatusDetails { message = "Test failed" }
+                            : new StatusDetails { message = "Test passed" };
+
+                        // Записываем обратно
+                        var updatedJson = System.Text.Json.JsonSerializer.Serialize(testResult,
+                            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                        File.WriteAllText(testResultFile, updatedJson);
+
+                        Log.Information("Allure test status updated successfully");
+                    }
+                }
+                else
+                {
+                    Log.Warning($"Test result file not found: {testResultFile}");
+                }
+
+                // Проверяем файлы
+                if (Directory.Exists(allureDir))
+                {
+                    var files = Directory.GetFiles(allureDir);
+                    Log.Information($"Files in Allure directory: {files.Length}");
+                    foreach (var file in files)
+                    {
+                        Log.Information($"  - {Path.GetFileName(file)}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Failed to finalize Allure test case: {ex.Message}");
+                Log.Error($"Stack trace: {ex.StackTrace}");
+            }
+        }
+
+        // 1. ОБРАБОТКА ОШИБКИ
         if (_testFailed && Page != null)
         {
             try
@@ -139,16 +221,23 @@ public abstract class BaseTest : IAsyncLifetime
                 var fileName = $"ERROR_{GetType().Name}_{DateTime.Now:HHmmss}.png";
                 var path = Path.Combine(ScreenshotsPath, fileName);
 
-                // Делаем финальный скриншот
                 await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
-                AllureApi.AddAttachment("Скриншот ошибки", "image/png", path);
-                var relativePath = $"../Screenshots/{fileName}";
 
-                // Помечаем в ExtentReports как Fail, прикладываем скрин и вешаем категорию
+                if (File.Exists(path))
+                {
+                    var attachmentGuid = Guid.NewGuid().ToString("N");
+                    var attachmentFileName = $"{attachmentGuid}-attachment.png";
+                    var attachmentPath = Path.Combine(AllureLifecycle.Instance.ResultsDirectory, attachmentFileName);
+
+                    File.Copy(path, attachmentPath, true);
+                    Log.Information($"Screenshot copied to Allure directory: {attachmentPath}");
+                }
+
+                var relativePath = $"../Screenshots/{fileName}";
                 _test.Fail("<b><font color='red'>ТЕСТ ПРЕРВАН ОШИБКОЙ</font></b>",
                     MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
 
-                _test.AssignCategory("Runtime Failures"); // Категория по умолчанию для упавших тестов
+                _test.AssignCategory("Runtime Failures");
                 Log.Error("[Dispose] Тест упал. Скриншот ошибки сохранен: {Path}", path);
             }
             catch (Exception ex)
@@ -157,7 +246,7 @@ public abstract class BaseTest : IAsyncLifetime
             }
         }
 
-        // 2. РАБОТА С ВИДЕО (Ваш существующий код)
+        // 2. РАБОТА С ВИДЕО
         string? videoPath = null;
         if (Page != null && Page.Video != null)
         {
@@ -175,15 +264,25 @@ public abstract class BaseTest : IAsyncLifetime
         if (videoPath != null)
         {
             Log.Information("[Video] Тест завершен. Видео сохранено: {Path}", videoPath);
-            // Опционально: можно добавить ссылку на видео в отчет
             _test.Info($"<a href='file:///{videoPath}'>Запись видео теста</a>");
-            // --- ДОБАВЛЕНО ДЛЯ ALLURE ---
-            // Ждем полсекунды, чтобы Playwright успел финализировать файл видео на диске
-            /*await Task.Delay(500);
+
+            await Task.Delay(500);
             if (File.Exists(videoPath))
             {
-                AllureApi.AddAttachment("Видео прогона", "video/webm", videoPath);
-            }*/
+                try
+                {
+                    var attachmentGuid = Guid.NewGuid().ToString("N");
+                    var attachmentFileName = $"{attachmentGuid}-attachment.webm";
+                    var attachmentPath = Path.Combine(AllureLifecycle.Instance.ResultsDirectory, attachmentFileName);
+
+                    File.Copy(videoPath, attachmentPath, true);
+                    Log.Information($"Video copied to Allure directory: {attachmentPath}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Failed to copy video: {ex.Message}");
+                }
+            }
         }
 
         Log.Information("--- Завершение работы браузера ---");
@@ -191,23 +290,20 @@ public abstract class BaseTest : IAsyncLifetime
 
     protected void MarkTestAsPassed()
     {
-        _testFailed = false; // Мы подтверждаем, что тест дошел до конца без ошибок
-        _test.Pass("Тест завершен успешно"); // Отмечаем в ExtentReports
+        _testFailed = false;
+        _test.Pass("Тест завершен успешно");
     }
 
     protected async Task LoginAsAdmin()
     {
         Log.Information("[Setup] Начало авторизации под SYSADMIN");
 
-        // Переход на страницу (BaseUrl можно взять из конфига или задать тут)
         await Page.GotoAsync("https://farvater.mcad.dev/farvater/");
 
-        // Используем простые селекторы или те, что у вас в SignInPage
         await Page.GetByPlaceholder("Пользователь").FillAsync("SYSADMIN");
         await Page.GetByPlaceholder("Пароль").FillAsync("");
         await Page.GetByRole(AriaRole.Button, new() { Name = "Войти" }).ClickAsync();
 
-        // Ждем, что мы попали на главную (Dashboard)
         await Page.WaitForURLAsync("**/dashboard");
 
         _test.Info("Авторизация выполнена успешно");

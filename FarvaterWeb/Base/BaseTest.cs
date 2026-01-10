@@ -1,4 +1,5 @@
-﻿using Microsoft.Playwright;
+﻿using System.IO;
+using Microsoft.Playwright;
 using Xunit;
 using Serilog;
 using Xunit.Abstractions;
@@ -11,7 +12,7 @@ namespace FarvaterWeb.Base;
 
 public abstract class BaseTest : IAsyncLifetime
 {
-    protected AllureLifecycle Allure => AllureLifecycle.Instance;
+    //protected AllureLifecycle Allure => AllureLifecycle.Instance;
 
     private static readonly string ProjectRoot =
         Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
@@ -32,6 +33,7 @@ public abstract class BaseTest : IAsyncLifetime
 
     private bool _testFailed = true;
     private string _allureTestUuid = null!;
+    private readonly ITestOutputHelper _output;
 
     static BaseTest()
     {
@@ -54,6 +56,7 @@ public abstract class BaseTest : IAsyncLifetime
 
     protected BaseTest(ITestOutputHelper output)
     {
+        _output = output; // Сохраняем для использования в InitializeAsync
         Serilog.Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.TestOutput(output)
@@ -62,34 +65,34 @@ public abstract class BaseTest : IAsyncLifetime
         Log = Serilog.Log.Logger;
         _test = _extent.CreateTest(GetType().Name);
 
-        // ДИАГНОСТИКА ALLURE
-        Log.Information("=== ALLURE DIAGNOSTICS ===");
-        Log.Information($"Allure Results Directory: {AllureLifecycle.Instance.ResultsDirectory}");
-        Log.Information($"Current Directory: {Directory.GetCurrentDirectory()}");
-        Log.Information($"Base Directory: {AppDomain.CurrentDomain.BaseDirectory}");
+        ///*// ДИАГНОСТИКА ALLURE
+        //Log.Information("=== ALLURE DIAGNOSTICS ===");
+        //Log.Information($"Allure Results Directory: {AllureLifecycle.Instance.ResultsDirectory}");
+        //Log.Information($"Current Directory: {Directory.GetCurrentDirectory()}");
+        //Log.Information($"Base Directory: {AppDomain.CurrentDomain.BaseDirectory}");
 
-        var allureDir = AllureLifecycle.Instance.ResultsDirectory;
-        Log.Information($"Allure Directory Exists: {Directory.Exists(allureDir)}");
+        //var allureDir = AllureLifecycle.Instance.ResultsDirectory;
+        //Log.Information($"Allure Directory Exists: {Directory.Exists(allureDir)}");
 
-        try
-        {
-            Directory.CreateDirectory(allureDir);
-            Log.Information($"Allure Directory Created/Verified: {allureDir}");
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"Failed to create Allure directory: {ex.Message}");
-        }
+        //try
+        //{
+        //    Directory.CreateDirectory(allureDir);
+        //    Log.Information($"Allure Directory Created/Verified: {allureDir}");
+        //}
+        //catch (Exception ex)
+        //{
+        //    Log.Error($"Failed to create Allure directory: {ex.Message}");
+        //}
 
-        var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "allureConfig.json");
-        Log.Information($"Config Path: {configPath}");
-        Log.Information($"Config Exists: {File.Exists(configPath)}");
+        //var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "allureConfig.json");
+        //Log.Information($"Config Path: {configPath}");
+        //Log.Information($"Config Exists: {File.Exists(configPath)}");
 
-        if (File.Exists(configPath))
-        {
-            var configContent = File.ReadAllText(configPath);
-            Log.Information($"Config Content: {configContent}");
-        }
+        //if (File.Exists(configPath))
+        //{
+        //    var configContent = File.ReadAllText(configPath);
+        //    Log.Information($"Config Content: {configContent}");
+        //}
     }
 
     public async Task InitializeAsync()
@@ -103,34 +106,11 @@ public abstract class BaseTest : IAsyncLifetime
 
         BaseComponent.ResetCounter();
 
-        // === ЯВНАЯ ИНИЦИАЛИЗАЦИЯ ALLURE ===
+        // === ВЫЗОВ ALLURE СЕРВИСА ===
         _allureTestUuid = Guid.NewGuid().ToString();
-        var testName = GetType().Name;
-
-        Log.Information($"Creating Allure test case: {testName} with UUID: {_allureTestUuid}");
-
-        try
-        {
-            var testResult = new TestResult
-            {
-                uuid = _allureTestUuid,
-                name = testName,
-                fullName = GetType().FullName,
-                labels = new List<Label>
-                {
-                    new Label { name = "host", value = Environment.MachineName },
-                    new Label { name = "thread", value = Environment.CurrentManagedThreadId.ToString() }
-                }
-            };
-
-            AllureLifecycle.Instance.StartTestCase(testResult);
-            Log.Information("Allure test case started successfully");
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"Failed to start Allure test case: {ex.Message}");
-            Log.Error($"Stack trace: {ex.StackTrace}");
-        }
+        // Просто передаем UUID и имя класса теста
+        //AllureService.StartTest(_allureTestUuid, GetType().Name);
+        AllureService.StartTest(_allureTestUuid, GetType().Name, GetType().FullName);
 
         var playwright = await Playwright.CreateAsync();
         Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
@@ -148,144 +128,55 @@ public abstract class BaseTest : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        // === ЗАВЕРШЕНИЕ ALLURE ===
-        if (!string.IsNullOrEmpty(_allureTestUuid))
+        string? videoPath = null;
+
+        try
         {
-            try
-            {
-                Log.Information($"Finalizing Allure test case: {_allureTestUuid}");
-
-                // Получаем TestResultContainer напрямую
-                var testResultContainer = new TestResultContainer
-                {
-                    uuid = Guid.NewGuid().ToString()
-                };
-
-                // Обновляем тест напрямую через файл
-                var allureDir = AllureLifecycle.Instance.ResultsDirectory;
-                var testResultFile = Path.Combine(allureDir, $"{_allureTestUuid}-result.json");
-
-                // Проверяем, создан ли файл результата
-                if (File.Exists(testResultFile))
-                {
-                    Log.Information($"Test result file found: {testResultFile}");
-
-                    // Читаем существующий результат
-                    var json = File.ReadAllText(testResultFile);
-                    var testResult = System.Text.Json.JsonSerializer.Deserialize<TestResult>(json);
-
-                    if (testResult != null)
-                    {
-                        // Обновляем статус
-                        testResult.status = _testFailed ? AllureStatus.failed : AllureStatus.passed;
-                        testResult.statusDetails = _testFailed
-                            ? new StatusDetails { message = "Test failed" }
-                            : new StatusDetails { message = "Test passed" };
-
-                        // Записываем обратно
-                        var updatedJson = System.Text.Json.JsonSerializer.Serialize(testResult,
-                            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-                        File.WriteAllText(testResultFile, updatedJson);
-
-                        Log.Information("Allure test status updated successfully");
-                    }
-                }
-                else
-                {
-                    Log.Warning($"Test result file not found: {testResultFile}");
-                }
-
-                // Проверяем файлы
-                if (Directory.Exists(allureDir))
-                {
-                    var files = Directory.GetFiles(allureDir);
-                    Log.Information($"Files in Allure directory: {files.Length}");
-                    foreach (var file in files)
-                    {
-                        Log.Information($"  - {Path.GetFileName(file)}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Failed to finalize Allure test case: {ex.Message}");
-                Log.Error($"Stack trace: {ex.StackTrace}");
-            }
-        }
-
-        // 1. ОБРАБОТКА ОШИБКИ
-        if (_testFailed && Page != null)
-        {
-            try
+            // 1. Обработка скриншота при падении
+            if (_testFailed && Page != null)
             {
                 var fileName = $"ERROR_{GetType().Name}_{DateTime.Now:HHmmss}.png";
                 var path = Path.Combine(ScreenshotsPath, fileName);
-
                 await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
 
-                if (File.Exists(path))
-                {
-                    var attachmentGuid = Guid.NewGuid().ToString("N");
-                    var attachmentFileName = $"{attachmentGuid}-attachment.png";
-                    var attachmentPath = Path.Combine(AllureLifecycle.Instance.ResultsDirectory, attachmentFileName);
-
-                    File.Copy(path, attachmentPath, true);
-                    Log.Information($"Screenshot copied to Allure directory: {attachmentPath}");
-                }
-
-                var relativePath = $"../Screenshots/{fileName}";
+                // Отправляем в ExtentReports
                 _test.Fail("<b><font color='red'>ТЕСТ ПРЕРВАН ОШИБКОЙ</font></b>",
-                    MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
+                    MediaEntityBuilder.CreateScreenCaptureFromPath(path).Build());
 
-                _test.AssignCategory("Runtime Failures");
-                Log.Error("[Dispose] Тест упал. Скриншот ошибки сохранен: {Path}", path);
+                // Отправляем в Allure через сервис
+                AllureService.AddAttachment("Скриншот ошибки", path); 
             }
-            catch (Exception ex)
+
+            // 2. Получаем путь к видео до закрытия контекста
+            if (Page?.Video != null)
             {
-                Log.Error("[Dispose] Не удалось сохранить скриншот ошибки: {Msg}", ex.Message);
+                videoPath = await Page.Video.PathAsync();
             }
         }
-
-        // 2. РАБОТА С ВИДЕО
-        string? videoPath = null;
-        if (Page != null && Page.Video != null)
+        catch (Exception ex)
         {
-            videoPath = await Page.Video.PathAsync();
+            Log.Error("[Dispose] Ошибка при сохранении артефактов: {Msg}", ex.Message);
         }
-
-        // 3. ЗАКРЫТИЕ БРАУЗЕРА
-        if (Page != null) await Page.CloseAsync();
-        if (Context != null) await Context.DisposeAsync();
-        if (Browser != null) await Browser.DisposeAsync();
-
-        // 4. СОХРАНЕНИЕ ОТЧЕТА
-        _extent.Flush();
-
-        if (videoPath != null)
+        finally
         {
-            Log.Information("[Video] Тест завершен. Видео сохранено: {Path}", videoPath);
-            _test.Info($"<a href='file:///{videoPath}'>Запись видео теста</a>");
+            // 3. Закрываем браузер (нужно для финализации видеофайла)
+            if (Page != null) await Page.CloseAsync();
+            if (Context != null) await Context.DisposeAsync();
+            if (Browser != null) await Browser.DisposeAsync();
 
-            await Task.Delay(500);
-            if (File.Exists(videoPath))
+            // 4. Прикрепляем видео, если оно создано
+            if (!string.IsNullOrEmpty(videoPath) && File.Exists(videoPath))
             {
-                try
-                {
-                    var attachmentGuid = Guid.NewGuid().ToString("N");
-                    var attachmentFileName = $"{attachmentGuid}-attachment.webm";
-                    var attachmentPath = Path.Combine(AllureLifecycle.Instance.ResultsDirectory, attachmentFileName);
-
-                    File.Copy(videoPath, attachmentPath, true);
-                    Log.Information($"Video copied to Allure directory: {attachmentPath}");
-                }
-                catch (Exception ex)
-                {
-                    Log.Error($"Failed to copy video: {ex.Message}");
-                }
+                _test.Info($"<a href='file:///{videoPath}'>Запись видео теста</a>");
+                AllureService.AddAttachment("Запись теста", videoPath);
             }
-        }
 
-        Log.Information("--- Завершение работы браузера ---");
+            // 5. Финализируем отчеты
+            AllureService.Finish(_testFailed); // Наш "тихий" метод
+            _extent.Flush(); // Основной HTML отчет
+
+            Log.Information("--- Завершение работы браузера ---");
+        }
     }
 
     protected void MarkTestAsPassed()

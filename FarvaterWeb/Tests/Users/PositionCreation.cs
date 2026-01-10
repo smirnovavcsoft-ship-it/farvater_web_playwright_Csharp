@@ -35,8 +35,9 @@ namespace FarvaterWeb.Tests.Users
             var allureResultsPath = AllureLifecycle.Instance.ResultsDirectory;
             Log.Information($"Allure results path: {allureResultsPath}");
 
-            
-            
+            try
+            {
+                Log.Information("--- Запуск сценария: Создание новой должности---");
                 await LoginAsAdmin();
                 await SideMenu.OpenSection("Пользователи", "users");
 
@@ -71,7 +72,18 @@ namespace FarvaterWeb.Tests.Users
                 // Проверка наличия созданно должности на странице
 
                 // Удаление должности
-            
+
+                Log.Information("Тест успешно завершен.");
+
+                MarkTestAsPassed();
+            }
+            catch (Exception ex)
+            {
+                // Передаем текст ошибки прямо в отчет перед тем, как «уронить» тест для xUnit
+                _test.Fail($"<b>Критическая ошибка:</b> {ex.Message}<br>StackTrace: {ex.StackTrace}");
+                throw; // Пробрасываем ошибку дальше, чтобы xUnit пометил тест красным
+            }
+
         }
     }
 

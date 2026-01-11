@@ -126,6 +126,11 @@ public abstract class BaseTest : IAsyncLifetime
         Log.Information("--- Начало теста: {TestName} ---", GetType().Name);
     }
 
+    protected async Task Step(string name, Func<Task> action)
+    {
+        await AllureService.Step(name, action);
+    }
+
     public async Task DisposeAsync()
     {
         string? videoPath = null;

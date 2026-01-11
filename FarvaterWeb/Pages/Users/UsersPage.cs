@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace FarvaterWeb.Pages.Users
 {
-    public class UsersPage : BasePage
+    public class UsersPage : BaseComponent
     {
         public UsersPage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
 

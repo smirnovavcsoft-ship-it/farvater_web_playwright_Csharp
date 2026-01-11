@@ -6,7 +6,7 @@ using FarvaterWeb.Tests.Counterparty;
 
 namespace FarvaterWeb.Pages
 {
-    public class CounterpartyPage : BasePage
+    public class CounterpartyPage : BaseComponent
     {
         // 1. Локаторы как свойства ILocator (ленивая инициализация)
         // Кнопка "Добавить"

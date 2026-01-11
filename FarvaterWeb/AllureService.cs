@@ -45,6 +45,27 @@ public static class AllureService
         }
     }
 
+    public static async Task Step(string name, Func<Task> action)
+    {
+        if (!IsEnabled) { await action(); return; }
+        try
+        {
+            await AllureApi.Step(name, action);
+        }
+        catch
+        {
+            await action(); // Если Allure упал, тест должен продолжаться
+        }
+    }
+
+    public static async Task<T> Step<T>(string name, Func<Task<T>> action)
+    {
+        if (!IsEnabled) return await action();
+
+        // AllureApi.Step имеет встроенную поддержку возвращаемых значений
+        return await AllureApi.Step(name, action);
+    }
+
     // Возвращаем Finish, который требует BaseTest
     public static void Finish(bool failed)
     {

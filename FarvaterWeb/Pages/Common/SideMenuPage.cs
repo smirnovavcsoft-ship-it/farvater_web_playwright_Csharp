@@ -4,7 +4,7 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages.Common
 {
-    public class SideMenuPage : BasePage
+    public class SideMenuPage : BaseComponent
     {
         // Оставляем только те локаторы, которые уникальны (меню пользователя)
 

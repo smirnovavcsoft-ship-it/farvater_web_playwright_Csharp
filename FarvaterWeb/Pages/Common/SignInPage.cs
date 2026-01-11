@@ -5,7 +5,7 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages.Common
 {
-    public class SignInPage : BasePage
+    public class SignInPage : BaseComponent
     {
         private readonly string _path = "https://farvater.mcad.dev/farvater/signin";
 

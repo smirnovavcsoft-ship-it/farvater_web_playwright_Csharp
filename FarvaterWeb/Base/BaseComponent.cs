@@ -6,10 +6,10 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Base;
 
-public abstract class BaseComponent
+public abstract class BaseComponent : BasePage
 {
-    protected readonly IPage Page;
-    protected readonly ILogger Log;
+    //protected readonly IPage Page;
+    //protected readonly ILogger Log;
     protected readonly ILocator? Root;
     protected readonly string _componentName;
     protected readonly ExtentTest _extentTest;
@@ -21,13 +21,10 @@ public abstract class BaseComponent
         _stepCounter = 0;
     }
 
-    protected BaseComponent(IPage page, ILogger logger, ExtentTest extentTest, ILocator? root = null)
+    protected BaseComponent(IPage page, ILogger logger, ExtentTest extentTest, string componentName = "Component")
+        : base(page, logger, extentTest)
     {
-        Page = page;
-        Log = logger;
-        _extentTest = extentTest;
-        Root = root;
-        _componentName = GetType().Name; // Автоматически берет имя класса (например, "LoginForm")
+         _componentName = GetType().Name; // Автоматически берет имя класса (например, "LoginForm")
     }
 
     // --- Вспомогательный метод для поиска локаторов внутри компонента ---
@@ -86,10 +83,13 @@ public abstract class BaseComponent
     // --- Действия с текстом ---
     protected async Task DoFill(ILocator locator, string name, string text, bool maskText = false)
     {
-        string logValue = maskText ? "****" : text;
-        Log.Information("[{Component}] Ввод '{Value}' в поле '{Name}'", _componentName, logValue, name);
-        await locator.FillAsync(text);
-        await AutoScreenshot($"Fill_{name.Replace(" ", "_")}");
+        await Do($"[{_componentName}] Ввод '{text}' в поле '{name}'", async () =>
+        {
+            string logValue = maskText ? "****" : text;
+            //Log.Information("[{Component}] Ввод '{Value}' в поле '{Name}'", _componentName, logValue, name);
+            await locator.FillAsync(text);
+            await AutoScreenshot($"Fill_{name.Replace(" ", "_")}");
+        });
     }
 
     protected async Task DoFillByLabel(string label, string text)
@@ -103,26 +103,43 @@ public abstract class BaseComponent
 
     protected async Task<string> DoGetText(ILocator locator, string name)
     {
-        var text = await locator.InnerTextAsync();
-        Log.Information("[{Component}] Получен текст из '{Name}': '{Text}'", _componentName, name, text);
-        return text;
+        // Do<string> вызовет AllureService.Step<string>
+        // Тот получит текст из Playwright и вернет его сюда
+        return await Do($"[{_componentName}] Получение текста из '{name}'", async () =>
+        {
+            return await locator.InnerTextAsync();
+        });
     }
 
     // --- Клики ---
     protected async Task DoClick(ILocator locator, string name)
     {
-        Log.Information("[{Component}] Клик по '{Name}'", _componentName, name);
-        await locator.ClickAsync();
-        await AutoScreenshot($"Click_{name.Replace(" ", "_")}");
+        await Do($"[{_componentName}] Клик по '{name}'", async () =>
+        //Log.Information("[{Component}] Клик по '{Name}'", _componentName, name);
+        {
+            await locator.ClickAsync();
+            await AutoScreenshot($"Click_{name.Replace(" ", "_")}");
+        });
 
     }
 
     protected async Task DoDoubleClick(ILocator locator, string name)
     {
+        await Do($"[{_componentName}] Клик по '{name}'", async () =>
+        //Log.Information("[{Component}] Двойной клик по '{Name}'", _componentName, name);
+        {
+            await locator.DblClickAsync();
+            await AutoScreenshot($"Click_{name.Replace(" ", "_")}");
+        });
+
+    }
+
+    /*protected async Task DoDoubleClick(ILocator locator, string name)
+    {
         Log.Information("[{Component}] Двойной клик по '{Name}'", _componentName, name);
         await locator.DblClickAsync();
         await AutoScreenshot($"DoubleClick_{name.Replace(" ", "_")}");
-    }
+    }*/
 
     /*protected async Task DoClickByText(string buttonText)
     {
@@ -177,40 +194,27 @@ public abstract class BaseComponent
 
     protected async Task DoClickByText(string buttonText)
     {
-        Log.Information("[{Component}] Нажатие на кнопку '{Text}'", _componentName, buttonText);
-
-        string lowerLabel = buttonText.ToLower().Trim();
-        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
-        string lower = "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-
-        // 1. Формируем локатор
-        string xpathSelector = $"xpath=(//button|//a|//*[@role='button']|//input[@type='submit' or @type='button'])[contains(translate(., '{chars}', '{lower}'), '{lowerLabel}') or contains(translate(@value, '{chars}', '{lower}'), '{lowerLabel}')]";
-        var roleLocator = Page.GetByRole(AriaRole.Button, new() { Name = buttonText });
-        var combinedLocator = Page.Locator(xpathSelector).Or(roleLocator).First;
-
-        // 2. Улучшенная логика взаимодействия
-        try
+        // 1. Создаем локатор через роли (ищет button, a[role=button], input[type=submit] и т.д.)
+        // Exact = false заменяет вашу логику с translate (игнорирует регистр)
+        var locator = Page.GetByRole(AriaRole.Button, new()
         {
-            // Сначала пробуем проскроллить
-            try
-            {
-                await combinedLocator.ScrollIntoViewIfNeededAsync(new() { Timeout = 2000 });
-            }
-            catch { /* Если не скроллится, возможно элемент уже в области видимости */ }
+            Name = buttonText,
+            Exact = false
+        }).First;
 
-            // Ждем видимости
-            await Assertions.Expect(combinedLocator).ToBeVisibleAsync(new() { Timeout = 7000 });
+        // 2. Оборачиваем в наш мастер-метод Do
+        await Do($"[{_componentName}] Нажатие на кнопку '{buttonText}'", async () =>
+        {
+            // Скроллим и проверяем видимость (стандарт надежности)
+            await locator.ScrollIntoViewIfNeededAsync();
+            await Assertions.Expect(locator).ToBeVisibleAsync(new() { Timeout = 7000 });
 
-            // Кликаем (добавим Force, чтобы игнорировать возможные невидимые перекрытия)
-            await combinedLocator.ClickAsync(new() { Force = true });
+            // Кликаем
+            await locator.ClickAsync(new() { Force = true });
 
+            // Скриншот
             await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
-        }
-        catch (Exception ex)
-        {
-            Log.Error("Не удалось кликнуть по кнопке '{Text}': {Error}", buttonText, ex.Message);
-            throw;
-        }
+        });
     }
 
     /*protected async Task DoClickByText(string buttonText)
@@ -243,50 +247,80 @@ public abstract class BaseComponent
     // --- Мышь и сложные действия ---
     protected async Task DoHover(ILocator locator, string name)
     {
-        Log.Information("[{Component}] Наведение мыши на '{Name}'", _componentName, name);
-        await locator.HoverAsync();
-        await AutoScreenshot($"Hover_{name.Replace(" ", "_")}");
+        // Используем Do для логирования в Serilog, Allure и Extent одним махом
+        await Do($"[{_componentName}] Наведение мыши на '{name}'", async () =>
+        {
+            // Выполняем само действие
+            await locator.HoverAsync();
+
+            // Делаем скриншот внутри шага
+            await AutoScreenshot($"Hover_{name.Replace(" ", "_")}");
+        });
     }
 
+    // --- Перетаскивание (Drag and Drop) ---
     protected async Task DoDragAndDrop(ILocator source, string sourceName, ILocator target, string targetName)
     {
-        Log.Information("[{Component}] Перетаскивание '{Source}' на '{Target}'", _componentName, sourceName, targetName);
-        await source.DragToAsync(target);
-        await AutoScreenshot($"Drag_{sourceName}_to_{targetName}");
+        await Do($"[{_componentName}] Перетаскивание '{sourceName}' на '{targetName}'", async () =>
+        {
+            await source.DragToAsync(target);
+            await AutoScreenshot($"Drag_{sourceName}_to_{targetName}");
+        });
     }
 
-    // --- Выпадающие списки и скролл ---
+    // --- Выпадающие списки ---
     protected async Task DoSelectOption(ILocator locator, string name, string label)
     {
-        Log.Information("[{Component}] Выбор значения '{Label}' в списке '{Name}'", _componentName, label, name);
-        await locator.SelectOptionAsync(new SelectOptionValue { Label = label });
-        await AutoScreenshot($"SelectOption_{name.Replace(" ", "_")}");
+        await Do($"[{_componentName}] Выбор '{label}' в списке '{name}'", async () =>
+        {
+            // Выбираем опцию по тексту (Label)
+            await locator.SelectOptionAsync(new SelectOptionValue { Label = label });
+            await AutoScreenshot($"Select_{name.Replace(" ", "_")}");
+        });
     }
 
+    // --- Скролл к элементу ---
     protected async Task DoScrollToElement(ILocator locator, string name)
     {
-        Log.Information("[{Component}] Прокрутка к элементу '{Name}'", _componentName, name);
-        await locator.ScrollIntoViewIfNeededAsync();
-        await AutoScreenshot($"DoScrollToElement_{name.Replace(" ", "_")}");
+        await Do($"[{_componentName}] Прокрутка к '{name}'", async () =>
+        {
+            await locator.ScrollIntoViewIfNeededAsync();
+            // Скриншот после скролла подтвердит, что элемент в поле зрения
+            await AutoScreenshot($"Scroll_{name.Replace(" ", "_")}");
+        });
     }
 
     // --- Проверки (Assertions) ---
     protected async Task AssertIsVisible(ILocator locator, string name)
     {
-        Log.Information("[{Component}] Проверка видимости элемента '{Name}'", _componentName, name);
-        await Assertions.Expect(locator).ToBeVisibleAsync();
+        await Do($"[{_componentName}] Проверка видимости: '{name}'", async () =>
+        {
+            await Assertions.Expect(locator).ToBeVisibleAsync();
+        });
     }
 
     protected async Task AssertNotVisible(ILocator locator, string name)
     {
-        Log.Information("[{Component}] Проверка отсутствия элемента '{Name}'", _componentName, name);
-        await Assertions.Expect(locator).ToBeHiddenAsync();
+        await Do($"[{_componentName}] Проверка отсутствия: '{name}'", async () =>
+        {
+            await Assertions.Expect(locator).ToBeHiddenAsync();
+        });
     }
 
     protected async Task AssertIsEnabled(ILocator locator, string name)
     {
-        Log.Information("[{Component}] Проверка доступности элемента '{Name}'", _componentName, name);
-        await Assertions.Expect(locator).ToBeEnabledAsync();
+        await Do($"[{_componentName}] Проверка доступности (Enabled): '{name}'", async () =>
+        {
+            await Assertions.Expect(locator).ToBeEnabledAsync();
+        });
+    }
+
+    protected async Task AssertElementText(ILocator locator, string expectedText, string name)
+    {
+        await Do($"[{_componentName}] Проверка текста элемента '{name}': ожидается '{expectedText}'", async () =>
+        {
+            await Assertions.Expect(locator).ToHaveTextAsync(expectedText);
+        });
     }
 
     protected bool MakeStepScreenshots = true;

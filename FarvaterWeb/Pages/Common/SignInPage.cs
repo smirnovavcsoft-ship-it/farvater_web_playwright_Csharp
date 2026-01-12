@@ -5,7 +5,7 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages.Common
 {
-    public class SignInPage : BaseComponent
+    public class SignInPage : BasePage
     {
         private readonly string _path = "https://farvater.mcad.dev/farvater/signin";
 
@@ -14,7 +14,7 @@ namespace FarvaterWeb.Pages.Common
         private ILocator PasswordInput => Page.Locator("//input[@data-signature='password-input']");
         private ILocator LoginButton => Page.Locator("//button[.//span[text()='Войти']]");
 
-        public SignInPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
+        public SignInPage(IPage page, Serilog.ILogger logger, ExtentTest test) : base(page, logger, test) { }
 
         public async Task NavigateAsync() => await GoToUrl(_path, "signin");
 

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Base\BaseUI.cs" />
     <Compile Remove="Components\CreateComponent.cs" />
     <Compile Remove="UnitTest1.cs" />
   </ItemGroup>

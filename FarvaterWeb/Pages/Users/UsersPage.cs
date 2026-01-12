@@ -7,9 +7,9 @@ using System.Xml.Linq;
 
 namespace FarvaterWeb.Pages.Users
 {
-    public class UsersPage : BaseComponent
+    public class UsersPage : BasePage
     {
-        public UsersPage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
+        public UsersPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test) { }
 
         public async Task ClickTab(string tabName)
         {
@@ -31,10 +31,10 @@ namespace FarvaterWeb.Pages.Users
         {
             // Указываем специфичный селектор корзины для этой страницы
             // Точка в начале означает поиск по классу
-            const string deleteIcon = ".menuItemDelete";
+            //const string deleteIcon = ".menuItemDelete";
 
             // Вызываем метод компонента
-            await Table.DeleteRowByText(name, deleteIcon);
+            await Table.DeleteRow(name);
 
             // Подтверждаем удаление в модальном окне (это уже логика страницы или ModalComponent)
             await Page.GetByRole(AriaRole.Button, new() { Name = "Да" }).ClickAsync();

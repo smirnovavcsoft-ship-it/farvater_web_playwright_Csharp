@@ -6,7 +6,7 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages
 {
-    public class NewLegalPage : BaseComponent
+    public class NewLegalPage : BasePage
     {
         // Локаторы через name аттрибуты (более стабильно чем XPath)
         /*private ILocator InnInput => Page.Locator("input[name='inn']");
@@ -24,7 +24,7 @@ namespace FarvaterWeb.Pages
 
         
 
-        public NewLegalPage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest) { }
+        public NewLegalPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test) { }
 
         /*public async Task FillForm(LegalDetails details)
         {

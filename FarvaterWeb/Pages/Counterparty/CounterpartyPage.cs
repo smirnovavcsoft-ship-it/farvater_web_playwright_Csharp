@@ -16,7 +16,7 @@ namespace FarvaterWeb.Pages
         private ILocator NewLegalOption => Page.Locator("//div[text()='Юр. лицо']");
 
         // 2. Конструктор (теперь только Page и Logger)
-        public CounterpartyPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest)
+        public CounterpartyPage(IPage page, Serilog.ILogger logger, ExtentTest test) : base(page, logger, test)
         {
         }
 

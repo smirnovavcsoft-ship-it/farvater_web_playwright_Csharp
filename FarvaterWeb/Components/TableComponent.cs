@@ -6,7 +6,7 @@ using AventStack.ExtentReports;
 namespace FarvaterWeb.Components
 {
     // Наследуем BaseUI — это дает нам Do() и AutoScreenshot()
-    public class TableComponent : BaseUI
+    public class TableComponent : BaseComponent
     {
         public TableComponent(IPage page, ILogger logger, ExtentTest test)
             : base(page, logger, test, "Table")

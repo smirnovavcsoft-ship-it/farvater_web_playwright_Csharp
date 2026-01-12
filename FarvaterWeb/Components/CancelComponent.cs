@@ -1,16 +1,16 @@
-﻿using Microsoft.Playwright;
+﻿using AventStack.ExtentReports;
+using FarvaterWeb.Base;
+using Microsoft.Playwright;
 using Serilog;
 
 namespace FarvaterWeb.Components
 {
-    public class CancelComponent
+    public class CancelComponent : BaseComponent
     {
         private readonly IPage _page;
 
-        public CancelComponent(IPage page)
-        {
-            _page = page;
-        }
+        public CancelComponent(IPage page, ILogger logger, ExtentTest test)
+        : base(page, logger, test) { }
 
         public async Task CancelAndVerify(string unexpectedText)
         {

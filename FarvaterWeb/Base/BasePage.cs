@@ -7,17 +7,17 @@ using System.Text.RegularExpressions;
 
 namespace FarvaterWeb.Base;
 
-public abstract class BasePage : BaseUI
+public abstract class BasePage : BaseComponent
 {
-    protected readonly IPage Page;
-    protected readonly ILogger Log;
-    protected readonly ExtentTest _test;
+    //protected readonly IPage Page;
+   // protected readonly ILogger Log;
+    //protected readonly ExtentTest _test;
     // Конструктор просто пробрасывает зависимости в BaseComponent
     // Мы передаем null в качестве Root, так как у страницы нет родительского локатора
     public TableComponent Table => new TableComponent(Page, Log, _test);
 
-    public CancelComponent CancelAction => new CancelComponent(Page);
-    protected BasePage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest, "Page")
+    public CancelComponent CancelAction => new CancelComponent(Page, Log, _test);
+    protected BasePage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test, "Page")
     {
         
     }

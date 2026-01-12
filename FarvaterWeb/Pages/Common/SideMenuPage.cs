@@ -4,7 +4,7 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Pages.Common
 {
-    public class SideMenuPage : BaseComponent
+    public class SideMenuPage : BasePage
     {
         // Оставляем только те локаторы, которые уникальны (меню пользователя)
 
@@ -12,7 +12,7 @@ namespace FarvaterWeb.Pages.Common
         private ILocator UserDropdown => Page.Locator("//div[starts-with(@class, '_user_name_')]");
         private ILocator LogoutItem => Page.Locator("//div[@data-signature='dropdown-menu-item' and .//div[text()='Выйти']]");
 
-        public SideMenuPage(IPage page, Serilog.ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest)
+        public SideMenuPage(IPage page, Serilog.ILogger logger, ExtentTest test) : base(page, logger, test)
         {
             _page = page;
         }

@@ -50,7 +50,18 @@ namespace FarvaterWeb.Pages.Users
         public async Task CancelAndVerify(string PositionName)
         {
             
-            await CancelAction.ExecuteAndVerify(PositionName);
+            await CancelAction.CancelAndVerify(PositionName);
+        }
+
+        public async Task ClickAddButton()
+        {
+            await DoClickByText("Добавить");
+        }
+
+        public async Task VerifyPositionCreated(string positionName)
+        {
+            // Метод AssertTextExists уже доступен, так как страница наследует BaseComponent
+            await AssertTextExists(positionName);
         }
 
 

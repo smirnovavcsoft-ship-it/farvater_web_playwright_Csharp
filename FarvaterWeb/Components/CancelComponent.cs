@@ -12,7 +12,7 @@ namespace FarvaterWeb.Components
             _page = page;
         }
 
-        public async Task ExecuteAndVerify(string unexpectedText)
+        public async Task CancelAndVerify(string unexpectedText)
         {
             Log.Information("[CancelComponent] Проверка отмены для данных: {Text}", unexpectedText);
 

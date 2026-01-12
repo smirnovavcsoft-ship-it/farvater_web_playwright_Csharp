@@ -323,6 +323,21 @@ public abstract class BaseComponent : BasePage
         });
     }
 
+    protected async Task AssertTextExists(string text, bool exact = false)
+    {
+        // Используем ваш мастер-метод Do для отчетов
+        await Do($"[{_componentName}] Проверка наличия текста: '{text}'", async () =>
+        {
+            var locator = Page.GetByText(text, new() { Exact = exact }).First;
+
+            // Стандартный ассерт Playwright с ожиданием
+            await Assertions.Expect(locator).ToBeVisibleAsync(new() { Timeout = 10000 });
+
+            // Ваш метод для скриншота
+            await AutoScreenshot($"VerifyText_{text.Replace(" ", "_")}");
+        });
+    }
+
     protected bool MakeStepScreenshots = true;
 
     protected async Task AutoScreenshot(string actionName)

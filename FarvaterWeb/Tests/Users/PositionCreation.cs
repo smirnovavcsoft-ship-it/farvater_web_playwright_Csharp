@@ -55,23 +55,30 @@ namespace FarvaterWeb.Tests.Users
 
                 await Users.FillPositionName(positionName);
 
-                // Клик по кнопке "Отмена"
+                // Клик по кнопке "Отмена" и проверка создания должности
 
                 await Users.CancelAndVerify(positionName);
-
-                // Проверка наличия созданной должности на странице
-
 
 
                 // Клик по кнопке "Создать должность"
 
+                await Users.ClickCreatePositionButton();
+
                 // Ввод наименования должности
+
+                await Users.FillPositionName(positionName);
 
                 // Клик по кнопке "Добавить"
 
+                await Users.ClickAddButton();
+
                 // Проверка наличия созданно должности на странице
 
+                await Users.VerifyPositionCreated(positionName);
+
                 // Удаление должности
+
+
 
                 Log.Information("Тест успешно завершен.");
 

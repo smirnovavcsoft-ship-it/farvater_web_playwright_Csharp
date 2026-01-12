@@ -6,7 +6,7 @@ using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Base;
 
-public abstract class BaseComponent : BasePage
+public abstract class BaseComponent : BaseUI
 {
     //protected readonly IPage Page;
     //protected readonly ILogger Log;
@@ -340,7 +340,7 @@ public abstract class BaseComponent : BasePage
 
     protected bool MakeStepScreenshots = true;
 
-    protected async Task AutoScreenshot(string actionName)
+    /*protected async Task AutoScreenshot(string actionName)
     {
         if (!MakeStepScreenshots) return;
         _stepCounter++;
@@ -375,5 +375,5 @@ public abstract class BaseComponent : BasePage
             // Если скриншот не создался, вы увидите это в Output
             Log.Error("[AutoScreenshot] Критическая ошибка сохранения: {Message}", ex.Message);
         }
-    }
+    }*/
 }

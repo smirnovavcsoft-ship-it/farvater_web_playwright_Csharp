@@ -1,37 +1,47 @@
-﻿using Microsoft.Playwright;
+﻿using FarvaterWeb.Base;
+using Microsoft.Playwright;
 using Serilog;
+using AventStack.ExtentReports;
 
 namespace FarvaterWeb.Components
 {
-    public class TableComponent
+    // Наследуем BaseUI — это дает нам Do() и AutoScreenshot()
+    public class TableComponent : BaseUI
     {
-        private readonly IPage _page;
-
-        public TableComponent(IPage page)
+        public TableComponent(IPage page, ILogger logger, ExtentTest test)
+            : base(page, logger, test, "Table")
         {
-            _page = page;
         }
 
         /// <summary>
-        /// Универсальный метод удаления строки по тексту (имени)
+        /// Универсальный метод: найти строку по тексту и нажать в ней кнопку/иконку
         /// </summary>
-        /// <param name="rowText">Текст, по которому ищем строку (название компании)</param>
-        /// <param name="deleteIconSelector">Селектор иконки корзины</param>
-        public async Task DeleteRowByText(string rowText, string deleteIconSelector)
+        public async Task ClickActionInRow(string rowText, string actionSelector, string actionName)
         {
-            Log.Information("Попытка удаления строки с текстом: {Text}", rowText);
+            await Do($"[Таблица] Действие '{actionName}' для строки '{rowText}'", async () =>
+            {
+                // 1. Ищем строку
+                var row = Page.Locator("tr").Filter(new() { HasText = rowText }).First;
 
-            // 1. Находим нужную строку таблицы
-            var row = _page.Locator("tr").Filter(new() { HasText = rowText }).First;
+                // 2. Ищем элемент внутри строки (например, корзину или карандаш)
+                var actionElement = row.Locator(actionSelector);
 
-            // 2. Находим иконку удаления ВНУТРИ этой строки
-            var deleteButton = row.Locator(deleteIconSelector);
+                // 3. Скроллим и кликаем
+                await actionElement.ScrollIntoViewIfNeededAsync();
+                await actionElement.ClickAsync(new() { Force = true });
 
-            // 3. Скроллим и кликаем
-            await row.ScrollIntoViewIfNeededAsync();
-            await deleteButton.ClickAsync();
+                // 4. Скриншот результата
+                await AutoScreenshot($"{actionName}_{rowText.Replace(" ", "_")}");
+            });
+        }
 
-            Log.Information("Клик по корзине выполнен для: {Text}", rowText);
+        /// <summary>
+        /// Упрощенный метод специально для удаления
+        /// </summary>
+        public async Task DeleteRow(string rowText)
+        {
+            // Используем селектор корзины по умолчанию, который мы нашли ранее
+            await ClickActionInRow(rowText, "div[class*='menuItemDelete']", "Удаление");
         }
     }
 }

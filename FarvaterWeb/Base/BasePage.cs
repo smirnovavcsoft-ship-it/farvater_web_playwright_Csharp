@@ -1,4 +1,5 @@
 ﻿using AventStack.ExtentReports;
+using AventStack.ExtentReports.Model;
 using FarvaterWeb.Components;
 using Microsoft.Playwright;
 using Serilog;
@@ -6,21 +7,19 @@ using System.Text.RegularExpressions;
 
 namespace FarvaterWeb.Base;
 
-public abstract class BasePage 
+public abstract class BasePage : BaseUI
 {
     protected readonly IPage Page;
     protected readonly ILogger Log;
     protected readonly ExtentTest _test;
     // Конструктор просто пробрасывает зависимости в BaseComponent
     // Мы передаем null в качестве Root, так как у страницы нет родительского локатора
-    public TableComponent Table => new TableComponent(Page);
+    public TableComponent Table => new TableComponent(Page, Log, _test);
 
     public CancelComponent CancelAction => new CancelComponent(Page);
-    protected BasePage(IPage page, ILogger logger, ExtentTest extentTest)
+    protected BasePage(IPage page, ILogger logger, ExtentTest extentTest) : base(page, logger, extentTest, "Page")
     {
-        this.Page = page;
-        this.Log = logger;
-        this._test = extentTest;
+        
     }
     
 
@@ -60,7 +59,7 @@ public abstract class BasePage
     }*/
 
     // Передача метода записи шага в отчет из AllureService.cs
-    protected async Task Do(string stepName, Func<Task> action)
+    /*protected async Task Do(string stepName, Func<Task> action)
     {
         // 1. Проверяем Log (Serilog)
         Log?.Information(stepName);
@@ -81,7 +80,7 @@ public abstract class BasePage
 
         // Теперь AllureService.Step<T> возвращает значение, и ошибка CS0029 исчезнет
         return await AllureService.Step(stepName, action);
-    }
+    }*/
 
     public async Task GoToUrl(string url, string expectedUrlPart)
     {

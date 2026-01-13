@@ -1,6 +1,8 @@
 ﻿using AventStack.ExtentReports;
 using FarvaterWeb.Base;
 using FarvaterWeb.Tests.Counterparty;
+using FarvaterWeb.Tests.Users;
+using HarmonyLib;
 using Microsoft.Playwright;
 using Serilog;
 using System.Xml.Linq;
@@ -27,7 +29,12 @@ namespace FarvaterWeb.Pages.Users
             await DoClickByText("Создать должность");
         }
 
-        public async Task DeletePosition(string name)
+        public async Task ClickCreateDepartmentButton()
+        {
+            await DoClickByText("Создать подразделение");
+        }
+
+        /*public async Task DeletePosition(string name)
         {
             // Указываем специфичный селектор корзины для этой страницы
             // Точка в начале означает поиск по классу
@@ -40,11 +47,17 @@ namespace FarvaterWeb.Pages.Users
             await Page.GetByRole(AriaRole.Button, new() { Name = "Да" }).ClickAsync();
 
 
-        }
+        }*/
 
         public async Task FillPositionName(string name)
         {
             await DoFillByLabel("Наименование", name);
+        }
+
+        public async Task FillDepartmentDetails(DepartmentDetails details)
+        {
+            await DoFillByLabel("Наименование", details.Name);
+            await DoFillByLabel("Код", details.Code);
         }
 
         public async Task CancelAndVerify(string PositionName)
@@ -62,6 +75,31 @@ namespace FarvaterWeb.Pages.Users
         {
             // Метод AssertTextExists уже доступен, так как страница наследует BaseComponent
             await AssertTextExists(positionName);
+        }
+
+        
+
+        public async Task DeletePosition(string positionName)
+        {
+            string buttonText = "Удалить";
+            // 1. Нажимаем на иконку удаления в таблице
+            await Table.DeleteRow(positionName, buttonText);
+
+            // 2. Ждем появления модального окна и кликаем по кнопке подтверждения
+            // Используем селектор кнопки "Удалить" в модальном окне
+            // Обычно у нее есть уникальный класс или текст
+            await Do($"Подтверждение удаления должности '{positionName}'", async () =>
+            {
+                var confirmButton = Page.GetByRole(AriaRole.Button, new() { Name = "Удалить", Exact = true });
+
+                // Ждем, чтобы кнопка стала видимой (на случай анимации появления модалки)
+                //await confirmButton.WaitForAsync(new() { State = ElementState.Visible, Timeout = 5000 });
+
+                await confirmButton.ClickAsync();
+
+                // 3. Ждем, пока модалка исчезнет (хорошая практика)
+                await Assertions.Expect(confirmButton).ToBeHiddenAsync();
+            });
         }
 
 

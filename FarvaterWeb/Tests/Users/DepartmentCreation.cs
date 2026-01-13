@@ -1,0 +1,63 @@
+﻿using Allure.Net.Commons;
+using Allure.Xunit.Attributes;
+using Allure.Xunit.Attributes.Steps;
+using FarvaterWeb.Base;
+using FarvaterWeb.Pages;
+using FarvaterWeb.Pages.Common;
+using FarvaterWeb.Pages.Users;
+using Microsoft.Playwright;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace FarvaterWeb.Tests.Users
+{
+    public record DepartmentDetails(string Name, string Code);
+    public class DepartmentCreationTests : BaseTest
+    {
+        private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
+        private UsersPage Users => new UsersPage(Page, Log, _test);
+
+        public DepartmentCreationTests(ITestOutputHelper output) : base(output)
+        {
+            
+
+        }
+
+        [Fact(DisplayName = "Проверка успешного создания нового подразделения")]
+        public async Task SouldCreateNewDepartment()
+        {
+            Log.Information("--- Запуск сценария: Создание нового подразделения---");
+            await LoginAsAdmin();
+            await SideMenu.OpenSection("Пользователи", "users");
+
+            // Клик по вкладке "Подразделения"
+
+            await Users.ClickTab("Должности");
+
+            // Клик по кнопке "Создать подразделение"
+
+            await Users.ClickCreateDepartmentButton();
+
+            // Ввод наименования и кода подразделения
+
+            var newDepartmentDetails = new DepartmentDetails(
+                Name : "Тестовое подразделение",
+                Code : "12345"
+                );
+
+            await Users.FillDepartmentDetails(newDepartmentDetails);
+
+            // Клик по кнопке "Добавить"
+
+
+            // Удаление созданного подразделения
+
+
+        }
+
+        
+
+
+
+    }
+}

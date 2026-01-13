@@ -78,6 +78,8 @@ namespace FarvaterWeb.Tests.Users
 
                 // Удаление должности
 
+                await Users.DeletePosition(positionName);
+
 
 
                 Log.Information("Тест успешно завершен.");

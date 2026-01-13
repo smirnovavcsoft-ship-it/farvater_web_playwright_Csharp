@@ -127,7 +127,7 @@ namespace FarvaterWeb.Pages
                 
                 // 6. Подтверждаем в модальном окне (если оно появляется)
                 // Если после клика на корзину всплывает "Вы уверены?", раскомментируйте:
-                await DoClickByText("Удалить"); 
+                //await DoClickByText("Удалить"); 
 
                 Log.Information("[CounterpartyPage] Нажата иконка удаления для {Name}", name);
                 await AutoScreenshot($"Delete_Clicked_{name}");

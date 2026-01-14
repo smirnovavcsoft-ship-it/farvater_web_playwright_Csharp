@@ -135,6 +135,57 @@ public abstract class BaseComponent
         await DoFill(locator, label, text);
     }
 
+    /*public async Task SetCheckboxByText(string label, bool state)
+    {
+        await Do($"{(state ? "Установка" : "Снятие")} чек-бокса '{label}'", async () =>
+        {
+            var checkbox = Page.GetByLabel(label);
+            if (state)
+                await checkbox.CheckAsync();
+            else
+                await checkbox.UncheckAsync();
+        });
+    }*/
+
+    public async Task SetCheckboxByText(string label, bool state)
+    {
+        await Do($"{(state ? "Установка" : "Снятие")} чек-бокса '{label}'", async () =>
+        {
+            var checkbox = Page.GetByLabel(label);
+
+            // 1. Выполняем действие
+            if (state)
+                await checkbox.CheckAsync();
+            else
+                await checkbox.UncheckAsync();
+
+            // 2. ПРОВЕРКА (Assertion)
+            // Метод ToBeCheckedAsync сам подождет (по умолчанию до 5 сек), 
+            // пока чекбокс примет нужное состояние.
+            await Assertions.Expect(checkbox).ToBeCheckedAsync(new() { Checked = state });
+        });
+    }
+
+
+    public async Task SetCheckboxInRow(ILocator rowLocator, bool state)
+    {
+        await Do($"{(state ? "Выбор" : "Снятие выбора")} в строке", async () =>
+        {
+            // Ищем внутри строки элемент типа checkbox
+            var checkbox = rowLocator.Locator("input[type='checkbox'], .v-checkbox");
+
+            if (state)
+                await checkbox.CheckAsync(new() { Force = true });
+            else
+                await checkbox.UncheckAsync(new() { Force = true });
+
+            // 2. ПРОВЕРКА (Assertion)
+            // Метод ToBeCheckedAsync сам подождет (по умолчанию до 5 сек), 
+            // пока чекбокс примет нужное состояние.
+            await Assertions.Expect(checkbox).ToBeCheckedAsync(new() { Checked = state });
+        });    
+    }
+
     protected async Task<string> DoGetText(ILocator locator, string name)
     {
         // Do<string> вызовет AllureService.Step<string>
@@ -251,6 +302,7 @@ public abstract class BaseComponent
         });
     }
 
+    
     /*protected async Task DoClickByText(string buttonText)
     {
         Log.Information("[{Component}] Нажатие на кнопку (GetByRole) '{Text}'", _componentName, buttonText);

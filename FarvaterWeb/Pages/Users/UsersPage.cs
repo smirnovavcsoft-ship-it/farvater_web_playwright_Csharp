@@ -34,6 +34,17 @@ namespace FarvaterWeb.Pages.Users
             await DoClickByText("Создать подразделение");
         }
 
+        
+        public async Task ClickCreateGroupButton()
+        {
+            await DoClickByText("Создать группу");
+        }
+
+        public async Task ClickAddUser()
+        {
+            await DoClickByText("Добавить пользователя");
+        }
+
         /*public async Task DeletePosition(string name)
         {
             // Указываем специфичный селектор корзины для этой страницы
@@ -60,6 +71,38 @@ namespace FarvaterWeb.Pages.Users
             await DoFillByLabel("Код", details.Code);
         }
 
+        public async Task FillUserDetails(UserDetails details)
+        {
+            await DoFillByLabel("");
+            await DoFillByLabel("");
+            await DoFillByLabel("");
+            await DoFillByLabel("");
+            await DoFillByLabel("");
+            await DoFillByLabel("");
+            await DoFillByLabel("");
+
+        }
+
+        public async Task FillGroupName(string name)
+        {
+            await DoFillByLabel("Наименование", name);
+        }
+
+        public async Task SetPermissions(PermissionDetails permissions)
+        {
+            await Do("Установка прав доступа для роли", async () =>
+            {
+                // Вызываем твой универсальный метод для каждого права
+                await SetCheckboxByText("Администратор", permissions.IsAdmin);
+                await SetCheckboxByText("ГИП", permissions.IsGip);
+                await SetCheckboxByText("Архив", permissions.IsArchive);
+                await SetCheckboxByText("Работа с договорами", permissions.IsContracts);
+                await SetCheckboxByText("Работа с ОРД", permissions.IsOrd);
+            });
+        }
+
+
+
         public async Task CancelAndVerify(string PositionName)
         {
             
@@ -70,6 +113,11 @@ namespace FarvaterWeb.Pages.Users
         {
             await DoClickByText("Добавить");
         }
+
+        /*public async Task ClickAddButton()
+        {
+            await DoClickByText("Добавить");
+        }*/
 
         public async Task VerifyPositionCreated(string positionName)
         {
@@ -95,15 +143,24 @@ namespace FarvaterWeb.Pages.Users
                 // Ждем, чтобы кнопка стала видимой (на случай анимации появления модалки)
                 //await confirmButton.WaitForAsync(new() { State = ElementState.Visible, Timeout = 5000 });
 
-                await confirmButton.ClickAsync();
+                //await confirmButton.ClickAsync();
 
                 // 3. Ждем, пока модалка исчезнет (хорошая практика)
-                await Assertions.Expect(confirmButton).ToBeHiddenAsync();
+                //await Assertions.Expect(confirmButton).ToBeHiddenAsync();
             });
         }
 
+        public async Task DeleteDepartment(string departmentName, string departmentCode)
+        {
+            string buttonText = "Удалить";
+            await Table.DeleteRow(departmentName, buttonText);
+        }
 
-
+        public async Task DeleteGroup(string groupName)
+        {
+            string buttonText = "Удалить";
+            await Table.DeleteRow(groupName, buttonText);
+        }
 
     }
 }

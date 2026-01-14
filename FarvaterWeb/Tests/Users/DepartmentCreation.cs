@@ -1,12 +1,6 @@
-﻿using Allure.Net.Commons;
-using Allure.Xunit.Attributes;
-using Allure.Xunit.Attributes.Steps;
-using FarvaterWeb.Base;
-using FarvaterWeb.Pages;
+﻿using FarvaterWeb.Base;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
-using Microsoft.Playwright;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace FarvaterWeb.Tests.Users
@@ -32,7 +26,7 @@ namespace FarvaterWeb.Tests.Users
 
             // Клик по вкладке "Подразделения"
 
-            await Users.ClickTab("Должности");
+            await Users.ClickTab("Подразделения");
 
             // Клик по кнопке "Создать подразделение"
 
@@ -49,8 +43,11 @@ namespace FarvaterWeb.Tests.Users
 
             // Клик по кнопке "Добавить"
 
+            await Users.ClickAddButton();
 
             // Удаление созданного подразделения
+
+
 
 
         }

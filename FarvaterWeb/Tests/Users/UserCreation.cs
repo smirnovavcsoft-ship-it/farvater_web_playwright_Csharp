@@ -58,7 +58,7 @@ namespace FarvaterWeb.Tests.Users
 
             await Users.FillUserDetails(userDetails);
 
-            // Выбор подразделения
+            // Создание подразделения
 
 
 

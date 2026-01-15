@@ -1,5 +1,6 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.Model;
+using FarvaterWeb.Extensions;
 using Microsoft.Playwright;
 using Serilog;
 using System.Xml.Linq;
@@ -462,4 +463,12 @@ public abstract class BaseComponent
             Log.Error("[AutoScreenshot] Критическая ошибка сохранения: {Message}", ex.Message);
         }
     }*/
+
+    public async Task SelectDropdownItemByNumber(string label, int number)
+    {
+        // Мы передаем (number - 1), потому что для пользователя первый пункт — это 1,
+        // а для программиста (и Playwright) — это индекс 0.
+        await Do($"Выбор пункта №{number} в списке '{label}'",
+            async () => await Page.GetByLabel(label).SelectByIndexAndVerifyAsync(number - 1));
+    }
 }

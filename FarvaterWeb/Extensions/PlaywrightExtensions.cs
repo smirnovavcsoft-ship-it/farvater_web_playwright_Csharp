@@ -63,8 +63,46 @@ namespace FarvaterWeb.Extensions
 
         public static async Task ShouldBeVisibleAsync(this ILocator locator, string message = "Элемент не отображается")
         {
-            // Кастомное сообщение об ошибке помогает быстрее понять, что упало
-            await Assertions.Expect(locator).ToBeVisibleAsync(new() { Message = message });
+            try
+            {
+                // Стандартный ассерт без лишних аргументов
+                await Assertions.Expect(locator).ToBeVisibleAsync();
+            }
+            catch (Exception ex)
+            {
+                // Перехватываем и добавляем твой текст к ошибке
+                throw new Exception($"{message}. Подробности: {ex.Message}");
+            }
+        }
+
+        
+        // Выбор по индексу (номеру)
+        public static async Task SelectByIndexAndVerifyAsync(this ILocator dropdown, int index)
+        {
+            await dropdown.ClickAsync();
+
+            // Ищем опции по всей странице (часто выпадающие списки рендерятся в конце body)
+            var options = dropdown.Page.GetByRole(AriaRole.Option);
+            await options.First.WaitForAsync(); // Ждем, пока список подгрузится
+
+            var targetOption = options.Nth(index);
+            string optionText = (await targetOption.InnerTextAsync()).Trim();
+
+            await targetOption.ClickAsync();
+
+            // Проверяем, что текст в контроле изменился на выбранный
+            await Assertions.Expect(dropdown).ToContainTextAsync(optionText);
+        }
+
+        // Выбор по тексту (на будущее)
+        public static async Task SelectByTextAndVerifyAsync(this ILocator dropdown, string text)
+        {
+            await dropdown.ClickAsync();
+
+            var targetOption = dropdown.Page.GetByRole(AriaRole.Option, new() { Name = text, Exact = true });
+            await targetOption.ClickAsync();
+
+            await Assertions.Expect(dropdown).ToContainTextAsync(text);
         }
     }
 

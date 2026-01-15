@@ -2,7 +2,7 @@
 
 namespace FarvaterWeb.Extensions
 {
-    public static class PlaywrightExtensions
+    public static class PwExtensions
     {      
 
         // --- Группа 1: Ввод данных ---

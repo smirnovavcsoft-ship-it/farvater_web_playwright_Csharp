@@ -73,14 +73,14 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task FillUserDetails(UserDetails details)
         {
-            await DoFillByLabel("");
-            await DoFillByLabel("");
-            await DoFillByLabel("");
-            await DoFillByLabel("");
-            await DoFillByLabel("");
-            await DoFillByLabel("");
-            await DoFillByLabel("");
-
+            Log.Information("[UsersPage] Заполнение формы по заголовкам");
+            await DoFillByLabel("Фамилия", details.Lastname);
+            await DoFillByLabel("Имя", details.Name);
+            await DoFillByLabel("Отчество", details.Middlename);
+            await DoFillByLabel("Таб.", details.IDnumber);
+            await DoFillByLabel("Логин *", details.UserLogin);
+            await DoFillByLabel("Телефон", details.Phone);
+            await DoFillByLabel("E-mail", details.Email);
         }
 
         public async Task FillGroupName(string name)

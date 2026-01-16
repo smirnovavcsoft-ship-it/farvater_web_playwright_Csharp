@@ -89,11 +89,11 @@ public abstract class BaseComponent
         // 3. Переводит в нижний регистр
         // 4. Находит ближайший input
         string xpath = $@"
-        (//*[translate(normalize-space(text()), '{chars}', '{lower}') = '{lowerLabel}']
-        /ancestor::div[1]//input | 
-        //*[translate(normalize-space(text()), '{chars}', '{lower}') = '{lowerLabel}']
-        /following-sibling::input |
-        //label[translate(normalize-space(string(.)), '{chars}', '{lower}') = '{lowerLabel}']//input)[1]";
+        (//*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
+    /ancestor::div[1]//input | 
+    //*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
+    /following-sibling::input |
+    //label[contains(translate(normalize-space(string(.)), '{chars}', '{lower}'), '{lowerLabel}')]//input)[1]";
 
         return Page.Locator(xpath);
     }

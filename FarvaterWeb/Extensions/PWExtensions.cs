@@ -77,7 +77,7 @@ namespace FarvaterWeb.Extensions
 
         
         // Выбор по индексу (номеру)
-        public static async Task SelectByIndexAndVerifyAsync(this ILocator dropdown, int index)
+        /*public static async Task SelectByIndexAndVerifyAsync(this ILocator dropdown, int index)
         {
             await dropdown.ClickAsync();
 
@@ -92,7 +92,7 @@ namespace FarvaterWeb.Extensions
 
             // Проверяем, что текст в контроле изменился на выбранный
             await Assertions.Expect(dropdown).ToContainTextAsync(optionText);
-        }
+        }*/
 
         // Выбор по тексту (на будущее)
         public static async Task SelectByTextAndVerifyAsync(this ILocator dropdown, string text)

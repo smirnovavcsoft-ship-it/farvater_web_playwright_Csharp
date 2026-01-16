@@ -11,6 +11,13 @@ namespace FarvaterWeb.Pages.Users
 {
     public class UsersPage : BasePage
     {
+        // Находим контейнер вкладок по уникальному классу
+        private ILocator TabsContainer => Page.Locator("div[class*='_switchContainer_']");
+
+        // Конкретная вкладка внутри этого контейнера
+        private ILocator UsersTab => TabsContainer.GetByText("Пользователи", new() { Exact = true });
+
+        private const string DepartmentField = "Подразделение";
         public UsersPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test) { }
 
         public async Task ClickTab(string tabName)
@@ -22,6 +29,19 @@ namespace FarvaterWeb.Pages.Users
 
             // Опционально: подождать, пока вкладка станет активной 
             // (в вашем HTML активная вкладка помечается наличием внутри div класса _switchOutline_)
+        }
+
+        public async Task ClickUsersTab()
+        {        
+           
+            await Do("Переход на вкладку: Пользователи", async () =>
+            {
+                // Ждем, чтобы вкладка стала видимой (на случай долгой загрузки)
+                //await UsersTab.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+                // Кликаем именно по вкладке внутри контейнера
+                await UsersTab.ClickAsync();
+            });
         }
 
         public async Task ClickCreatePositionButton()
@@ -77,8 +97,8 @@ namespace FarvaterWeb.Pages.Users
             await DoFillByLabel("Фамилия", details.Lastname);
             await DoFillByLabel("Имя", details.Name);
             await DoFillByLabel("Отчество", details.Middlename);
-            await DoFillByLabel("Таб.", details.IDnumber);
-            await DoFillByLabel("Логин *", details.UserLogin);
+            await DoFillByLabel("Таб. \u2116", details.IDnumber);
+            await DoFillByLabel("Логин", details.UserLogin);
             await DoFillByLabel("Телефон", details.Phone);
             await DoFillByLabel("E-mail", details.Email);
         }
@@ -161,6 +181,14 @@ namespace FarvaterWeb.Pages.Users
             string buttonText = "Удалить";
             await Table.DeleteRow(groupName, buttonText);
         }
+
+        public async Task SelectDepartmentByNumber(int position)
+        {
+            // Вызываем наш метод из BaseComponent, который мы написали ранее
+            await SelectDropdownItemByNumber(DepartmentField, position);
+        }
+
+
 
     }
 }

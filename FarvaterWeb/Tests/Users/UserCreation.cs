@@ -34,8 +34,7 @@ namespace FarvaterWeb.Tests.Users
 
             // Клик по вкладке "Пользователи"
 
-            await Users.ClickTab("Пользователи");
-
+            await Users.ClickUsersTab();
             // Клик по кнопке "Добавить пользователя"
 
             await Users.ClickAddUser();
@@ -50,21 +49,43 @@ namespace FarvaterWeb.Tests.Users
                 Lastname: "Тестиренко",
                 Name: "Анатолий",
                 Middlename: "Владимирович",
-                IDnumber: $"{postfix}",                // Будет типа 1446150114
-                UserLogin: $"testirenko{postfix}",         // Будет типа test_user_150114
-                Phone: $"+7(812)123-{postfix.Substring(0, 2)}-{postfix.Substring(2, 2)}", // Форматируем телефон
-                Email: $"testirenko{postfix}@company.ru"         // Будет типа test_150114@company.ru
+                IDnumber: $"{postfix}",                
+                UserLogin: $"testirenko{postfix}",         
+                Phone: $"+7(812)123-{postfix.Substring(0, 2)}-{postfix.Substring(2, 2)}", 
+                Email: $"testirenko{postfix}@company.ru"         
             );
 
             await Users.FillUserDetails(userDetails);
 
-            // Создание подразделения
+            // Выбор первого подразделения из списка
 
+            await Users.SelectDepartmentByNumber(1);
 
+            // Создание и выбор подразделения
 
-            // Выбор должности
+            // Выбор первой должности из списка
+
+            // Создание и выбор должности
 
             // Клик по чек-боксу "Является руководителем
+
+            // Клик по кнопке "Создать"
+
+            // Открытие карточки созданного пользователя
+
+            // Клик по кнопке "Уволить"
+
+            // Выбор сотрудника, которому передаются задачи
+
+            //Нажатие кнопки "Уволить"
+
+            // Переход в раздел "Пользователи
+
+            // Переход во вкладку "Неакивные пользователи" и проверка наличия удаленного пользователя.
+
+
+
+
         }
     }
 }

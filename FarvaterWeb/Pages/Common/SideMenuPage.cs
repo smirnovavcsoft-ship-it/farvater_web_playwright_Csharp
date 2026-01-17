@@ -30,6 +30,7 @@ namespace FarvaterWeb.Pages.Common
             await Page.WaitForURLAsync($"**/{urlPart}**");
 
             Log.Information($"[SideMenu] Переход в раздел {name} выполнен");
+            
         }
 
         public async Task Logout()

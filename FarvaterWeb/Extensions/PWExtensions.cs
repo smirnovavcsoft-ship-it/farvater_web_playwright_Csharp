@@ -1,9 +1,35 @@
-﻿using Microsoft.Playwright;
+﻿using FarvaterWeb.Base;
+using Microsoft.Playwright;
 
 namespace FarvaterWeb.Extensions
 {
     public static class PwExtensions
-    {      
+    {
+        public static async Task Do(this IPage page, string stepName, Func<Task> action)
+        {
+            // Используем статический доступ к Serilog
+            Serilog.Log.Information(stepName);
+
+            // Для ExtentReports обычно тоже есть статический доступ или контекст
+            // Если _test у тебя в BaseComponent, можно передавать его или сделать доступным
+            // _test?.Info(stepName); 
+
+            // Самое главное — Allure!
+            await AllureService.Step(stepName, action);
+        }
+
+        public static async Task SafeClickAsync(this ILocator locator, string? label = null)
+        {
+            // Пытаемся автоматически определить имя, если оно не передано
+            string name = label ?? "элемент";
+
+            // Вызываем расширение Do у страницы, к которой относится локатор
+            await locator.Page.Do($"Нажатие на '{name}'", async () =>
+            {
+                await locator.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await locator.ClickAsync();
+            });
+        }
 
         // --- Группа 1: Ввод данных ---
 
@@ -20,7 +46,7 @@ namespace FarvaterWeb.Extensions
 
         // --- Группа 2: Кнопки и клики ---
 
-        public static async Task ClickWithWaitAsync(this ILocator locator, float timeout = 5000)
+        /*public static async Task ClickWithWaitAsync(this ILocator locator, float timeout = 5000)
         {
             await locator.WaitForAsync(new LocatorWaitForOptions
             {
@@ -28,7 +54,7 @@ namespace FarvaterWeb.Extensions
                 Timeout = timeout
             });
             await locator.ClickAsync();
-        }
+        }*/
 
         public static async Task DoubleClickWithWaitAsync(this ILocator locator, float timeout = 5000)
         {

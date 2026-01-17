@@ -3,6 +3,7 @@ using Microsoft.Playwright;
 using FarvaterWeb.Base;
 using Serilog;
 using AventStack.ExtentReports;
+using FarvaterWeb.Extensions;
 
 namespace FarvaterWeb.Pages
 {
@@ -63,12 +64,16 @@ namespace FarvaterWeb.Pages
 
         public async Task Create()
         {
-            await DoClickByText("Создать");
+            //await DoClickByText("Создать");
+            //Новый метод с расширением
+            await Button("Создать").SafeClickAsync();
         }
 
         public async Task AddContact()
         {
-            await DoClickByText("Добавить контакт");
+            //await DoClickByText("Добавить контакт");
+            //Новый метод с расширением
+            await Button("Добавить контакт").SafeClickAsync();
         }
 
         

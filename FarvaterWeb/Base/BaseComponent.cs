@@ -303,7 +303,10 @@ public abstract class BaseComponent
         });
     }
 
-    
+    protected ILocator Button(string text) =>
+    Page.GetByRole(AriaRole.Button, new() { Name = text, Exact = false }).First;
+
+
     /*protected async Task DoClickByText(string buttonText)
     {
         Log.Information("[{Component}] Нажатие на кнопку (GetByRole) '{Text}'", _componentName, buttonText);

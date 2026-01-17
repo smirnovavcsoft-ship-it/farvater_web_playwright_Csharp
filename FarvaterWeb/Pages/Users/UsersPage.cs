@@ -1,5 +1,6 @@
 ﻿using AventStack.ExtentReports;
 using FarvaterWeb.Base;
+using FarvaterWeb.Extensions;
 using FarvaterWeb.Tests.Counterparty;
 using FarvaterWeb.Tests.Users;
 using HarmonyLib;
@@ -46,23 +47,31 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task ClickCreatePositionButton()
         {
-            await DoClickByText("Создать должность");
+            //await DoClickByText("Создать должность");
+            //Новый метод с расширением
+            await Button("Создать должность").SafeClickAsync();
         }
 
         public async Task ClickCreateDepartmentButton()
         {
-            await DoClickByText("Создать подразделение");
+            //await DoClickByText("Создать подразделение");
+            //Новый метод с расширением
+            await Button("Создать подразделение").SafeClickAsync();
         }
 
         
         public async Task ClickCreateGroupButton()
         {
-            await DoClickByText("Создать группу");
+            //await DoClickByText("Создать группу");
+            //Новый метод с расширением
+            await Button("Создать группу").SafeClickAsync();
         }
 
         public async Task ClickAddUser()
         {
-            await DoClickByText("Добавить пользователя");
+            //await DoClickByText("Добавить пользователя");
+            //Новый метод с расширением
+            await Button("Добавить пользователя").SafeClickAsync();
         }
 
         /*public async Task DeletePosition(string name)
@@ -131,7 +140,9 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task ClickAddButton()
         {
-            await DoClickByText("Добавить");
+            //await DoClickByText("Добавить");
+            //Новый метод с расширением
+            await Button("Добавить").SafeClickAsync();
         }
 
         /*public async Task ClickAddButton()

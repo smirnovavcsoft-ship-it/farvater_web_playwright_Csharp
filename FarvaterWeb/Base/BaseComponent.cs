@@ -255,7 +255,12 @@ public abstract class BaseComponent
         Page.GetByRole(AriaRole.Button, new() { Name = text, Exact = false });*/
 
     protected SmartLocator ButtonWithText(string text) =>
-    new SmartLocator(Page.GetByRole(AriaRole.Button, new() { Name = text }), text, "Кнопка", Page);
+    new SmartLocator(
+        Page.GetByRole(AriaRole.Button, new() { Name = text }),
+        text,
+        "Кнопка",
+        _componentName, // Используем твое поле
+        Page);
 
     // Для кнопок, где текст привязан через тег <label> или aria-label
     protected ILocator ButtonWithLabel(string label) =>

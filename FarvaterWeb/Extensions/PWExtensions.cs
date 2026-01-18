@@ -33,13 +33,12 @@ namespace FarvaterWeb.Extensions
 
         public static async Task SafeClickAsync(this SmartLocator smart)
         {
-            // Весь процесс логируется как одно действие
-            await smart.Page.Do($"Клик по элементу: {smart.Type} '{smart.Name}'", async () =>
-            {
-                // Сначала неявное ожидание, чтобы шаг не упал мгновенно
-                await smart.Locator.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+            // Формируем ту самую строку: [NewLegalPage] Клик по элементу: кнопка 'Создать'
+            string stepName = $"[{smart.ComponentName}] Клик по элементу: {smart.Type} '{smart.Name}'";
 
-                // Само действие
+            await smart.Page.Do(stepName, async () =>
+            {
+                await smart.Locator.WaitForAsync(new() { State = WaitForSelectorState.Visible });
                 await smart.Locator.ClickAsync();
             });
         }

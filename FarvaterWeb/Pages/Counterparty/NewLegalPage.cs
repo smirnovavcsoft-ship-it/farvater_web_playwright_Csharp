@@ -66,14 +66,14 @@ namespace FarvaterWeb.Pages
         {
             //await DoClickByText("Создать");
             //Новый метод с расширением
-            await Button("Создать").SafeClickAsync();
+            await ButtonWithText("Создать").SafeClickAsync();
         }
 
         public async Task AddContact()
         {
             //await DoClickByText("Добавить контакт");
             //Новый метод с расширением
-            await Button("Добавить контакт").SafeClickAsync();
+            await ButtonWithText("Добавить контакт").SafeClickAsync();
         }
 
         

@@ -18,7 +18,7 @@ namespace FarvaterWeb.Extensions
             await AllureService.Step(stepName, action);
         }
 
-        public static async Task SafeClickAsync(this ILocator locator, string? label = null)
+        /*public static async Task SafeClickAsync(this ILocator locator, string? label = null)
         {
             // Пытаемся автоматически определить имя, если оно не передано
             string name = label ?? "элемент";
@@ -28,6 +28,19 @@ namespace FarvaterWeb.Extensions
             {
                 await locator.WaitForAsync(new() { State = WaitForSelectorState.Visible });
                 await locator.ClickAsync();
+            });
+        }*/
+
+        public static async Task SafeClickAsync(this SmartLocator smart)
+        {
+            // Весь процесс логируется как одно действие
+            await smart.Page.Do($"Клик по элементу: {smart.Type} '{smart.Name}'", async () =>
+            {
+                // Сначала неявное ожидание, чтобы шаг не упал мгновенно
+                await smart.Locator.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+                // Само действие
+                await smart.Locator.ClickAsync();
             });
         }
 

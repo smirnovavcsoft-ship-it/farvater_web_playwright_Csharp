@@ -4,7 +4,7 @@ using FarvaterWeb.Extensions;
 using Microsoft.Playwright;
 using Serilog;
 using System.Xml.Linq;
-
+using FarvaterWeb.Extensions;
 
 namespace FarvaterWeb.Base;
 
@@ -90,10 +90,10 @@ public abstract class BaseComponent
         // 4. Находит ближайший input
         string xpath = $@"
         (//*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
-    /ancestor::div[1]//input | 
-    //*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
-    /following-sibling::input |
-    //label[contains(translate(normalize-space(string(.)), '{chars}', '{lower}'), '{lowerLabel}')]//input)[1]";
+        /ancestor::div[1]//input | 
+        //*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
+        /following-sibling::input |
+        //label[contains(translate(normalize-space(string(.)), '{chars}', '{lower}'), '{lowerLabel}')]//input)[1]";
 
         return Page.Locator(xpath);
     }
@@ -220,63 +220,7 @@ public abstract class BaseComponent
 
     }
 
-    /*protected async Task DoDoubleClick(ILocator locator, string name)
-    {
-        Log.Information("[{Component}] Двойной клик по '{Name}'", _componentName, name);
-        await locator.DblClickAsync();
-        await AutoScreenshot($"DoubleClick_{name.Replace(" ", "_")}");
-    }*/
-
-    /*protected async Task DoClickByText(string buttonText)
-    {
-        Log.Information("[{Component}] Нажатие на кнопку '{Text}'", _componentName, buttonText);
-
-        var locator = GetButtonByText(buttonText);
-
-        // Ждем, чтобы кнопка стала видимой и доступной для клика
-        await Assertions.Expect(locator).ToBeVisibleAsync(new() { Timeout = 5000 });
-        await Assertions.Expect(locator).ToBeEnabledAsync();
-
-        await locator.ClickAsync();
-
-        // Делаем скриншот ПОСЛЕ клика, чтобы увидеть результат действия
-        await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
-    }*/
-
-    /*protected async Task DoClickByText(string buttonText)
-    {
-        Log.Information("[{Component}] Нажатие на кнопку '{Text}'", _componentName, buttonText);
-
-        // 1. Подготовка переменных для XPath
-        string lowerLabel = buttonText.ToLower().Trim(); // Вот она, потеряшка!
-        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
-        string lower = "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-
-        // Формируем XPath для "всеядного" поиска
-        //string xpathSelector = $"xpath=(//button|//a|//*[@role='button']|//input[@type='submit' or @type='button'])[translate(normalize-space(.), '{chars}', '{lower}') = '{lowerLabel}' or translate(normalize-space(@value), '{chars}', '{lower}') = '{lowerLabel}']";
-        string xpathSelector = $"xpath=(//button|//a|//*[@role='button']|//input[@type='submit' or @type='button'])[contains(translate(., '{chars}', '{lower}'), '{lowerLabel}') or contains(translate(@value, '{chars}', '{lower}'), '{lowerLabel}')]";
-
-        // 2. Инициализация локаторов
-        var roleLocator = Page.GetByRole(AriaRole.Button, new() { Name = buttonText });
-
-        // Объединяем: ищем либо по роли, либо по нашему хитрому XPath
-        // Добавляем фильтр >> visible=true, чтобы не кликать по скрытым элементам
-        var combinedLocator = Page.Locator(xpathSelector).Or(roleLocator).Filter(new() { Visible = true }).First;
-
-        try
-        {
-            // 3. Ожидание и клик
-            await Assertions.Expect(combinedLocator).ToBeVisibleAsync(new() { Timeout = 5000 });
-            await combinedLocator.ClickAsync();
-
-            await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
-        }
-        catch (Exception ex)
-        {
-            Log.Error("[{Component}] Не удалось кликнуть по кнопке '{Text}': {Error}", _componentName, buttonText, ex.Message);
-            throw; // Пробрасываем ошибку в тест
-        }
-    }*/
+    
 
     protected async Task DoClickByText(string buttonText)
     {
@@ -303,8 +247,23 @@ public abstract class BaseComponent
         });
     }
 
-    protected ILocator Button(string text) =>
-    Page.GetByRole(AriaRole.Button, new() { Name = text, Exact = false }).First;
+    /*protected ILocator Button(string text) =>
+    Page.GetByRole(AriaRole.Button, new() { Name = text, Exact = false }).First;*/
+
+    // Для кнопок, где текст — это часть интерфейса (самый частый случай)
+    /*protected ILocator ButtonWithText(string text) =>
+        Page.GetByRole(AriaRole.Button, new() { Name = text, Exact = false });*/
+
+    protected SmartLocator ButtonWithText(string text) =>
+    new SmartLocator(Page.GetByRole(AriaRole.Button, new() { Name = text }), text, "Кнопка", Page);
+
+    // Для кнопок, где текст привязан через тег <label> или aria-label
+    protected ILocator ButtonWithLabel(string label) =>
+        Page.GetByLabel(label);
+
+    // Универсальный метод для кнопок по CSS/XPath (иконки, классы, ID)
+    protected ILocator Button(string selector) =>
+        Page.Locator(selector);
 
 
     /*protected async Task DoClickByText(string buttonText)

@@ -49,14 +49,14 @@ namespace FarvaterWeb.Pages.Users
         {
             //await DoClickByText("Создать должность");
             //Новый метод с расширением
-            await Button("Создать должность").SafeClickAsync();
+            await ButtonWithText("Создать должность").SafeClickAsync();
         }
 
         public async Task ClickCreateDepartmentButton()
         {
             //await DoClickByText("Создать подразделение");
             //Новый метод с расширением
-            await Button("Создать подразделение").SafeClickAsync();
+            await ButtonWithText("Создать подразделение").SafeClickAsync();
         }
 
         
@@ -64,14 +64,14 @@ namespace FarvaterWeb.Pages.Users
         {
             //await DoClickByText("Создать группу");
             //Новый метод с расширением
-            await Button("Создать группу").SafeClickAsync();
+            await ButtonWithText("Создать группу").SafeClickAsync();
         }
 
         public async Task ClickAddUser()
         {
             //await DoClickByText("Добавить пользователя");
             //Новый метод с расширением
-            await Button("Добавить пользователя").SafeClickAsync();
+            await ButtonWithText("Добавить пользователя").SafeClickAsync();
         }
 
         /*public async Task DeletePosition(string name)
@@ -142,7 +142,7 @@ namespace FarvaterWeb.Pages.Users
         {
             //await DoClickByText("Добавить");
             //Новый метод с расширением
-            await Button("Добавить").SafeClickAsync();
+            await ButtonWithText("Добавить").SafeClickAsync();
         }
 
         /*public async Task ClickAddButton()

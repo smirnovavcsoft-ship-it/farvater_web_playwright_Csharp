@@ -1,10 +1,11 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.Model;
+using FarvaterWeb.Components;
 using FarvaterWeb.Extensions;
 using Microsoft.Playwright;
 using Serilog;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using FarvaterWeb.Extensions;
 
 namespace FarvaterWeb.Base;
 
@@ -31,6 +32,8 @@ public abstract class BaseComponent
         //_componentName = componentName;
         _componentName = GetType().Name; // Автоматически берет имя класса (например, "LoginForm")
     }
+
+    protected DropdownComponent Dropdown(string label) => new DropdownComponent(Page, label, _componentName);
 
     // --- Вспомогательный метод для поиска локаторов внутри компонента ---
     protected ILocator GetLocator(ILocator locator) => Root ?? locator;
@@ -431,11 +434,47 @@ public abstract class BaseComponent
         }
     }*/
 
-    public async Task SelectDropdownItemByNumber(string label, int number)
+    /*public async Task SelectDropdownItemByNumber(string label, int number)
     {
         // Мы передаем (number - 1), потому что для пользователя первый пункт — это 1,
         // а для программиста (и Playwright) — это индекс 0.
         await Do($"Выбор пункта №{number} в списке '{label}'",
             async () => await Page.GetByLabel(label).SelectByIndexAndVerifyAsync(number - 1));
-    }
+    }*/
+
+    /*protected SmartLocator Dropdown(string label) =>
+    new SmartLocator(Page.GetByLabel(label), label, "Выпадающий список", _componentName, Page);*/
+
+    /*protected SmartLocator Dropdown(string label)
+    {
+        // Список стратегий поиска (добавляй сюда новые, если верстка изменится)
+        var searchStrategies = new[]
+        {
+        Page.Locator($"div[data-signature*='{label}'] ._controlWrapper_16801_8"), // По сигнатуре (самый точный)
+        Page.GetByLabel(label, new() { Exact = false }),                       // Стандартный лейбл
+        Page.Locator("div[data-testid='dropdown_list']").Filter(new() { HasText = label }), // Контейнер с текстом
+        Page.Locator("div").Filter(new() { HasText = label }).Locator("..").Locator("._header_16801_13"), // Поиск по соседям
+        Page.Locator($"div[data-signature='contactDepartment'] ._controlWrapper_16801_8"),
+        Page.Locator("div").Filter(new() { HasText = label }).Locator("..").Locator("._controlWrapper_16801_8")
+        };
+
+        // Склеиваем все стратегии в один супер-локатор
+        var finalLocator = searchStrategies.Aggregate((acc, next) => acc.Or(next));
+
+        return new SmartLocator(finalLocator, label, "выпадающий список", _componentName, Page);
+    }*/
+
+    /*protected SmartLocator Dropdown(string label)
+    {
+        // Ищем контейнер дропдауна, который содержит лейбл с ТОЧНЫМ текстом
+        var locator = Page.Locator("div._DropDownSelect_16801_1")
+            .Filter(new()
+            {
+                // Используем селектор :text-is для строгого сравнения
+                Has = Page.Locator($"._label_16801_163:text-is('{label}')")
+            })
+            .Locator("._controlWrapper_16801_8");
+
+        return new SmartLocator(locator, label, "выпадающий список", _componentName, Page);
+    }*/
 }

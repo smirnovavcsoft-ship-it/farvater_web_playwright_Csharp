@@ -113,7 +113,7 @@ namespace FarvaterWeb.Extensions
             }
         }
 
-        
+
         // Выбор по индексу (номеру)
         /*public static async Task SelectByIndexAndVerifyAsync(this ILocator dropdown, int index)
         {
@@ -132,16 +132,7 @@ namespace FarvaterWeb.Extensions
             await Assertions.Expect(dropdown).ToContainTextAsync(optionText);
         }*/
 
-        // Выбор по тексту (на будущее)
-        public static async Task SelectByTextAndVerifyAsync(this ILocator dropdown, string text)
-        {
-            await dropdown.ClickAsync();
-
-            var targetOption = dropdown.Page.GetByRole(AriaRole.Option, new() { Name = text, Exact = true });
-            await targetOption.ClickAsync();
-
-            await Assertions.Expect(dropdown).ToContainTextAsync(text);
-        }
+        
     }
 
 

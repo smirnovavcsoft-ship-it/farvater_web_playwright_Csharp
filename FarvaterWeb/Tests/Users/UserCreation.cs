@@ -59,9 +59,11 @@ namespace FarvaterWeb.Tests.Users
 
             // Выбор первого подразделения из списка
 
-            await Users.SelectDepartmentByNumber(1);
+            //await Users.SelectDepartmentByNumber(1);
 
             // Создание и выбор подразделения
+
+
 
             // Выбор первой должности из списка
 

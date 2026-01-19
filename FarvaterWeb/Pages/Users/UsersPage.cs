@@ -1,11 +1,13 @@
 ﻿using AventStack.ExtentReports;
 using FarvaterWeb.Base;
+using FarvaterWeb.Components;
 using FarvaterWeb.Extensions;
 using FarvaterWeb.Tests.Counterparty;
 using FarvaterWeb.Tests.Users;
 using HarmonyLib;
 using Microsoft.Playwright;
 using Serilog;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
 
 namespace FarvaterWeb.Pages.Users
@@ -18,7 +20,10 @@ namespace FarvaterWeb.Pages.Users
         // Конкретная вкладка внутри этого контейнера
         private ILocator UsersTab => TabsContainer.GetByText("Пользователи", new() { Exact = true });
 
-        private const string DepartmentField = "Подразделение";
+        //private const string DepartmentField = "Подразделение";
+
+        private DropdownComponent DepartmentField => Dropdown("Подразделение");
+        private DropdownComponent PositionField => Dropdown("Должность");
         public UsersPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test) { }
 
         public async Task ClickTab(string tabName)
@@ -110,7 +115,22 @@ namespace FarvaterWeb.Pages.Users
             await DoFillByLabel("Логин", details.UserLogin);
             await DoFillByLabel("Телефон", details.Phone);
             await DoFillByLabel("E-mail", details.Email);
+            await PositionField.Control.SelectByIndexAndVerifyAsync(0);
+            await DepartmentField.Control.SelectByIndexAndVerifyAsync(0);
+            await DepartmentField.CreateButton.SafeClickAsync();
+
         }
+
+        public async Task CreateDepartment()
+        {
+            await DepartmentField.CreateButton.SafeClickAsync();
+        }
+
+        public async Task CreatePosition()
+        {
+            await PositionField.CreateButton.SafeClickAsync();
+        }
+
 
         public async Task FillGroupName(string name)
         {
@@ -193,11 +213,19 @@ namespace FarvaterWeb.Pages.Users
             await Table.DeleteRow(groupName, buttonText);
         }
 
-        public async Task SelectDepartmentByNumber(int position)
+        /*public async Task SelectDepartmentByNumber( int position)
         {
-            // Вызываем наш метод из BaseComponent, который мы написали ранее
-            await SelectDropdownItemByNumber(DepartmentField, position);
-        }
+                       // Вызываем наш метод из BaseComponent, который мы написали ранее
+            await SelectDropdownItemByNumber("Подразделение", position);
+        }*/
+
+        /*public async Task SelectDepartmentByNumber(int number)
+        {
+            // Теперь нам не нужно вызывать Do здесь, так как он уже внутри Safe-метода
+            await Dropdown("Подразделение").SelectByIndexAndVerifyAsync(number - 1);
+        }*/
+
+
 
 
 

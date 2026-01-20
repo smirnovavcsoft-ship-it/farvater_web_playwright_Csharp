@@ -1,6 +1,7 @@
 ﻿using FarvaterWeb.Extensions;
 using Microsoft.Playwright;
 
+
 namespace FarvaterWeb.Components
 {
     public class CheckboxComponent

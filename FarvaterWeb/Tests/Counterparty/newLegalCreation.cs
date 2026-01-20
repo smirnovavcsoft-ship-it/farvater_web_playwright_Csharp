@@ -29,7 +29,7 @@ namespace FarvaterWeb.Tests.Counterparty
     // 1. Создание Browser, Context, Page
     // 2. Инициализацию Serilog
     // 3. Запись Видео и Скриншотов при падении
-    
+    [Collection("AllureCollection")]
     public class FarvaterLegalCreationTests : BaseTest
     {
 

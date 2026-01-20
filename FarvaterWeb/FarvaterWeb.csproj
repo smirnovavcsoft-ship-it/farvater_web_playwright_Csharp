@@ -17,11 +17,13 @@
   <ItemGroup>
     <Compile Remove="Base\BaseUI.cs" />
     <Compile Remove="Components\CreateComponent.cs" />
+    <Compile Remove="TestCollection.cs" />
     <Compile Remove="UnitTest1.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="Extensions\PWExtensions.cs.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +62,10 @@
 
   <ItemGroup>
     <Folder Include="TestResults\Screenshots\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="TestCollection.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,6 +13,7 @@ namespace FarvaterWeb.Tests.Users
     bool IsOrd = true
     );
 
+    [Collection("AllureCollection")]
     public class GroupCreationTests : BaseTest
     {
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);

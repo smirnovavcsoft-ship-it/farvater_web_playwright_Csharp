@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 namespace FarvaterWeb.Tests.Users
 {
     public record DepartmentDetails(string Name, string Code);
+    [Collection("AllureCollection")]
     public class DepartmentCreationTests : BaseTest
     {
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);

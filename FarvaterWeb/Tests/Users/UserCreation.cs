@@ -16,6 +16,8 @@ namespace FarvaterWeb.Tests.Users
         string Phone,
         string Email        
         );
+
+    [Collection("AllureCollection")]
     public class UserCreationTests : BaseTest
     {
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);

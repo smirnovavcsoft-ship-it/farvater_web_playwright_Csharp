@@ -12,6 +12,7 @@ using Xunit.Abstractions;
 
 namespace FarvaterWeb.Tests.Users
 {
+    [Collection("AllureCollection")]
     public class PositionCreationTests : BaseTest
     {        
         //private readonly SideMenuPage _sideMenuPage;

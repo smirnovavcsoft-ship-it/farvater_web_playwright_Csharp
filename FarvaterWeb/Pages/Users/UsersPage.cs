@@ -101,7 +101,7 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task FillDepartmentDetails(DepartmentDetails details)
         {
-            await DoFillByLabel("Наименование", details.Name);
+            await DoFillByLabel("Наименование*", details.Name);
             await DoFillByLabel("Код", details.Code);
         }
 
@@ -114,12 +114,20 @@ namespace FarvaterWeb.Pages.Users
             await DoFillByLabel("Таб. \u2116", details.IDnumber);
             await DoFillByLabel("Логин", details.UserLogin);
             await DoFillByLabel("Телефон", details.Phone);
-            await DoFillByLabel("E-mail", details.Email);
-            await PositionField.Control.SelectByIndexAndVerifyAsync(0);
-            await DepartmentField.Control.SelectByIndexAndVerifyAsync(0);
-            await DepartmentField.CreateButton.SafeClickAsync();
+            await DoFillByLabel("E-mail", details.Email);            
 
         }
+
+        public async Task SelectFirstDepartment()
+        {
+            await DepartmentField.Control.SelectByIndexAndVerifyAsync(0);
+        }
+
+        public async Task SelectFirstPosition()
+        {
+            await PositionField.Control.SelectByIndexAndVerifyAsync(0);
+        }
+
 
         public async Task CreateDepartment()
         {
@@ -170,10 +178,20 @@ namespace FarvaterWeb.Pages.Users
             await DoClickByText("Добавить");
         }*/
 
+        public async Task CreateButton()
+        {
+            await ButtonWithText("Создать").SafeClickAsync();
+        }
+
         public async Task VerifyPositionCreated(string positionName)
         {
             // Метод AssertTextExists уже доступен, так как страница наследует BaseComponent
             await AssertTextExists(positionName);
+        }
+
+        public async Task VerifyUserCreated(string userName)
+        {
+            await AssertTextExists(userName);
         }
 
         
@@ -225,8 +243,22 @@ namespace FarvaterWeb.Pages.Users
             await Dropdown("Подразделение").SelectByIndexAndVerifyAsync(number - 1);
         }*/
 
+        public async Task IsABoss()
+        {
+            await Checkbox("Является руководителем").SetAsync(true);
+        }
 
+        public async Task HaveARightToSign()
+        {
+            await Checkbox("Имеет право подписи").SetAsync(true);
+        }
 
+        public async Task OpenUserCard(string email)
+        {
+            await Table.Row(email).SafeClickAsync();
+        }
+
+        
 
 
     }

@@ -1,4 +1,5 @@
 ﻿using FarvaterWeb.Base;
+using FarvaterWeb.Extensions;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
 using Xunit.Abstractions;
@@ -33,11 +34,12 @@ namespace FarvaterWeb.Tests.Users
             await Users.ClickCreateDepartmentButton();
 
             // Ввод наименования и кода подразделения
+            string postfix = DataExtensions.GetUniquePostfix();
 
             var newDepartmentDetails = new DepartmentDetails(
-                Name : "Тестовое подразделение",
-                Code : "12345"
-                );
+               Name: $"Тестовое подразделение {postfix}",
+               Code: $"{postfix}"
+               );
 
             await Users.FillDepartmentDetails(newDepartmentDetails);
 

@@ -1,4 +1,5 @@
 ﻿using FarvaterWeb.Base;
+using Microsoft.CodeAnalysis;
 using Microsoft.Playwright;
 
 namespace FarvaterWeb.Extensions
@@ -80,15 +81,31 @@ namespace FarvaterWeb.Extensions
 
         // --- Группа 3: Выбор (Selection) ---
 
-        public static async Task SetCheckedSafeAsync(this ILocator locator, bool state)
+        public static async Task SetCustomCheckboxAsync(this SmartLocator smart, bool shouldBeChecked)
         {
-            if (state)
-                await locator.CheckAsync();
-            else
-                await locator.UncheckAsync();
+            string stateText = shouldBeChecked ? "включить" : "выключить";
+            string stepName = $"[{smart.ComponentName}] Попытка {stateText} {smart.Type} '{smart.Name}'";
 
-            // Встроенная проверка результата
-            await Assertions.Expect(locator).ToBeCheckedAsync(new() { Checked = state });
+            await smart.Page.Do(stepName, async () =>
+            {
+                // В твоей верстке признак "чека" — наличие svg с классом _icon_on_oaaw3_66
+                var checkIcon = smart.Locator.Locator("svg._icon_on_oaaw3_66");
+
+                // Проверяем текущее состояние
+                bool isCurrentlyChecked = await checkIcon.IsVisibleAsync();
+
+                if (isCurrentlyChecked != shouldBeChecked)
+                {
+                    // Кликаем по самому контейнеру чекбокса
+                    await smart.Locator.ClickAsync();
+
+                    // Ждем анимации или смены состояния
+                    if (shouldBeChecked)
+                        await Assertions.Expect(checkIcon).ToBeVisibleAsync();
+                    else
+                        await Assertions.Expect(checkIcon).ToBeHiddenAsync();
+                }
+            });
         }
 
         public static async Task SelectOptionByTextAsync(this ILocator locator, string text)

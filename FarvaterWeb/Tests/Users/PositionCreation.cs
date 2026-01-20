@@ -2,6 +2,7 @@
 using Allure.Xunit.Attributes;
 using Allure.Xunit.Attributes.Steps;
 using FarvaterWeb.Base;
+using FarvaterWeb.Extensions;
 using FarvaterWeb.Pages;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
@@ -51,7 +52,9 @@ namespace FarvaterWeb.Tests.Users
 
                 // Ввод наименования должности
 
-                string positionName = "Тестовая должность (удалить)";
+                string postfix = DataExtensions.GetUniquePostfix();
+
+                string positionName = $"Тестовая должность {postfix}";
 
                 await Users.FillPositionName(positionName);
 

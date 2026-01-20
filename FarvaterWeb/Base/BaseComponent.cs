@@ -35,6 +35,8 @@ public abstract class BaseComponent
 
     protected DropdownComponent Dropdown(string label) => new DropdownComponent(Page, label, _componentName);
 
+    protected CheckboxComponent Checkbox(string label) => new CheckboxComponent(Page, label, _componentName);
+
     // --- Вспомогательный метод для поиска локаторов внутри компонента ---
     protected ILocator GetLocator(ILocator locator) => Root ?? locator;
 

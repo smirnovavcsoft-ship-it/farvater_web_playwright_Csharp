@@ -2,10 +2,10 @@
 using Microsoft.Playwright;
 using Serilog;
 using AventStack.ExtentReports;
+using FarvaterWeb.Extensions; // Важно для работы SmartLocator и SafeClickAsync
 
 namespace FarvaterWeb.Components
 {
-    // Наследуем BaseUI — это дает нам Do() и AutoScreenshot()
     public class TableComponent : BaseComponent
     {
         public TableComponent(IPage page, ILogger logger, ExtentTest test)
@@ -13,50 +13,65 @@ namespace FarvaterWeb.Components
         {
         }
 
-        /// <summary>
-        /// Универсальный метод: найти строку по тексту и нажать в ней кнопку/иконку
-        /// </summary>
+        // --- СТАРЫЕ МЕТОДЫ (Оставляем как есть) ---
+
         public async Task ClickActionInRow(string rowText, string actionSelector, string actionName)
         {
             await Do($"[Таблица] Действие '{actionName}' для строки '{rowText}'", async () =>
             {
-                // 1. Ищем строку
                 var row = Page.Locator("tr").Filter(new() { HasText = rowText }).First;
-
-                // 2. Ищем элемент внутри строки (например, корзину или карандаш)
                 var actionElement = row.Locator(actionSelector);
-
-                // 3. Скроллим и кликаем
                 await actionElement.ScrollIntoViewIfNeededAsync();
                 await actionElement.ClickAsync(new() { Force = true });
-
-                // 4. Скриншот результата
                 await AutoScreenshot($"{actionName}_{rowText.Replace(" ", "_")}");
             });
         }
 
-        /// <summary>
-        /// Упрощенный метод специально для удаления
-        /// </summary>
         public async Task DeleteRow(string rowText, string buttonText)
         {
-            // Используем селектор корзины по умолчанию, который мы нашли ранее
             await ClickActionInRow(rowText, "div[class*='menuItemDelete']", "Удаление");
-
             await DoClickByText(buttonText);
         }
 
-
-        // Метод для удаления конкретного локатора (внутренний). Понадобится, когда буду делать проверку наличия элемента перед созданием
         private async Task DeleteRow(ILocator rowLocator)
         {
-            // Находим кнопку удаления внутри этой конкретной строки
-            var deleteBtn = rowLocator.Locator("button.delete-action"); // замените на ваш селектор
+            var deleteBtn = rowLocator.Locator("button.delete-action");
             await deleteBtn.ClickAsync();
-
-            // Подтверждение в модальном окне (если оно есть)
             var confirmBtn = Page.Locator("button:has-text('Да')");
             if (await confirmBtn.IsVisibleAsync()) await confirmBtn.ClickAsync();
         }
+
+        // --- НОВЫЕ МЕТОДЫ (Для гибкости и цепочек) ---
+
+        /// <summary>
+        /// Возвращает SmartLocator для всей строки. 
+        /// Позволяет делать Grid.Row("Имя").SafeClickAsync()
+        /// </summary>
+        public SmartLocator Row(string rowText)
+        {
+            var locator = Page.Locator("tr").Filter(new() { HasText = rowText }).First;
+            return new SmartLocator(locator, rowText, "Строка таблицы", _componentName, Page);
+        }
+
+        /// <summary>
+        /// Позволяет найти любой элемент внутри строки и вернуть его как SmartLocator
+        /// </summary>
+        public SmartLocator ControlInRow(string rowText, string selector, string elementName)
+        {
+            var locator = Page.Locator("tr")
+                .Filter(new() { HasText = rowText })
+                .First
+                .Locator(selector);
+
+            return new SmartLocator(locator, $"{elementName} в строке '{rowText}'", "Элемент таблицы", _componentName, Page);
+        }
+
+        // 1. Создаем готовый метод для удаления (селектор спрятан здесь)
+        public SmartLocator DeleteButton(string rowText) =>
+            ControlInRow(rowText, "div[class*='menuItemDelete']", "Удалить");
+
+        // 2. Создаем метод для редактирования (если селектор известен)
+        public SmartLocator EditButton(string rowText) =>
+            ControlInRow(rowText, "button.edit-action", "Редактировать");
     }
 }

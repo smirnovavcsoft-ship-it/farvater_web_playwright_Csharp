@@ -46,11 +46,11 @@ namespace FarvaterWeb.Tests.Users
 
             // 2. Создаем запись, используя интерполяцию строк $""
             var userDetails = new UserDetails(
-                Lastname: "Тестиренко",
+                Lastname: "Тестеренко",
                 Name: "Анатолий",
                 Middlename: "Владимирович",
                 IDnumber: $"{postfix}",                
-                UserLogin: $"testirenko{postfix}",         
+                UserLogin: $"testerenko{postfix}",         
                 Phone: $"+7(812)123-{postfix.Substring(0, 2)}-{postfix.Substring(2, 2)}", 
                 Email: $"testirenko{postfix}@company.ru"         
             );
@@ -59,23 +59,50 @@ namespace FarvaterWeb.Tests.Users
 
             // Выбор первого подразделения из списка
 
-            //await Users.SelectDepartmentByNumber(1);
+            await Users.SelectFirstDepartment();
 
             // Создание и выбор подразделения
 
+            await Users.CreateDepartment();
 
+            var newDepartmentDetails = new DepartmentDetails(
+               Name: $"Тестовое подразделение {postfix}",
+               Code: $"{postfix}"
+               );
+
+            await Users.FillDepartmentDetails(newDepartmentDetails);
 
             // Выбор первой должности из списка
 
+            await Users.SelectFirstPosition();
+
             // Создание и выбор должности
 
-            // Клик по чек-боксу "Является руководителем
+            await Users.CreatePosition();
+
+            await Users.FillPositionName(newDepartmentDetails.Name);
+
+            // Клик по чек-боксу "Является руководителем" и "Имеет право подписи"
+
+            await Users.IsABoss();
+
+            await Users.HaveARightToSign();
 
             // Клик по кнопке "Создать"
 
+            await Users.CreateButton();
+
             // Открытие карточки созданного пользователя
 
+            await Users.VerifyUserCreated(userDetails.Email);
+
+            // Откритие карточки созданного пользователя
+
+
+
             // Клик по кнопке "Уволить"
+
+
 
             // Выбор сотрудника, которому передаются задачи
 

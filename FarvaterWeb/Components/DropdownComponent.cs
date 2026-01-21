@@ -6,48 +6,32 @@ namespace FarvaterWeb.Components
     public class DropdownComponent
     {
         private readonly IPage _page;
-        private readonly string _pageName;
+        private readonly string _componentName;
 
-        public DropdownComponent(IPage page, string pageName)
+        public DropdownComponent(IPage page, string componentName)
         {
             _page = page;
-            _pageName = pageName;
+            _componentName = componentName;
         }
 
-        // Универсальная логика нахождения "кликабельной" части
-        private ILocator GetControl(ILocator container) =>
-            container.Locator("input, [class*='control'], [class*='ValueContainer']").Last;
+        public SmartLocator WithLabel(string label)
+        {
+            var locator = _page.Locator("div._DropDownSelect_16801_1")
+                .Filter(new() { Has = _page.Locator($"._label_16801_163:text-is('{label}')") });
 
-        // МЕТОД 1: По заголовку (DropdownWithLabel)
-        public SmartLocator WithLabel(string label) =>
-            new SmartLocator(
-                GetControl(_page.Locator("div[class*='_DropDownSelect_']")
-                    .Filter(new() { Has = _page.Locator($"[class*='_label_']:text-is('{label}')") })
-                    .Locator("xpath=..").Last),
-                label, "Выпадающий список", _pageName, _page);
+            return new SmartLocator(locator, label, "выпадающий список", _componentName, _page);
+        }
 
-        // МЕТОД 2: По тексту/placeholder внутри (DropdownWithText)
-        public SmartLocator WithText(string text) =>
-            new SmartLocator(
-                GetControl(_page.Locator("div[class*='_Flex_']")
-                    .Filter(new() { Has = _page.Locator($"input[placeholder='{text}'], div:text-is('{text}')") }).Last),
-                text, "Выпадающий список", _pageName, _page);
+        public SmartLocator WithText(string text)
+        {
+            var locator = _page.Locator("div._DropDownSelect_16801_1")
+                .Filter(new() { Has = _page.Locator($"div:text-is('{text}'), input[placeholder='{text}']") });
 
-        // МЕТОД 3: По селектору (DropdownWithSelector)
-        public SmartLocator WithSelector(string selector, string friendlyName) =>
-            new SmartLocator(
-                GetControl(_page.Locator(selector).Last),
-                friendlyName, "Выпадающий список", _pageName, _page);
+            return new SmartLocator(locator, text, "выпадающий список", _componentName, _page);
+        }
 
-        //
-
-        public SmartLocator CreateButton(SmartLocator parent) =>
-        new SmartLocator(
-            parent.Locator.Locator("button[data-signature='button-wrapper']"),
-            $"Создать в '{parent.Name}'",
-            "кнопка '+'",
-            _pageName,
-            _page);
+        public SmartLocator WithLocator(ILocator customLocator, string friendlyName) =>
+            new SmartLocator(customLocator, friendlyName, "особенный список", _componentName, _page);
     }
 
 }

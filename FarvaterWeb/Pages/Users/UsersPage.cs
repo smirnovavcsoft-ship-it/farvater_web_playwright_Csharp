@@ -27,11 +27,11 @@ namespace FarvaterWeb.Pages.Users
 
         //private DropdownComponent ReplacementUser => Dropdown("", "");
 
-        private SmartLocator DepartmentField => Dropdown.WithLabel("Подразделение");
-        private SmartLocator PositionField => Dropdown.WithLabel("Должность");
+        //private SmartLocator DepartmentField => Dropdown.WithLabel("Подразделение");
+        //private SmartLocator PositionField => Dropdown.WithLabel("Должность");
 
         
-        private SmartLocator ReplacementUserField => Dropdown.WithSelector("div[data-testid='user-selector']", "Замещающий");
+        //private SmartLocator ReplacementUserField => Dropdown.WithSelector("div[data-testid='user-selector']", "Замещающий");
         public UsersPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test) { }
 
         public async Task ClickTab(string tabName)
@@ -128,25 +128,25 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task SelectFirstDepartment()
         {
-            await DepartmentField.SelectByIndexAndVerifyAsync(0);
+            await Dropdown.WithLabel("Подразделение").SelectByIndexAndVerifyAsync(0);
         }
 
         public async Task SelectFirstPosition()
         {
-            await PositionField.SelectByIndexAndVerifyAsync(0);
+            await Dropdown.WithLabel("Должность").SelectByIndexAndVerifyAsync(0);
         }
 
 
         public async Task CreateDepartment()
         {
             //await DepartmentField.CreateButton.SafeClickAsync();
-            await Dropdown.CreateButton("Подразделение").SelectByIndexAndVerifyAsync();
+            await Dropdown.WithLabel("Подразделение").PlusButton.SafeClickAsync();
             //await 
         }
 
         public async Task CreatePosition()
         {
-            await PositionField.CreateButton.SafeClickAsync();
+            await Dropdown.WithLabel("Должность").PlusButton.SafeClickAsync();
         }
 
 
@@ -275,11 +275,10 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task SelectReplacementEmployee()
         {
-            await 
+            var replacementPath = Page.Locator("//div[contains(@class, 'employee-select')]").First;
+            await Dropdown.WithLocator(replacementPath, "Выбор замещающего сотрудника").SelectByIndexAndVerifyAsync(0);
         }
-
-        
-
+           
 
     }
 }

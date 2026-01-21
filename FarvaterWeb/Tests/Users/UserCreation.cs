@@ -104,7 +104,7 @@ namespace FarvaterWeb.Tests.Users
 
             // Клик по кнопке "Уволить"
 
-            await Users.
+            //await Users.
 
             // Выбор сотрудника, которому передаются задачи
 

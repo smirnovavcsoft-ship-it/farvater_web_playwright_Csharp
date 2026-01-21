@@ -22,8 +22,16 @@ namespace FarvaterWeb.Pages.Users
 
         //private const string DepartmentField = "Подразделение";
 
-        private DropdownComponent DepartmentField => Dropdown("Подразделение");
-        private DropdownComponent PositionField => Dropdown("Должность");
+        //private DropdownComponent DepartmentField => Dropdown("Подразделение");
+        //private DropdownComponent PositionField => Dropdown("Должность");
+
+        //private DropdownComponent ReplacementUser => Dropdown("", "");
+
+        private SmartLocator DepartmentField => Dropdown.WithLabel("Подразделение");
+        private SmartLocator PositionField => Dropdown.WithLabel("Должность");
+
+        
+        private SmartLocator ReplacementUserField => Dropdown.WithSelector("div[data-testid='user-selector']", "Замещающий");
         public UsersPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test) { }
 
         public async Task ClickTab(string tabName)
@@ -120,18 +128,20 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task SelectFirstDepartment()
         {
-            await DepartmentField.Control.SelectByIndexAndVerifyAsync(0);
+            await DepartmentField.SelectByIndexAndVerifyAsync(0);
         }
 
         public async Task SelectFirstPosition()
         {
-            await PositionField.Control.SelectByIndexAndVerifyAsync(0);
+            await PositionField.SelectByIndexAndVerifyAsync(0);
         }
 
 
         public async Task CreateDepartment()
         {
-            await DepartmentField.CreateButton.SafeClickAsync();
+            //await DepartmentField.CreateButton.SafeClickAsync();
+            await Dropdown.CreateButton("Подразделение").SelectByIndexAndVerifyAsync();
+            //await 
         }
 
         public async Task CreatePosition()
@@ -256,6 +266,16 @@ namespace FarvaterWeb.Pages.Users
         public async Task OpenUserCard(string email)
         {
             await Table.Row(email).SafeClickAsync();
+        }
+
+        public async Task ClickFireButton()
+        {
+            await ButtonWithText("Уволить").SafeClickAsync();
+        }
+
+        public async Task SelectReplacementEmployee()
+        {
+            await 
         }
 
         

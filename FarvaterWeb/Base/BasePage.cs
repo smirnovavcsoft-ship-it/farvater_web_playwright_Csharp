@@ -17,6 +17,8 @@ public abstract class BasePage : BaseComponent
     public TableComponent Table => new TableComponent(Page, Log, _test);
 
     public CancelComponent CancelAction => new CancelComponent(Page, Log, _test);
+
+    
     protected BasePage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test, "Page")
     {
         

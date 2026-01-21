@@ -100,11 +100,11 @@ namespace FarvaterWeb.Tests.Users
 
             // Откритие карточки созданного пользователя
 
-
+            await Users.OpenUserCard(userDetails.Email);
 
             // Клик по кнопке "Уволить"
 
-
+            await Users.
 
             // Выбор сотрудника, которому передаются задачи
 

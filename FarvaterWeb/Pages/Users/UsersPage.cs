@@ -29,7 +29,13 @@ namespace FarvaterWeb.Pages.Users
 
         private SmartLocator PositionPlusButton => Dropdown.WithLabel("Должность").PlusButton;
 
-        private SmartLocator ReplacementEmployeeDropdown => Dropdown.WithLocator(Page.Locator("//div[contains(@class, 'employee-select')]").First, "Выбор замещающего сотрудника");
+        private SmartLocator ReplacementEmployeeDropdown => Dropdown
+            .WithLocator(Page.Locator("//div[contains(@class, 'employee-select')]")
+            .First, "Выбор замещающего сотрудника");
+
+        private SmartLocator PositionInput => Input.WithText("Должность");
+
+        private SmartLocator Department => Input.WithText("Подразделение");
 
         //private SmartLocator DepartmentField => Dropdown.WithLabel("Подразделение");
         //private SmartLocator PositionField => Dropdown.WithLabel("Должность");

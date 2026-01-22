@@ -35,6 +35,8 @@ public abstract class BaseComponent
 
     protected DropdownComponent Dropdown => new DropdownComponent(Page, _componentName);
 
+    protected InputComponent Input => new InputComponent(Page, _componentName);
+
     //protected CheckboxComponent Checkboxes => new CheckboxComponent(Page, _componentName);
 
     protected CheckboxComponent Checkbox(string label) => new CheckboxComponent(Page, label, _componentName);

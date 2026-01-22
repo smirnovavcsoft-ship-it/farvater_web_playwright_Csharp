@@ -65,7 +65,7 @@ public abstract class BaseComponent
         return await AllureService.Step(stepName, action);
     }
 
-    protected async Task AutoScreenshot(string actionName)
+    /*protected async Task AutoScreenshot(string actionName)
     {
         _stepCounter++;
         var fileName = $"step_{_stepCounter:D3}_{_componentName}_{actionName}.png";
@@ -74,6 +74,33 @@ public abstract class BaseComponent
         Directory.CreateDirectory(BaseTest.ScreenshotsPath);
         await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
 
+        var relativePath = $"../Screenshots/{fileName}";
+        _test?.Info($"Шаг {_stepCounter}: {actionName}",
+            MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
+
+        AllureService.AddAttachment(actionName, path);
+    }*/
+
+    protected async Task AutoScreenshot(string actionName)
+    {
+        _stepCounter++;
+
+        // 1. Очищаем имя действия от запрещенных символов (*, :, /, \, и т.д.)
+        string safeActionName = actionName;
+        foreach (char c in Path.GetInvalidFileNameChars())
+        {
+            safeActionName = safeActionName.Replace(c, '_');
+        }
+
+        // 2. Формируем имя файла, используя ОЧИЩЕННОЕ имя
+        var fileName = $"step_{_stepCounter:D3}_{_componentName}_{safeActionName}.png";
+        var path = Path.Combine(BaseTest.ScreenshotsPath, fileName);
+
+        // 3. Создаем директорию и делаем скриншот
+        Directory.CreateDirectory(BaseTest.ScreenshotsPath);
+        await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
+
+        // 4. Логирование в отчеты (здесь можно оставить оригинальное actionName для красоты)
         var relativePath = $"../Screenshots/{fileName}";
         _test?.Info($"Шаг {_stepCounter}: {actionName}",
             MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
@@ -90,17 +117,13 @@ public abstract class BaseComponent
         string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
         string lower = "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
 
-        // XPath, который:
-        // 1. Ищет элемент, содержащий текст (span, label, div)
-        // 2. Очищает его от лишних пробелов
-        // 3. Переводит в нижний регистр
-        // 4. Находит ближайший input
+        // XPath в его исходном виде
         string xpath = $@"
-        (//*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
-        /ancestor::div[1]//input | 
-        //*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
-        /following-sibling::input |
-        //label[contains(translate(normalize-space(string(.)), '{chars}', '{lower}'), '{lowerLabel}')]//input)[1]";
+    (//*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
+    /ancestor::div[1]//input | 
+    //*[contains(translate(normalize-space(text()), '{chars}', '{lower}'), '{lowerLabel}')]
+    /following-sibling::input |
+    //label[contains(translate(normalize-space(string(.)), '{chars}', '{lower}'), '{lowerLabel}')]//input)[1]";
 
         return Page.Locator(xpath);
     }
@@ -142,6 +165,16 @@ public abstract class BaseComponent
         // Используем ваш существующий метод логирования и скриншотов
         await DoFill(locator, label, text);
     }
+
+    protected async Task DoFillByLabel1(string label, string text)
+    {
+        // ХАРДКОД: Игнорируем label и ищем напрямую по подсказке в инпуте
+        // [placeholder*='наименование'] — найдет поле, где в подсказке есть это слово
+        var locator = Page.Locator("input[placeholder*='Введите наименование'], textarea[placeholder*='Введите наименование']").First;
+
+        await DoFill(locator, label, text);
+    }
+
 
     /*public async Task SetCheckboxByText(string label, bool state)
     {

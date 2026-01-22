@@ -107,31 +107,61 @@ public abstract class BasePage : BaseComponent
     /// <summary>
     /// Создание скриншота всей страницы
     /// </summary>
-    public async Task TakeScreenshotAsync(string name)
+    /*public async Task TakeScreenshotAsync(string name)
     {
-        // Генерируем имя и путь
-        string fileName = $"{name}_{DateTime.Now:HHmmss}.png";
+        // 1. Создаем безопасное имя (убираем *, :, /, \ и т.д.)
+        string safeActionName = name;
+        foreach (char c in Path.GetInvalidFileNameChars())
+        {
+            safeActionName = safeActionName.Replace(c, '_');
+        }
+
+        // 2. ИСПОЛЬЗУЕМ safeActionName вместо name для формирования пути!
+        string fileName = $"{safeActionName}_{DateTime.Now:HHmmss}.png";
         string path = Path.Combine("screenshots", fileName);
 
-        // Оборачиваем в Do, чтобы в отчете было видно, когда сделан снимок
         await Do($"[Screenshot] Фиксация экрана: {name}", async () =>
         {
-            // 1. Создаем папку
             Directory.CreateDirectory("screenshots");
 
-            // 2. Делаем скриншот через Playwright
-            var screenshotBytes = await Page.ScreenshotAsync(new PageScreenshotOptions
+            await Page.ScreenshotAsync(new PageScreenshotOptions
             {
-                Path = path,
-                FullPage = false // Смените на true, если нужна вся длинная страница
+                Path = path, // Здесь теперь будет путь без '*'
+                FullPage = false
             });
 
-            // 3. ПРИКРЕПЛЯЕМ К ALLURE (Самый важный шаг!)
-            // Теперь скриншот будет виден прямо в браузере в отчете
+            // В Allure можно передавать оригинальное name, там символы разрешены
             AllureService.AddAttachment(name, path);
 
-            // 4. Логируем для истории
             Log.Information("[Screenshot] Сохранен локально: {Path}", path);
+        });
+    }*/
+
+    public async Task TakeScreenshotAsync(string name)
+    {
+        // 1. Убираем всё лишнее из имени (звездочки, двоеточия и т.д.)
+        // string.Join объединяет разрешенные символы, отсекая запрещенные
+        string safeName = string.Join("_", name.Split(Path.GetInvalidFileNameChars()));
+        safeName = safeName.Replace("*", ""); // На всякий случай удаляем звезду явно
+
+        // 2. Формируем имя файла. ВНИМАНИЕ: используем safeName!
+        // Важно: в дате используем дефисы, так как двоеточия тоже запрещены.
+        string fileName = $"step_{safeName}_{DateTime.Now:HH-mm-ss}.png";
+
+        // 3. Формируем путь
+        string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestResults", "Screenshots");
+        string fullPath = Path.Combine(folderPath, fileName);
+
+        // 4. Логируем путь ПЕРЕД созданием, чтобы ты увидел его в консоли
+        Log.Information("[Debug] Сохраняем файл в: {FullPath}", fullPath);
+
+        await Do($"[Screenshot] Фиксация экрана: {name}", async () =>
+        {
+            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+            await Page.ScreenshotAsync(new PageScreenshotOptions { Path = fullPath });
+
+            AllureService.AddAttachment(name, fullPath);
         });
     }
 

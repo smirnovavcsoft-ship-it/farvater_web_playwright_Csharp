@@ -14,12 +14,22 @@ namespace FarvaterWeb.Components
             _componentName = componentName;
         }
 
-        public SmartLocator WithLabel(string label)
+        /*public SmartLocator WithLabel(string label)
         {
             var locator = _page.Locator("div._DropDownSelect_16801_1")
                 .Filter(new() { Has = _page.Locator($"._label_16801_163:text-is('{label}')") });
 
             return new SmartLocator(locator, label, "выпадающий список", _componentName, _page);
+        }*/
+
+        public SmartLocator WithLabel(string label)
+        {
+            // Ищем общий Flex-контейнер, в котором лежит и лейбл, и кнопка
+            var container = _page.Locator("div[class*='_Flex_']")
+                .Filter(new() { Has = _page.Locator($"._label_16801_163:text-is('{label}')") })
+                .Last; // .Last нужен, если на странице есть вложенные флексы
+
+            return new SmartLocator(container, label, "Dropdown", _componentName, _page);
         }
 
         public SmartLocator WithText(string text)

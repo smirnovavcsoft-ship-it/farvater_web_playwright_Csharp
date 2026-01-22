@@ -22,10 +22,14 @@ namespace FarvaterWeb.Pages.Users
 
         //private const string DepartmentField = "Подразделение";
 
-        //private DropdownComponent DepartmentField => Dropdown("Подразделение");
-        //private DropdownComponent PositionField => Dropdown("Должность");
+        private SmartLocator DepartmentDropdown => Dropdown.WithLabel("Подразделение");
+        private SmartLocator PositionDropdown => Dropdown.WithLabel("Должность");
 
-        //private DropdownComponent ReplacementUser => Dropdown("", "");
+        private SmartLocator DepartmentPlusButton => Dropdown.WithLabel("Подразделение").PlusButton;
+
+        private SmartLocator PositionPlusButton => Dropdown.WithLabel("Должность").PlusButton;
+
+        private SmartLocator ReplacementEmployeeDropdown => Dropdown.WithLocator(Page.Locator("//div[contains(@class, 'employee-select')]").First, "Выбор замещающего сотрудника");
 
         //private SmartLocator DepartmentField => Dropdown.WithLabel("Подразделение");
         //private SmartLocator PositionField => Dropdown.WithLabel("Должность");
@@ -109,7 +113,7 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task FillDepartmentDetails(DepartmentDetails details)
         {
-            await DoFillByLabel("Наименование*", details.Name);
+            await DoFillByLabel1("Наименование*", details.Name);
             await DoFillByLabel("Код", details.Code);
         }
 
@@ -128,25 +132,25 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task SelectFirstDepartment()
         {
-            await Dropdown.WithLabel("Подразделение").SelectByIndexAndVerifyAsync(0);
+            await DepartmentDropdown.SelectByIndexAndVerifyAsync(0);
         }
 
         public async Task SelectFirstPosition()
         {
-            await Dropdown.WithLabel("Должность").SelectByIndexAndVerifyAsync(0);
+            await PositionDropdown.SelectByIndexAndVerifyAsync(0);
         }
 
 
         public async Task CreateDepartment()
         {
             //await DepartmentField.CreateButton.SafeClickAsync();
-            await Dropdown.WithLabel("Подразделение").PlusButton.SafeClickAsync();
+            await DepartmentPlusButton.SafeClickAsync();
             //await 
         }
 
         public async Task CreatePosition()
         {
-            await Dropdown.WithLabel("Должность").PlusButton.SafeClickAsync();
+            await PositionPlusButton.SafeClickAsync();
         }
 
 
@@ -275,8 +279,8 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task SelectReplacementEmployee()
         {
-            var replacementPath = Page.Locator("//div[contains(@class, 'employee-select')]").First;
-            await Dropdown.WithLocator(replacementPath, "Выбор замещающего сотрудника").SelectByIndexAndVerifyAsync(0);
+            //var replacementPath = Page.Locator("//div[contains(@class, 'employee-select')]").First;
+            await ReplacementEmployeeDropdown.SelectByIndexAndVerifyAsync(0);
         }
            
 

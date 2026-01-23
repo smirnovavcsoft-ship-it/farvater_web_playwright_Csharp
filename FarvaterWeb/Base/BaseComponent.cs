@@ -46,13 +46,7 @@ public abstract class BaseComponent
 
     //Компоненты для элементов
 
-    /*protected ILocator GetInputByLabel(string labelText)
-    {
-        // Этот XPath ищет input, который находится внутри того же контейнера, что и текст заголовка
-        // Или input, на который ссылается тег <label>
-        return Page.Locator($"//div[contains(text(), '{labelText}')]/following-sibling::input | //label[contains(text(), '{labelText}')]/..//input");
-    }*/
-
+    
     protected async Task Do(string stepName, Func<Task> action)
     {
         Log?.Information(stepName);
@@ -176,19 +170,7 @@ public abstract class BaseComponent
 
         await DoFill(locator, label, text);
     }
-
-
-    /*public async Task SetCheckboxByText(string label, bool state)
-    {
-        await Do($"{(state ? "Установка" : "Снятие")} чек-бокса '{label}'", async () =>
-        {
-            var checkbox = Page.GetByLabel(label);
-            if (state)
-                await checkbox.CheckAsync();
-            else
-                await checkbox.UncheckAsync();
-        });
-    }*/
+       
 
     public async Task SetCheckboxByText(string label, bool state)
     {
@@ -289,12 +271,7 @@ public abstract class BaseComponent
         });
     }
 
-    /*protected ILocator Button(string text) =>
-    Page.GetByRole(AriaRole.Button, new() { Name = text, Exact = false }).First;*/
-
-    // Для кнопок, где текст — это часть интерфейса (самый частый случай)
-    /*protected ILocator ButtonWithText(string text) =>
-        Page.GetByRole(AriaRole.Button, new() { Name = text, Exact = false });*/
+    
 
     protected SmartLocator ButtonWithText(string text) =>
     new SmartLocator(
@@ -313,32 +290,7 @@ public abstract class BaseComponent
         Page.Locator(selector);
 
 
-    /*protected async Task DoClickByText(string buttonText)
-    {
-        Log.Information("[{Component}] Нажатие на кнопку (GetByRole) '{Text}'", _componentName, buttonText);
-
-        // Ищем строго по роли кнопки с учетом имени (регистронезависимо по умолчанию)
-        var locator = Page.GetByRole(AriaRole.Button, new() { Name = buttonText }).First;
-
-        try
-        {
-            // Ждем, чтобы кнопка стала видимой (стандартные 5-7 секунд)
-            await locator.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 7000 });
-
-            // Кликаем с параметром Force, чтобы пробить возможные невидимые перекрытия
-            await locator.ClickAsync(new() { Force = true });
-
-            await AutoScreenshot($"Click_{buttonText.Replace(" ", "_")}");
-        }
-        catch (Exception ex)
-        {
-            Log.Error("GetByRole не смог найти или кликнуть по кнопке '{Text}': {Error}", buttonText, ex.Message);
-
-            // Если упало, сделаем диагностический скриншот сразу
-            await AutoScreenshot($"ERROR_Click_{buttonText.Replace(" ", "_")}");
-            throw;
-        }
-    }*/
+   
 
     // --- Мышь и сложные действия ---
     protected async Task DoHover(ILocator locator, string name)
@@ -436,84 +388,7 @@ public abstract class BaseComponent
 
     protected bool MakeStepScreenshots = true;
 
-    /*protected async Task AutoScreenshot(string actionName)
-    {
-        if (!MakeStepScreenshots) return;
-        _stepCounter++;
+    
 
-        // 1. Формируем имя и путь (используем ТОЛЬКО ScreenshotsPath)
-        var fileName = $"step_{_stepCounter:D3}_{_componentName}_{actionName}.png";
-        var path = Path.Combine(BaseTest.ScreenshotsPath, fileName);
-
-        try
-        {
-            // 2. Создаем нужную директорию (TestResults/Screenshots)
-            Directory.CreateDirectory(BaseTest.ScreenshotsPath);
-
-            // 3. Сохраняем скриншот
-            await Page.ScreenshotAsync(new PageScreenshotOptions { Path = path });
-
-            // ПУТЬ ДЛЯ HTML: отчет лежит в TestReports/, а скрины в Screenshots/
-            // Чтобы HTML увидел картинку, нужно выйти из своей папки и зайти в соседнюю
-            var relativePath = $"../Screenshots/{fileName}";
-
-            // Добавляем в отчет текст и скриншот
-            _extentTest.Info($"Шаг {_stepCounter}: {actionName}",
-                MediaEntityBuilder.CreateScreenCaptureFromPath(relativePath).Build());
-
-            //Log.Information("[AutoScreenshot] Шаг {Step} сохранен в отчет", _stepCounter);
-
-            // 4. Логируем результат
-            //Log.Information("[AutoScreenshot] Шаг {Step} сохранен: {FullPath}", _stepCounter, path);
-        }
-        catch (Exception ex)
-        {
-            // Если скриншот не создался, вы увидите это в Output
-            Log.Error("[AutoScreenshot] Критическая ошибка сохранения: {Message}", ex.Message);
-        }
-    }*/
-
-    /*public async Task SelectDropdownItemByNumber(string label, int number)
-    {
-        // Мы передаем (number - 1), потому что для пользователя первый пункт — это 1,
-        // а для программиста (и Playwright) — это индекс 0.
-        await Do($"Выбор пункта №{number} в списке '{label}'",
-            async () => await Page.GetByLabel(label).SelectByIndexAndVerifyAsync(number - 1));
-    }*/
-
-    /*protected SmartLocator Dropdown(string label) =>
-    new SmartLocator(Page.GetByLabel(label), label, "Выпадающий список", _componentName, Page);*/
-
-    /*protected SmartLocator Dropdown(string label)
-    {
-        // Список стратегий поиска (добавляй сюда новые, если верстка изменится)
-        var searchStrategies = new[]
-        {
-        Page.Locator($"div[data-signature*='{label}'] ._controlWrapper_16801_8"), // По сигнатуре (самый точный)
-        Page.GetByLabel(label, new() { Exact = false }),                       // Стандартный лейбл
-        Page.Locator("div[data-testid='dropdown_list']").Filter(new() { HasText = label }), // Контейнер с текстом
-        Page.Locator("div").Filter(new() { HasText = label }).Locator("..").Locator("._header_16801_13"), // Поиск по соседям
-        Page.Locator($"div[data-signature='contactDepartment'] ._controlWrapper_16801_8"),
-        Page.Locator("div").Filter(new() { HasText = label }).Locator("..").Locator("._controlWrapper_16801_8")
-        };
-
-        // Склеиваем все стратегии в один супер-локатор
-        var finalLocator = searchStrategies.Aggregate((acc, next) => acc.Or(next));
-
-        return new SmartLocator(finalLocator, label, "выпадающий список", _componentName, Page);
-    }*/
-
-    /*protected SmartLocator Dropdown(string label)
-    {
-        // Ищем контейнер дропдауна, который содержит лейбл с ТОЧНЫМ текстом
-        var locator = Page.Locator("div._DropDownSelect_16801_1")
-            .Filter(new()
-            {
-                // Используем селектор :text-is для строгого сравнения
-                Has = Page.Locator($"._label_16801_163:text-is('{label}')")
-            })
-            .Locator("._controlWrapper_16801_8");
-
-        return new SmartLocator(locator, label, "выпадающий список", _componentName, Page);
-    }*/
+    
 }

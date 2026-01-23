@@ -53,7 +53,7 @@ namespace FarvaterWeb.Tests.Users
 
                 // Ввод наименования должности
 
-                string postfix = DataExtensions.GetUniquePostfix();
+                string postfix = DataPostfixExtensions.GetUniquePostfix();
 
                 string positionName = $"Тестовая должность {postfix}";
 

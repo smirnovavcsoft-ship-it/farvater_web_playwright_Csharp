@@ -18,19 +18,7 @@ namespace FarvaterWeb.Extensions
             await AllureService.Step(stepName, action);
         }
 
-        /*public static async Task SafeClickAsync(this ILocator locator, string? label = null)
-        {
-            // Пытаемся автоматически определить имя, если оно не передано
-            string name = label ?? "элемент";
-
-            // Вызываем расширение Do у страницы, к которой относится локатор
-            await locator.Page.Do($"Нажатие на '{name}'", async () =>
-            {
-                await locator.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-                await locator.ClickAsync();
-            });
-        }*/
-
+        
         public static async Task SafeClickAsync(this SmartLocator smart)
         {
             // Формируем ту самую строку: [NewLegalPage] Клик по элементу: кнопка 'Создать'
@@ -116,26 +104,8 @@ namespace FarvaterWeb.Extensions
                 // Перехватываем и добавляем твой текст к ошибке
                 throw new Exception($"{message}. Подробности: {ex.Message}");
             }
-        }
-
+        }        
         
-        // Выбор по индексу (номеру)
-        /*public static async Task SelectByIndexAndVerifyAsync(this ILocator dropdown, int index)
-        {
-            await dropdown.ClickAsync();
-
-            // Ищем опции по всей странице (часто выпадающие списки рендерятся в конце body)
-            var options = dropdown.Page.GetByRole(AriaRole.Option);
-            await options.First.WaitForAsync(); // Ждем, пока список подгрузится
-
-            var targetOption = options.Nth(index);
-            string optionText = (await targetOption.InnerTextAsync()).Trim();
-
-            await targetOption.ClickAsync();
-
-            // Проверяем, что текст в контроле изменился на выбранный
-            await Assertions.Expect(dropdown).ToContainTextAsync(optionText);
-        }*/
 
         // Выбор по тексту (на будущее)
         public static async Task SelectByTextAndVerifyAsync(this ILocator dropdown, string text)

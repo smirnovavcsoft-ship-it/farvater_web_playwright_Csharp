@@ -53,7 +53,7 @@ namespace FarvaterWeb.Tests.Users
 
             // Заполнение полей нового пользователя
 
-           string postfix = DataExtensions.GetUniquePostfix();
+           string postfix = DataPostfixExtensions.GetUniquePostfix();
 
             //  Данные создаваемого пользователя
             var userDetails = new UserDetails(
@@ -83,7 +83,7 @@ namespace FarvaterWeb.Tests.Users
 
          
 
-            // await Users.CreateDepartmentInUserCard(newDepartmentDetails);
+            await Users.CreateDepartmentInUserCard(newDepartmentDetails);
 
             // Выбор первой должности из списка
 
@@ -92,7 +92,7 @@ namespace FarvaterWeb.Tests.Users
             // Создание и выбор должности
             string positionName = "Тестовая должность {postfix}";
 
-            // await Users.CreatePositionInUserCard(positionName);
+           //  await Users.CreatePositionInUserCard(positionName);
 
      
 

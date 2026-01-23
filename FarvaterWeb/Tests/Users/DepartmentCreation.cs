@@ -35,7 +35,7 @@ namespace FarvaterWeb.Tests.Users
             await Users.ClickCreateDepartmentButton();
 
             // Ввод наименования и кода подразделения
-            string postfix = DataExtensions.GetUniquePostfix();
+            string postfix = DataPostfixExtensions.GetUniquePostfix();
 
             var newDepartmentDetails = new DepartmentDetails(
                Name: $"Тестовое подразделение {postfix}",

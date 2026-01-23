@@ -2,7 +2,7 @@
 
 namespace FarvaterWeb.Extensions
 {
-    public static class DataExtensions
+    public static class DataPostfixExtensions
     {
         // Метод для получения уникального постфикса на основе времени (ддММггЧЧммсс)
         // Он даст строку типа "15011425" (15 января, 14:25)

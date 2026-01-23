@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Compile Include="AllureSetup.cs.txt" />
+    <Compile Include="Components\InputComponentWithLabel.cs.txt" />
   </ItemGroup>
 
   <ItemGroup>

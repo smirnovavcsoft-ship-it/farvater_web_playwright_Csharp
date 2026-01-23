@@ -35,7 +35,8 @@ namespace FarvaterWeb.Pages.Users
 
         private SmartLocator PositionInput => Input.WithText("Введите наименование");
 
-        private SmartLocator DepartmentNameInput => Input.WithText("Введите наименование");
+        //private SmartLocator DepartmentNameInput => Input.WithText("Введите наименование");
+        private SmartLocator DepartmentNameInput => Input.WithLocator(Page.Locator("input[placeholder*='Введите наименование']"), "Наименование");
 
         private SmartLocator DepartmentCodeInput => Input.WithText("Введите код");
 
@@ -156,6 +157,8 @@ namespace FarvaterWeb.Pages.Users
             await DepartmentPlusButton.SafeClickAsync();
             await DepartmentNameInput.ClearAndFillAsync(details.Name);
             await DepartmentCodeInput.ClearAndFillAsync(details.Code);
+            await DepartmentNameInput.AssertTextAsync(details.Name);
+            await DepartmentCodeInput.AssertTextAsync(details.Code);
 
         }
 

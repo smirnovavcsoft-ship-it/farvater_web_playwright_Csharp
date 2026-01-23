@@ -4,6 +4,7 @@ using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
 using System.Xml.Linq;
 using Xunit.Abstractions;
+using FarvaterWeb.Tests;
 
 namespace FarvaterWeb.Tests.Users
 {
@@ -16,6 +17,15 @@ namespace FarvaterWeb.Tests.Users
         string Phone,
         string Email        
         );
+
+    /*public record DepartmentDetails(
+        string Name,
+        string code
+        );*/
+
+    
+
+    
 
     [Collection("AllureCollection")]
     public class UserCreationTests : BaseTest
@@ -65,24 +75,27 @@ namespace FarvaterWeb.Tests.Users
 
             // Создание и выбор подразделения
 
-            await Users.CreateDepartment();
+            //await Users.CreateDepartment();
 
             var newDepartmentDetails = new DepartmentDetails(
                Name: $"Тестовое подразделение {postfix}",
                Code: $"{postfix}"
                );
 
-            await Users.FillDepartmentDetails(newDepartmentDetails);
+            //await Users.FillDepartmentDetails(newDepartmentDetails);
+
+            await Users.CreateDepartmentInUserCard(newDepartmentDetails);
 
             // Выбор первой должности из списка
 
             await Users.SelectFirstPosition();
 
             // Создание и выбор должности
+            string positionName = "Тестовая должность {postfix}";
 
-            await Users.CreatePosition();
+            await Users.CreatePositionInUserCard(positionName);
 
-            await Users.FillPositionName(newDepartmentDetails.Name);
+            //await Users.FillPositionName(newDepartmentDetails.Name);
 
             // Клик по чек-боксу "Является руководителем" и "Имеет право подписи"
 

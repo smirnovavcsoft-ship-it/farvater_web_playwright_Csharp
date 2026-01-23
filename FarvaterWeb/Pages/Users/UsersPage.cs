@@ -33,9 +33,11 @@ namespace FarvaterWeb.Pages.Users
             .WithLocator(Page.Locator("//div[contains(@class, 'employee-select')]")
             .First, "Выбор замещающего сотрудника");
 
-        private SmartLocator PositionInput => Input.WithText("Должность");
+        private SmartLocator PositionInput => Input.WithText("Наименование");
 
-        private SmartLocator Department => Input.WithText("Подразделение");
+        private SmartLocator DepartmentNameInput => Input.WithText("Наименование");
+
+        private SmartLocator DepartmentCodeInput => Input.WithText("Код");
 
         //private SmartLocator DepartmentField => Dropdown.WithLabel("Подразделение");
         //private SmartLocator PositionField => Dropdown.WithLabel("Должность");
@@ -75,12 +77,13 @@ namespace FarvaterWeb.Pages.Users
             await ButtonWithText("Создать должность").SafeClickAsync();
         }
 
-        public async Task ClickCreateDepartmentButton()
+        public async Task CreateDepartmentButton()
         {
             //await DoClickByText("Создать подразделение");
             //Новый метод с расширением
             await ButtonWithText("Создать подразделение").SafeClickAsync();
         }
+
 
         
         public async Task ClickCreateGroupButton()
@@ -147,17 +150,21 @@ namespace FarvaterWeb.Pages.Users
         }
 
 
-        public async Task CreateDepartment()
+        public async Task CreateDepartmentInUserCard(DepartmentDetails details)
         {
             //await DepartmentField.CreateButton.SafeClickAsync();
             await DepartmentPlusButton.SafeClickAsync();
-            //await 
+            await DepartmentNameInput.ClearAndFillAsync(details.Name);
+            await DepartmentCodeInput.ClearAndFillAsync(details.Code);
+
         }
 
-        public async Task CreatePosition()
+        public async Task CreatePositionInUserCard(string departmentName)
         {
             await PositionPlusButton.SafeClickAsync();
+            await PositionDropdown.ClearAndFillAsync(departmentName);
         }
+
 
 
         public async Task FillGroupName(string name)

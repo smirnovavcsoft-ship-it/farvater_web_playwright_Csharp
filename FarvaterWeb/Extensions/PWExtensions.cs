@@ -45,10 +45,15 @@ namespace FarvaterWeb.Extensions
 
         // --- Группа 1: Ввод данных ---
 
-        public static async Task ClearAndFillAsync(this ILocator locator, string value)
+        public static async Task ClearAndFillAsync(this SmartLocator smart, string value)
         {
-            await locator.ClearAsync();
-            await locator.FillAsync(value);
+            string stepName = $"[{smart.ComponentName}] Клик по элементу: {smart.Type} '{smart.Name}'";
+            await smart.Page.Do(stepName, async () =>
+            {
+                await smart.Locator.ClearAsync();
+                await smart.Locator.FillAsync(value);
+            });
+            
         }
 
         public static async Task PressEnterAsync(this ILocator locator)

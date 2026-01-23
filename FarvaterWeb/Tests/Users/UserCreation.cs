@@ -53,10 +53,9 @@ namespace FarvaterWeb.Tests.Users
 
             // Заполнение полей нового пользователя
 
-            // 1. Генерируем один постфикс для всего юзера
-            string postfix = DataExtensions.GetUniquePostfix();
+           string postfix = DataExtensions.GetUniquePostfix();
 
-            // 2. Создаем запись, используя интерполяцию строк $""
+            //  Данные создаваемого пользователя
             var userDetails = new UserDetails(
                 Lastname: "Тестеренко",
                 Name: "Анатолий",
@@ -75,16 +74,16 @@ namespace FarvaterWeb.Tests.Users
 
             // Создание и выбор подразделения
 
-            //await Users.CreateDepartment();
+  
 
             var newDepartmentDetails = new DepartmentDetails(
                Name: $"Тестовое подразделение {postfix}",
                Code: $"{postfix}"
                );
 
-            //await Users.FillDepartmentDetails(newDepartmentDetails);
+         
 
-            await Users.CreateDepartmentInUserCard(newDepartmentDetails);
+            // await Users.CreateDepartmentInUserCard(newDepartmentDetails);
 
             // Выбор первой должности из списка
 
@@ -93,9 +92,9 @@ namespace FarvaterWeb.Tests.Users
             // Создание и выбор должности
             string positionName = "Тестовая должность {postfix}";
 
-            await Users.CreatePositionInUserCard(positionName);
+            // await Users.CreatePositionInUserCard(positionName);
 
-            //await Users.FillPositionName(newDepartmentDetails.Name);
+     
 
             // Клик по чек-боксу "Является руководителем" и "Имеет право подписи"
 

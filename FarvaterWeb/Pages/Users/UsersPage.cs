@@ -33,11 +33,11 @@ namespace FarvaterWeb.Pages.Users
             .WithLocator(Page.Locator("//div[contains(@class, 'employee-select')]")
             .First, "Выбор замещающего сотрудника");
 
-        private SmartLocator PositionInput => Input.WithText("Наименование");
+        private SmartLocator PositionInput => Input.WithText("Введите наименование");
 
-        private SmartLocator DepartmentNameInput => Input.WithText("Наименование");
+        private SmartLocator DepartmentNameInput => Input.WithText("Введите наименование");
 
-        private SmartLocator DepartmentCodeInput => Input.WithText("Код");
+        private SmartLocator DepartmentCodeInput => Input.WithText("Введите код");
 
         //private SmartLocator DepartmentField => Dropdown.WithLabel("Подразделение");
         //private SmartLocator PositionField => Dropdown.WithLabel("Должность");
@@ -77,7 +77,7 @@ namespace FarvaterWeb.Pages.Users
             await ButtonWithText("Создать должность").SafeClickAsync();
         }
 
-        public async Task CreateDepartmentButton()
+        public async Task ClickCreateDepartmentButton()
         {
             //await DoClickByText("Создать подразделение");
             //Новый метод с расширением
@@ -159,10 +159,10 @@ namespace FarvaterWeb.Pages.Users
 
         }
 
-        public async Task CreatePositionInUserCard(string departmentName)
+        public async Task CreatePositionInUserCard(string positionName)
         {
             await PositionPlusButton.SafeClickAsync();
-            await PositionDropdown.ClearAndFillAsync(departmentName);
+            await PositionInput.ClearAndFillAsync(positionName);
         }
 
 
@@ -218,6 +218,7 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task VerifyUserCreated(string userName)
         {
+            await Page.ReloadAsync();
             await AssertTextExists(userName);
         }
 

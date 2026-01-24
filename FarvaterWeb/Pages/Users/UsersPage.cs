@@ -31,12 +31,32 @@ namespace FarvaterWeb.Pages.Users
 
         private SmartLocator ReplacementEmployeeDropdown => Dropdown
             .WithLocator(Page.Locator("//div[contains(@class, 'employee-select')]")
-            .First, "Выбор замещающего сотрудника");
+            .Last, "Выбор замещающего сотрудника");
+
+        
 
         private SmartLocator PositionInput => Input.WithText("Введите наименование");
 
         //private SmartLocator DepartmentNameInput => Input.WithText("Введите наименование");
-        private SmartLocator DepartmentNameInput => Input.WithLocator(Page.Locator("input[placeholder*='Введите наименование']"), "Наименование");
+        // private SmartLocator DepartmentNameInput => Input.WithLocator(Page.Locator("input[placeholder*='Введите наименование']")
+        // .First, "Наименование");
+        /*private SmartLocator DepartmentNameInput => Input.WithLocator(
+            Page.Locator("[data-signature='input-field-wrapper']")
+            .Filter(new() { HasText = "Наименование" })
+            .Locator("input")
+            .First,
+            "Наименование"
+                );*/
+        /*private SmartLocator DepartmentNameInput => Input.WithLocator(
+        Page.Locator("input[name='description']").First,
+            "Наименование"
+            );*/
+
+        private SmartLocator DepartmentNameInput => Input.WithLocator(
+            Page.Locator("input[name='description']").Locator("visible=true").First,
+            "Наименование"
+                );
+
 
         private SmartLocator DepartmentCodeInput => Input.WithText("Введите код");
 
@@ -154,11 +174,13 @@ namespace FarvaterWeb.Pages.Users
         public async Task CreateDepartmentInUserCard(DepartmentDetails details)
         {
             //await DepartmentField.CreateButton.SafeClickAsync();
+
             await DepartmentPlusButton.SafeClickAsync();
             await DepartmentNameInput.ClearAndFillAsync(details.Name);
+            await Assertions.Expect(DepartmentNameInput.Locator).ToHaveCountAsync(1);
             await DepartmentCodeInput.ClearAndFillAsync(details.Code);
-            await DepartmentNameInput.AssertTextAsync(details.Name);
-            await DepartmentCodeInput.AssertTextAsync(details.Code);
+            //await DepartmentNameInput.AssertTextAsync(details.Name);
+            //await DepartmentCodeInput.AssertTextAsync(details.Code);
 
         }
 

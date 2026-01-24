@@ -38,8 +38,11 @@ namespace FarvaterWeb.Extensions
             string stepName = $"[{smart.ComponentName}] Клик по элементу: {smart.Type} '{smart.Name}'";
             await smart.Page.Do(stepName, async () =>
             {
+                await smart.Locator.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                await smart.Locator.ClickAsync(new() { Force = true });
                 await smart.Locator.ClearAsync();
-                await smart.Locator.FillAsync(value);
+                //await smart.Locator.FillAsync(value);
+                await smart.Locator.PressSequentiallyAsync(value, new() { Delay = 50 });
             });
             
         }

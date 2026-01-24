@@ -1,5 +1,6 @@
 ﻿using Microsoft.Playwright;
 using FarvaterWeb.Extensions;
+using System.ComponentModel.Design.Serialization;
 
 namespace FarvaterWeb.Components
 {
@@ -7,10 +8,12 @@ namespace FarvaterWeb.Components
     {
         private readonly IPage _page;
         private readonly string _componentName;
+        private readonly ILocator _root;
 
-        public InputComponent(IPage page, string componentName)
+        public InputComponent(IPage page, string componentName, ILocator root = null)
         {
             _page = page;
+            _root = root ?? page.Locator("html");
             _componentName = componentName;
         }
 

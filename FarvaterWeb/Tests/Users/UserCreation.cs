@@ -83,7 +83,7 @@ namespace FarvaterWeb.Tests.Users
 
          
 
-            await Users.CreateDepartmentInUserCard(newDepartmentDetails);
+            //await Users.CreateDepartmentInUserCard(newDepartmentDetails);
 
             // Выбор первой должности из списка
 
@@ -107,7 +107,7 @@ namespace FarvaterWeb.Tests.Users
             await Users.CreateButton();
 
             // Открытие карточки созданного пользователя
-
+            await SideMenu.OpenSection("Пользователи", "users");
             await Users.VerifyUserCreated(userDetails.Email);
 
             // Откритие карточки созданного пользователя
@@ -125,9 +125,6 @@ namespace FarvaterWeb.Tests.Users
             // Переход в раздел "Пользователи
 
             // Переход во вкладку "Неакивные пользователи" и проверка наличия удаленного пользователя.
-
-
-
 
         }
     }

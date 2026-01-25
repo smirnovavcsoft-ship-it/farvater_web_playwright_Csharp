@@ -243,6 +243,7 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task VerifyUserCreated(string userName)
         {
+
             await Page.ReloadAsync();
             await AssertTextExists(userName);
         }

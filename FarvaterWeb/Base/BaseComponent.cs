@@ -176,18 +176,22 @@ public abstract class BaseComponent
     {
         await Do($"{(state ? "Установка" : "Снятие")} чек-бокса '{label}'", async () =>
         {
-            var checkbox = Page.GetByLabel(label);
+            /*var checkbox = Page.GetByLabel(label);
+             
 
             // 1. Выполняем действие
             if (state)
                 await checkbox.CheckAsync();
             else
-                await checkbox.UncheckAsync();
+                await checkbox.UncheckAsync();*/
+
+            //var checkbox = Checkbox(label);
+            await Checkbox(label).SetAsync(state);
 
             // 2. ПРОВЕРКА (Assertion)
             // Метод ToBeCheckedAsync сам подождет (по умолчанию до 5 сек), 
             // пока чекбокс примет нужное состояние.
-            await Assertions.Expect(checkbox).ToBeCheckedAsync(new() { Checked = state });
+            //await Assertions.Expect(checkbox).ToBeCheckedAsync(new() { Checked = state });
         });
     }
 

@@ -33,6 +33,8 @@ namespace FarvaterWeb.Pages.Users
             .WithLocator(Page.Locator("//div[contains(@class, 'employee-select')]")
             .Last, "Выбор замещающего сотрудника");
 
+        private SmartLocator ResponsiblePersonsSelectionDropdown => Dropdown.WithLabel("Ответственные");
+
         
 
         private SmartLocator PositionInput => Input.WithText("Введите наименование");
@@ -170,6 +172,11 @@ namespace FarvaterWeb.Pages.Users
             await PositionDropdown.SelectByIndexAndVerifyAsync(0);
         }
 
+        public async Task SelectFirstResponsiblePerson()
+        {
+            await ResponsiblePersonsSelectionDropdown.SelectByIndexAndVerifyAsync(0);
+        }
+
 
         public async Task CreateDepartmentInUserCard(DepartmentDetails details)
         {
@@ -194,7 +201,7 @@ namespace FarvaterWeb.Pages.Users
 
         public async Task FillGroupName(string name)
         {
-            await DoFillByLabel("Наименование", name);
+            await DoFillByLabel("Название", name);
         }
 
         public async Task SetPermissions(PermissionDetails permissions)
@@ -230,7 +237,7 @@ namespace FarvaterWeb.Pages.Users
             await DoClickByText("Добавить");
         }*/
 
-        public async Task CreateButton()
+        public async Task ClickCreateButton()
         {
             await ButtonWithText("Создать").SafeClickAsync();
         }
@@ -273,7 +280,7 @@ namespace FarvaterWeb.Pages.Users
             });
         }
 
-        public async Task DeleteDepartment(string departmentName, string departmentCode)
+        public async Task DeleteDepartment(string departmentName)
         {
             string buttonText = "Удалить";
             await Table.DeleteRow(departmentName, buttonText);
@@ -284,6 +291,8 @@ namespace FarvaterWeb.Pages.Users
             string buttonText = "Удалить";
             await Table.DeleteRow(groupName, buttonText);
         }
+
+
 
         /*public async Task SelectDepartmentByNumber( int position)
         {
@@ -312,7 +321,7 @@ namespace FarvaterWeb.Pages.Users
             await Table.Row(email).SafeClickAsync();
         }
 
-        public async Task ClickFireButton()
+        public async Task ClickFireButton1()
         {
             await ButtonWithText("Уволить").SafeClickAsync();
         }
@@ -321,6 +330,11 @@ namespace FarvaterWeb.Pages.Users
         {
             //var replacementPath = Page.Locator("//div[contains(@class, 'employee-select')]").First;
             await ReplacementEmployeeDropdown.SelectByIndexAndVerifyAsync(0);
+        }
+
+        public async Task ClickFireButton2()
+        {
+            await ButtonWithText("Уволить").SafeClickAsync();
         }
            
 

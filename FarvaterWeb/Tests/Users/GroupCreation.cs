@@ -58,11 +58,15 @@ namespace FarvaterWeb.Tests.Users
 
             // Выбор ответственных
 
+            await Users.SelectFirstResponsiblePerson();
 
+            // Клик по кнопке "Создать"
 
-            // Клик по кнопке "Добавить"
+            await Users.ClickCreateButton();
 
             // Удаление созданной группы
+
+            await Users.DeleteGroup(groupName);
         }
     }
 }

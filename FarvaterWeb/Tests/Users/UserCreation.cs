@@ -104,7 +104,7 @@ namespace FarvaterWeb.Tests.Users
 
             // Клик по кнопке "Создать"
 
-            await Users.CreateButton();
+            await Users.ClickCreateButton();
 
             // Открытие карточки созданного пользователя
             await SideMenu.OpenSection("Пользователи", "users");
@@ -116,15 +116,24 @@ namespace FarvaterWeb.Tests.Users
 
             // Клик по кнопке "Уволить"
 
-            //await Users.
+            await Users.ClickFireButton1();
 
             // Выбор сотрудника, которому передаются задачи
 
+            await Users.SelectReplacementEmployee();
+
             //Нажатие кнопки "Уволить"
+
+            await Users.ClickFireButton2();
 
             // Переход в раздел "Пользователи
 
+            await SideMenu.OpenSection("Пользователи", "users");
+
             // Переход во вкладку "Неакивные пользователи" и проверка наличия удаленного пользователя.
+
+            await Users.ClickTab("Неактивные пользователи");
+            await Users.VerifyUserCreated(userDetails.Email);
 
         }
     }

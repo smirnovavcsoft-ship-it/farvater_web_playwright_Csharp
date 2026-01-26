@@ -6,8 +6,9 @@ public class AllureLauncher : IDisposable
 {
     public void Dispose()
     {
+        bool enableAutoReport = false;
         // Этот код сработает ОДИН РАЗ после всех тестов в коллекции
-        if (Environment.GetEnvironmentVariable("CI") == null)
+        if (enableAutoReport && Environment.GetEnvironmentVariable("CI") == null)
         {
             try
             {

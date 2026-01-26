@@ -50,6 +50,8 @@ namespace FarvaterWeb.Tests.Users
 
             // Удаление созданного подразделения
 
+            await Users.DeleteDepartment(newDepartmentDetails.Name);
+
 
 
 

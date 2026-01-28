@@ -113,12 +113,21 @@ public abstract class BaseTest : IAsyncLifetime
         AllureService.StartTest(_allureTestUuid, GetType().Name, GetType().FullName);
 
         var playwright = await Playwright.CreateAsync();
-        Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = false });
+        Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = false,
+            Args = new[] {
+            "--disable-notifications",
+            "--disable-device-discovery-notifications",
+            "--no-sandbox"
+        }
+        });
 
         Context = await Browser.NewContextAsync(new BrowserNewContextOptions
         {
             RecordVideoDir = VideoPath,
-            ViewportSize = new ViewportSize { Width = 1920, Height = 1080 }
+            ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
+            Permissions = new[] { "notifications" } // Авто-отмена запросов на уведомления
         });
 
         Page = await Context.NewPageAsync();
@@ -194,7 +203,7 @@ public abstract class BaseTest : IAsyncLifetime
     {
         Log.Information("[Setup] Начало авторизации под SYSADMIN");
 
-        await Page.GotoAsync("https://farvater.mcad.dev/farvater/");
+         await Page.GotoAsync("https://farvater.mcad.dev/farvater/");
 
         await Page.GetByPlaceholder("Пользователь").FillAsync("SYSADMIN");
         await Page.GetByPlaceholder("Пароль").FillAsync("");

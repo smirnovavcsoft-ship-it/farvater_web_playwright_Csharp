@@ -19,9 +19,9 @@ namespace FarvaterWeb.Pages.Documents
 
         private SmartLocator DocumentTypeDropdown => Dropdown.WithLabel("Тип документа");
 
-        private SmartLocator SummaryInput => Input.WithLabel("Краткое описание");
+        private SmartLocator SummaryInput => Input.WithLabel("Краткое описание*");
 
-        private SmartLocator ProjectDropdown => Dropdown.WithLabel("Проект");
+        private SmartLocator ProjectDropdown => Dropdown.WithText("Проекты");
 
         private SmartLocator SenderDropdown => Dropdown.WithLabel("Отправитель");
 
@@ -35,7 +35,7 @@ namespace FarvaterWeb.Pages.Documents
 
         private SmartLocator CreateButton => ButtonWithText("Создать");
 
-        private SmartLocator CreatedDocumentInAList => 
+        //private SmartLocator CreatedDocumentInAList => Table.ClickActionInRow()
 
         //private SmartLocator PlanningResponseDate =>
 
@@ -91,6 +91,11 @@ namespace FarvaterWeb.Pages.Documents
         {
             await CreateButton.SafeClickAsync();
         }
+
+        /*public async Task OpenCheckAndCloseCreatedDocument()
+        {
+            await 
+        }*/
 
 
 

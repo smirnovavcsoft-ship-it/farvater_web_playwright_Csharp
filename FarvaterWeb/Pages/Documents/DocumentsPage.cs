@@ -19,9 +19,9 @@ namespace FarvaterWeb.Pages.Documents
 
         private SmartLocator DocumentTypeDropdown => Dropdown.WithLabel("Тип документа");
 
-        private SmartLocator SummaryInput => Input.WithLabel("Краткое описание*");
+        private SmartLocator SummaryInput => Input.DescriptionField("Краткое описание *");
 
-        private SmartLocator ProjectDropdown => Dropdown.WithText("Проекты");
+        private SmartLocator ProjectDropdown => Dropdown.WithLabel("Проект");
 
         private SmartLocator SenderDropdown => Dropdown.WithLabel("Отправитель");
 
@@ -64,7 +64,7 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task SelectProject()
         {
-            await ProjectDropdown.SelectByIndexAndVerifyAsync(0);
+            await ProjectDropdown.SelectByIndexAndVerifyAsync(0, isMultiSelect:true);
         }
 
         public async Task SelectSender()

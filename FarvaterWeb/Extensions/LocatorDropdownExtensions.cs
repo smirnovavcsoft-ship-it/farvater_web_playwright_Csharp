@@ -109,7 +109,7 @@ namespace FarvaterWeb.Extensions
             });
         }*/
 
-        public static async Task SelectByIndexAndVerifyAsync(this SmartLocator smart, int index)
+        /*public static async Task SelectByIndexAndVerifyAsync(this SmartLocator smart, int index)
         {
             string stepName = $"[{smart.ComponentName}] Выбор пункта №{index + 1} в {smart.Type} '{smart.Name}'";
 
@@ -148,17 +148,52 @@ namespace FarvaterWeb.Extensions
                 // 6. Проверка текста
                 await Assertions.Expect(smart.Locator).ToContainTextAsync(optionText);
             });
-        }
+        }*/
 
-        // Выбор по тексту (на будущее)
-        public static async Task SelectByTextAndVerifyAsync(this ILocator dropdown, string text)
+        public static async Task SelectByIndexAndVerifyAsync(
+    this SmartLocator smart,
+    int index,
+    bool isMultiSelect = false,
+    string? customVerifyLocator = null)
         {
-            await dropdown.ClickAsync();
+            string stepName = $"[{smart.ComponentName}] Выбор пункта №{index + 1} в {smart.Type} '{smart.Name}'";
 
-            var targetOption = dropdown.Page.GetByRole(AriaRole.Option, new() { Name = text, Exact = true });
-            await targetOption.ClickAsync();
+            await smart.Page.Do(stepName, async () =>
+            {
+                // 1. Открываем дропдаун (Force помогает при нестабильности)
+                await smart.Locator.ClickAsync(new() { Force = true });
 
-            await Assertions.Expect(dropdown).ToContainTextAsync(text);
+                // 2. Находим контейнер списка (Last решает проблему нескольких списков в DOM)
+                var optionsContainer = smart.Page
+                    .Locator("[data-testid='dropdown_list-options']:visible")
+                    .Last;
+
+                await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+                // 3. Получаем текст и кликаем по пункту
+                var targetOption = optionsContainer.Locator("[data-signature='dropdown_list-item']").Nth(index);
+                string optionText = (await targetOption.InnerTextAsync()).Trim();
+
+                await targetOption.ClickAsync(new() { Force = true });
+
+                // 4. Логика для мультиселектора
+                if (isMultiSelect)
+                {
+                    await smart.Page.Keyboard.PressAsync("Escape");
+                    // Ждем закрытия, чтобы не "споткнуться" в следующем шаге
+                    await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                }
+
+                // 5. Проверка результата
+                var verifyLocator = !string.IsNullOrEmpty(customVerifyLocator)
+                    ? smart.Page.Locator(customVerifyLocator)
+                        : isMultiSelect
+                            ? smart.Page.Locator("[data-signature='mutliselect-list']") //локатор выбранного пункта, который появляется ниже выпадающего списка
+                            : smart.Locator;
+
+                await Assertions.Expect(verifyLocator).ToContainTextAsync(optionText);
+            });
         }
+    
     }
 }

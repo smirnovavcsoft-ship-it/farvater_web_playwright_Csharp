@@ -1,13 +1,7 @@
 ﻿using FarvaterWeb.Base;
-using FarvaterWeb.Components;
 using FarvaterWeb.Data;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace FarvaterWeb.Tests.Documents
@@ -90,11 +84,11 @@ namespace FarvaterWeb.Tests.Documents
 
             await Documents.ClickCreateButton();
 
-            // Открытие и закрытие документа в списке
+            // Открытие и закрытие документа в списке (сделать, когда появится пропавший столбец "Описание" с кратким описанием внутри).
 
+            //
 
-
-            // Удаление документа
+            // Удаление документа (сделать, когда появится пропавший столбец "Описание" с кратким описанием внутри)
         }
 
     }

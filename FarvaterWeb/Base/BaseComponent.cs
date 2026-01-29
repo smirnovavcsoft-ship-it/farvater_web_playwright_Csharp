@@ -37,8 +37,9 @@ public abstract class BaseComponent
 
     protected InputComponent Input => new InputComponent(Page, _componentName);
 
-    //protected CheckboxComponent Checkboxes => new CheckboxComponent(Page, _componentName);
+    protected CalendarComponent Date => new CalendarComponent(Page, Log, _test, _componentName);
 
+    
     protected CheckboxComponent Checkbox(string label) => new CheckboxComponent(Page, label, _componentName);
 
     // --- Вспомогательный метод для поиска локаторов внутри компонента ---

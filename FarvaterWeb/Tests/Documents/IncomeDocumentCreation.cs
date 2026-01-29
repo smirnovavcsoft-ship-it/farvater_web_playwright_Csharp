@@ -54,7 +54,9 @@ namespace FarvaterWeb.Tests.Documents
 
             // Выбор планируемой даты ответа
 
+            DateTime date = new DateTime(2026, 02, 05);
 
+            await Documents.AppointPlanningResponseDate(date);
 
             // Заполнение полей документа
 

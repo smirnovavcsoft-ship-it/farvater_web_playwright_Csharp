@@ -11,4 +11,9 @@ namespace FarvaterWeb.Data
         string Summary,
         string SenderNumber
     );
+
+    public record OutcomeDocumentDetails
+        (
+        string Summary
+        );
 }

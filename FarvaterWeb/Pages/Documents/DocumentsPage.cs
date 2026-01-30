@@ -15,11 +15,12 @@ namespace FarvaterWeb.Pages.Documents
 {
     public class DocumentsPage : BasePage
     {
+        // Входящий документ
         private SmartLocator CreateDocumentButton => ButtonWithText("Создать документ");
 
         private SmartLocator DocumentTypeDropdown => Dropdown.WithLabel("Тип документа");
 
-        private SmartLocator SummaryInput => Input.DescriptionField("Краткое описание *");
+        private SmartLocator SummaryInputInIncomeDocument => Input.DescriptionField("Краткое описание *");
 
         private SmartLocator ProjectDropdown => Dropdown.WithLabel("Проект");
 
@@ -34,6 +35,16 @@ namespace FarvaterWeb.Pages.Documents
         private SmartLocator CancelButton => ButtonWithText("Отмена");
 
         private SmartLocator CreateButton => ButtonWithText("Создать");
+
+        // Исходящий документ
+
+        private SmartLocator AdresseesDropdown => Dropdown.WithLabel("Адресаты");
+
+        private SmartLocator SignedByDropdown => Dropdown.WithLabel("Подписал");
+
+        private SmartLocator SummaryInputInOutcomeDocument => Input.WithLabel("Краткое описание");
+
+         
 
         //private SmartLocator CreatedDocumentInAList => Table.ClickActionInRow()
 
@@ -58,8 +69,13 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task FillIncomeDocumetDetails(IncomeDocumentDetails details)
         {
-            await SummaryInput.ClearAndFillAsync(details.Summary);
+            await SummaryInputInIncomeDocument.ClearAndFillAsync(details.Summary);
             await SenderNumberInput.ClearAndFillAsync(details.SenderNumber);
+        }
+
+        public async Task FillSummaryInOutcomeDocument(OutcomeDocumentDetails details)
+        {
+            await SummaryInputInOutcomeDocument.ClearAndFillAsync(details.Summary);
         }
 
         public async Task SelectProject()
@@ -75,6 +91,11 @@ namespace FarvaterWeb.Pages.Documents
         public async Task SelectSender()
         {
             await SenderDropdown.SelectByIndexAndVerifyAsync(0);
+        }
+
+        public async Task SelectAdressee()
+        {
+            await AdresseesDropdown.SelectByIndexAndVerifyAsync(0, customVerifyLocator: "td._table_cell_8wkbu_111");
         }
 
         public async Task SelectSenderSubscriber ()

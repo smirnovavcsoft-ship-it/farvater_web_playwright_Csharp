@@ -18,7 +18,7 @@ namespace FarvaterWeb.Tests.Documents
         }
 
         [Fact(DisplayName ="Проверка успешного создания входящего документа")]
-        public async Task SouldCreateIncomeDocument ()
+        public async Task ShouldCreateIncomeDocument ()
         {
             Log.Information("--- Запуск сценария: Создание входящего документа---");
             await LoginAsAdmin();
@@ -34,7 +34,7 @@ namespace FarvaterWeb.Tests.Documents
 
             await Documents.SelectDocumentType();
 
-            // Заполнение полей документа
+            // Заполнение полей документа 
 
             var incomeDocumentsDetails = new IncomeDocumentDetails("Краткое содержание, краткое содержание", "14645");
 
@@ -54,9 +54,9 @@ namespace FarvaterWeb.Tests.Documents
 
             // Выбор планируемой даты ответа
 
-            DateTime date = new DateTime(2026, 02, 05);
+            //DateTime date = new DateTime(2026, 02, 05);
 
-            await Documents.AppointPlanningResponseDate(date);
+            //await Documents.AppointPlanningResponseDate(date);
 
             // Заполнение полей документа
 

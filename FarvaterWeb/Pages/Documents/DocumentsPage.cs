@@ -48,7 +48,7 @@ namespace FarvaterWeb.Pages.Documents
 
         //private SmartLocator CreatedDocumentInAList => Table.ClickActionInRow()
 
-        private CalendarComponent PlanningResponseDate => new(Page, Log, _test, "Плановая дата ответа");
+        private CalendarComponent PlanningResponseDate => new(Page, Log, _test, "Планируемая дата ответа", GetType().Name);
 
         //private SmartLocator FromDate =>
         public DocumentsPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)

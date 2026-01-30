@@ -13,11 +13,13 @@ namespace FarvaterWeb.Components
     public class CalendarComponent : BaseComponent
     {
         private readonly string _label;
+        private readonly string _pageName;
 
-        public CalendarComponent(IPage page, ILogger logger, ExtentTest test, string label)
+        public CalendarComponent(IPage page, ILogger logger, ExtentTest test, string label, string pageName = "Component")
             : base(page, logger, test)
         {
             _label = label;
+            _pageName = pageName;
         }
 
         // 1. Локатор контейнера инпута (ищем по тексту заголовка внутри сигнатуры)
@@ -31,7 +33,7 @@ namespace FarvaterWeb.Components
 
         public async Task SetDateAsync(DateTime date)
         {
-            await Do($"Установка даты '{date:dd.MM.yyyy}' в поле '{_label}'", async () =>
+            await Do($"[{_pageName}] Установка даты '{date:dd.MM.yyyy}' в поле '{_label}'", async () =>
             {
                 // Открываем календарь кликом
                 await InputField.ClickAsync();

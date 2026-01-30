@@ -13,12 +13,14 @@ namespace FarvaterWeb.Components
 {
     public class SideMenuComponent : BaseComponent
     {
+        private readonly string _pageName;
         private ILocator MenuRoot => Page.Locator("div._sideMenu_viwlf_12");
         
         // Конструктор передает в базу селектор именно бокового меню
-        public SideMenuComponent(IPage page, ILogger logger, ExtentTest test)
+        public SideMenuComponent(IPage page, ILogger logger, ExtentTest test, string pageName = "Component")
         : base(page, logger, test, "Боковое меню")
         {
+            _pageName = pageName;
             
         }
 
@@ -39,7 +41,7 @@ namespace FarvaterWeb.Components
         // Метод действия: клик по пункту
         public async Task ClickItem(string name)
         {
-            await Page.Do($"Клик по пункту меню '{name}'", async () =>
+            await Page.Do($"[{_pageName}] Клик по пункту меню '{name}'", async () =>
             {
                 // Берем наш SmartLocator и вызываем клик
                 // Используем First, чтобы Playwright не ругался на строгость внутри меню

@@ -23,8 +23,11 @@ namespace FarvaterWeb.Components
         }
 
         // 1. Локатор контейнера инпута (ищем по тексту заголовка внутри сигнатуры)
+        /*private ILocator InputContainer => Page.Locator("[data-signature='input-field-wrapper']")
+            .Filter(new() { HasText = _label });*/
+
         private ILocator InputContainer => Page.Locator("[data-signature='input-field-wrapper']")
-            .Filter(new() { HasText = _label });
+            .Filter(new() { Has = Page.GetByText(_label, new() { Exact = true }) });
 
         private ILocator InputField => InputContainer.Locator("[data-signature='input-field-input']");
 

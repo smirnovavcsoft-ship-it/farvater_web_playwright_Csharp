@@ -72,7 +72,9 @@ namespace FarvaterWeb.Tests.Documents
 
             // Выбор даты "От"
 
+            DateTime fromDate = new DateTime(2026, 01, 31);
 
+            await Documents.AppointFromDate(fromDate);
 
             // Выбор "От отправителья подписал"
 

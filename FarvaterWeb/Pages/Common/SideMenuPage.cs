@@ -14,7 +14,7 @@ namespace FarvaterWeb.Pages.Common
         private ILocator UserDropdown => Page.Locator("//div[starts-with(@class, '_user_name_')]");
         private ILocator LogoutItem => Page.Locator("//div[@data-signature='dropdown-menu-item' and .//div[text()='Выйти']]");
 
-        public SideMenuComponent Menu => new SideMenuComponent(Page, Log, _test, pageName);
+        public SideMenuComponent Menu => new SideMenuComponent(Page, Log, _test, GetType().Name);
 
         public SideMenuPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)
         {

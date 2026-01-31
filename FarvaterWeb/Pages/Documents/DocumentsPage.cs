@@ -48,7 +48,9 @@ namespace FarvaterWeb.Pages.Documents
 
         //private SmartLocator CreatedDocumentInAList => Table.ClickActionInRow()
 
-        private CalendarComponent PlanningResponseDate => new(Page, Log, _test, "Планируемая дата ответа", GetType().Name);
+        private CalendarComponent Date (string label) => new(Page, Log, _test, label , GetType().Name);
+
+        //private CalendarComponent FromDate => new()
 
         //private SmartLocator FromDate =>
         public DocumentsPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)
@@ -85,7 +87,12 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task AppointPlanningResponseDate(DateTime date)
         {
-            await PlanningResponseDate.SetDateAsync(date);
+            await Date("Планируемая дата ответа").SetDateAsync(date);
+        }
+
+        public async Task AppointFromDate(DateTime date)
+        {
+            await Date("От").SetDateAsync(date);
         }
 
         public async Task SelectSender()

@@ -1,12 +1,13 @@
-﻿using System.IO;
-using Microsoft.Playwright;
-using Xunit;
-using Serilog;
-using Xunit.Abstractions;
+﻿using Allure.Net.Commons;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
-using Allure.Net.Commons;
+using Microsoft.Playwright;
+using Serilog;
+using System.IO;
+using Xunit;
+using Xunit.Abstractions;
 using AllureStatus = Allure.Net.Commons.Status; // Алиас для разрешения конфликта
+using FarvaterWeb.Configuration;
 
 namespace FarvaterWeb.Base;
 
@@ -115,11 +116,12 @@ public abstract class BaseTest : IAsyncLifetime
         var playwright = await Playwright.CreateAsync();
         Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            Headless = false,
+            Headless = ConfigurationReader.Headless,
             Args = new[] {
             "--disable-notifications",
             "--disable-device-discovery-notifications",
-            "--no-sandbox"
+            "--no-sandbox",
+            "--disable-setuid-sandbox"
         }
         });
 
@@ -203,7 +205,7 @@ public abstract class BaseTest : IAsyncLifetime
     {
         Log.Information("[Setup] Начало авторизации под SYSADMIN");
 
-         await Page.GotoAsync("https://farvater.mcad.dev/farvater/");
+         await Page.GotoAsync(ConfigurationReader.BaseUrl);
 
         await Page.GetByPlaceholder("Пользователь").FillAsync("SYSADMIN");
         await Page.GetByPlaceholder("Пароль").FillAsync("");

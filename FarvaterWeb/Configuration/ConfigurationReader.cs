@@ -18,6 +18,7 @@ namespace FarvaterWeb.Configuration
                 //.SetBasePath(Directory.GetCurrentDirectory())
                 // Добавляем appsettings.json; optional: false означает, что файл обязателен
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables()
                 .Build();
         }
 

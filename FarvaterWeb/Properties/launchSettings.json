@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FarvaterWeb": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "PlaywrightSettings__BaseUrl": "https://google.com"
+      }
+    }
+  }
+}

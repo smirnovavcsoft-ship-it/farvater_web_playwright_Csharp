@@ -9,14 +9,11 @@ public static class AllureService
 {
     public static bool IsEnabled { get; set; } = true;
 
-    // Возвращаем StartTest, который требует BaseTest
     public static void StartTest(string uuid, string name, string fullName = "")
     {
         if (!IsEnabled) return;
         try
         {
-            // Используем AllureApi для запуска (если версия позволяет) 
-            // или стандартный Lifecycle для управления контейнером
             var testResult = new TestResult
             {
                 uuid = uuid,
@@ -26,10 +23,9 @@ public static class AllureService
             };
             AllureLifecycle.Instance.StartTestCase(testResult);
         }
-        catch { /* Контекст может быть уже запущен адаптером xUnit */ }
+        catch {          }
     }
 
-    // Тот самый рабочий AddAttachment через Api
     public static void AddAttachment(string name, string path)
     {
         if (IsEnabled && File.Exists(path))
@@ -54,7 +50,7 @@ public static class AllureService
         }
         catch
         {
-            await action(); // Если Allure упал, тест должен продолжаться
+            await action();       
         }
     }
 
@@ -62,11 +58,9 @@ public static class AllureService
     {
         if (!IsEnabled) return await action();
 
-        // AllureApi.Step имеет встроенную поддержку возвращаемых значений
         return await AllureApi.Step(name, action);
     }
 
-    // Возвращаем Finish, который требует BaseTest
     public static void Finish(bool failed)
     {
         if (!IsEnabled) return;

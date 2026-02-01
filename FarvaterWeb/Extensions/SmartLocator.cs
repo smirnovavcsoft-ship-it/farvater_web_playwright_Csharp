@@ -5,10 +5,9 @@ public class SmartLocator
     public ILocator Locator { get; }
     public string Name { get; }
 
-    // Меняем private поля на public свойства, чтобы расширения их видели
     public IPage Page { get; }
     public string ComponentName { get; }
-    public string Type { get; } // Это то, что раньше было _elementType
+    public string Type { get; }       
 
     public SmartLocator(ILocator locator, string name, string elementType, string componentName, IPage page)
     {

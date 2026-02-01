@@ -13,7 +13,6 @@ namespace FarvaterWeb.Components
         public ModalDialogComponent(IPage page, ILogger logger, ExtentTest test)
             : base(page, logger, test) { }
 
-        // Находим кнопку внутри модалки по тексту
         public SmartLocator Button(string text)
         {
             var locator = ModalDialogRoot
@@ -23,7 +22,6 @@ namespace FarvaterWeb.Components
             return new SmartLocator(locator, text, "Кнопка", _componentName, Page);
         }
 
-        // Находим инпут по его лейблу (Наименование, Код и т.д.)
         public ILocator GetInput(string labelText)
         {
             return ModalDialogRoot
@@ -37,7 +35,6 @@ namespace FarvaterWeb.Components
             await Do($"Нажатие кнопки '{text}'", async () =>
             {
                 await Button(text).Locator.ClickAsync();
-                // Если кнопка закрывает окно (Добавить/Отмена), ждем исчезновения
                 if (text == "Добавить" || text == "Отмена")
                 {
                     await ModalDialogRoot.WaitForAsync(new() { State = WaitForSelectorState.Hidden });

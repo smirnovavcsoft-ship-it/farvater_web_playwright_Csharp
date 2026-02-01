@@ -4,12 +4,9 @@ namespace FarvaterWeb.Extensions
 {
     public static class DataPostfixExtensions
     {
-        // Метод для получения уникального постфикса на основе времени (ддММггЧЧммсс)
-        // Он даст строку типа "15011425" (15 января, 14:25)
         public static string GetUniquePostfix()
-            => DateTime.Now.ToString("ddHHmm"); //если будут нужны секунды сделать "ddHHmmss"
+            => DateTime.Now.ToString("ddHHmm");      
 
-        // Метод для генерации случайного числа заданной длины
         public static string GetRandomDigits(int length)
         {
             var random = new Random();

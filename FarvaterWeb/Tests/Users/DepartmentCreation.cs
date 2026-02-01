@@ -26,15 +26,10 @@ namespace FarvaterWeb.Tests.Users
             await LoginAsAdmin();
             await SideMenu.OpenSection("Пользователи", "users");
 
-            // Клик по вкладке "Подразделения"
-
             await Users.ClickTab("Подразделения");
-
-            // Клик по кнопке "Создать подразделение"
 
             await Users.ClickCreateDepartmentButton();
 
-            // Ввод наименования и кода подразделения
             string postfix = DataPostfixExtensions.GetUniquePostfix();
 
             var newDepartmentDetails = new DepartmentDetails(
@@ -44,11 +39,7 @@ namespace FarvaterWeb.Tests.Users
 
             await Users.FillDepartmentDetails(newDepartmentDetails);
 
-            // Клик по кнопке "Добавить"
-
             await Users.ClickAddButton();
-
-            // Удаление созданного подразделения
 
             await Users.DeleteDepartment(newDepartmentDetails.Name);
 

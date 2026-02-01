@@ -21,66 +21,32 @@ namespace FarvaterWeb.Tests.Documents
             await LoginAsAdmin();
             await SideMenu.OpenSection("Исходящие", "outcome");
 
-            // Клик по кнопке "Создать документ"
-
             await Documents.ClickCreateDocumentButton();
-
-            // Ввести текст в краткое описание
 
             var outcomedocumentDetails = new OutcomeDocumentDetails("Кратакое описание краткое описание");
 
             await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
 
-            // Выбор адресата
-
             await Documents.SelectAdressee();
-
-            // Выбор исполнителя
 
             await Documents.SelectPerformer();
 
-            // Нажатие кнопки "Отмена"
-
             await Documents.ClickCancelButton();
-
-            // Проверка несоздания документа (сейчас не сделать, потому что нет краткого описания документа в столбце описания, поэтому не к чему прицепиться)
-
-            // Клик по кнопке "Создать документ"
 
             await Documents.ClickCreateDocumentButton();
 
 
-            // Ввести текст в краткое описание
-
             await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
-
-            // Выбор адресата
 
             await Documents.SelectAdressee();
 
-            // Выбор исполнителя
-
             await Documents.SelectPerformer();
 
-            // Заполнение полей адресата (пока не буду здесь заполнять, потому что какая-то таблица, которой возможно больше нигде не будет, если где-то встречу такую-же, то напишу)
-
-            // Выбор проекта 
-
             await Documents.SelectProject();
 
-            // Выбор пользователя в поле "Подписал"
-
             await Documents.SelectProject();
-
-            // Нажатие кнопки "Создать"
 
             await Documents.ClickCreateButton();
-
-            // Обновление страницы и проверка создания документа в списке (пока не сделать из-за отсутствия краткого описания в списке)
-
-            // Удаление документа (пока не сделать из-за отсутствия краткого описания в списке)
-
-            // Обмновление страницы и проверка отсутствия документа (пока не сделать из-за отсутствия краткого описания в списке)
 
 
         }

@@ -18,11 +18,6 @@ namespace FarvaterWeb.Tests.Users
         string Email        
         );
 
-    /*public record DepartmentDetails(
-        string Name,
-        string code
-        );*/
-
     
 
     
@@ -44,18 +39,11 @@ namespace FarvaterWeb.Tests.Users
             await LoginAsAdmin();
             await SideMenu.OpenSection("Пользователи", "users");
 
-            // Клик по вкладке "Пользователи"
-
             await Users.ClickUsersTab();
-            // Клик по кнопке "Добавить пользователя"
-
             await Users.ClickAddUser();
-
-            // Заполнение полей нового пользователя
 
            string postfix = DataPostfixExtensions.GetUniquePostfix();
 
-            //  Данные создаваемого пользователя
             var userDetails = new UserDetails(
                 Lastname: "Тестеренко",
                 Name: "Анатолий",
@@ -68,11 +56,7 @@ namespace FarvaterWeb.Tests.Users
 
             await Users.FillUserDetails(userDetails);
 
-            // Выбор первого подразделения из списка
-
             await Users.SelectFirstDepartment();
-
-            // Создание и выбор подразделения
 
   
 
@@ -83,54 +67,30 @@ namespace FarvaterWeb.Tests.Users
 
          
 
-            //await Users.CreateDepartmentInUserCard(newDepartmentDetails);
-
-            // Выбор первой должности из списка
-
             await Users.SelectFirstPosition();
 
-            // Создание и выбор должности
             string positionName = "Тестовая должность {postfix}";
 
-           //  await Users.CreatePositionInUserCard(positionName);
-
      
-
-            // Клик по чек-боксу "Является руководителем" и "Имеет право подписи"
 
             await Users.IsABoss();
 
             await Users.HaveARightToSign();
 
-            // Клик по кнопке "Создать"
-
             await Users.ClickCreateButton();
 
-            // Открытие карточки созданного пользователя
             await SideMenu.OpenSection("Пользователи", "users");
             await Users.VerifyUserCreated(userDetails.Email);
 
-            // Откритие карточки созданного пользователя
-
             await Users.OpenUserCard(userDetails.Email);
-
-            // Клик по кнопке "Уволить"
 
             await Users.ClickFireButton1();
 
-            // Выбор сотрудника, которому передаются задачи
-
             await Users.SelectReplacementEmployee();
-
-            //Нажатие кнопки "Уволить"
 
             await Users.ClickFireButton2();
 
-            // Переход в раздел "Пользователи
-
             await SideMenu.OpenSection("Пользователи", "users");
-
-            // Переход во вкладку "Неакивные пользователи" и проверка наличия удаленного пользователя.
 
             await Users.ClickTab("Неактивные пользователи");
             await Users.VerifyUserCreated(userDetails.Email);

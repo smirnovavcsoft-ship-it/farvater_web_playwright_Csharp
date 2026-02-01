@@ -2,7 +2,7 @@
 using Microsoft.Playwright;
 using Serilog;
 using AventStack.ExtentReports;
-using FarvaterWeb.Extensions; // Важно для работы SmartLocator и SafeClickAsync
+using FarvaterWeb.Extensions;       
 
 namespace FarvaterWeb.Components
 {
@@ -12,8 +12,6 @@ namespace FarvaterWeb.Components
             : base(page, logger, test, "Table")
         {
         }
-
-        // --- СТАРЫЕ МЕТОДЫ (Оставляем как есть) ---
 
         public async Task ClickActionInRow(string rowText, string actionSelector, string actionName)
         {
@@ -41,21 +39,12 @@ namespace FarvaterWeb.Components
             if (await confirmBtn.IsVisibleAsync()) await confirmBtn.ClickAsync();
         }
 
-        // --- НОВЫЕ МЕТОДЫ (Для гибкости и цепочек) ---
-
-        /// <summary>
-        /// Возвращает SmartLocator для всей строки. 
-        /// Позволяет делать Grid.Row("Имя").SafeClickAsync()
-        /// </summary>
         public SmartLocator Row(string rowText)
         {
             var locator = Page.Locator("tr").Filter(new() { HasText = rowText }).First;
             return new SmartLocator(locator, rowText, "Строка таблицы", _componentName, Page);
         }
 
-        /// <summary>
-        /// Позволяет найти любой элемент внутри строки и вернуть его как SmartLocator
-        /// </summary>
         public SmartLocator ControlInRow(string rowText, string selector, string elementName)
         {
             var locator = Page.Locator("tr")
@@ -66,11 +55,9 @@ namespace FarvaterWeb.Components
             return new SmartLocator(locator, $"{elementName} в строке '{rowText}'", "Элемент таблицы", _componentName, Page);
         }
 
-        // 1. Создаем готовый метод для удаления (селектор спрятан здесь)
         public SmartLocator DeleteButton(string rowText) =>
             ControlInRow(rowText, "div[class*='menuItemDelete']", "Удалить");
 
-        // 2. Создаем метод для редактирования (если селектор известен)
         public SmartLocator EditButton(string rowText) =>
             ControlInRow(rowText, "button.edit-action", "Редактировать");
     }

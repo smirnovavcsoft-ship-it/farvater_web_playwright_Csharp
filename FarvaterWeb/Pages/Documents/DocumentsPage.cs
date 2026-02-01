@@ -15,7 +15,6 @@ namespace FarvaterWeb.Pages.Documents
 {
     public class DocumentsPage : BasePage
     {
-        // Входящий документ
         private SmartLocator CreateDocumentButton => ButtonWithText("Создать документ");
 
         private SmartLocator DocumentTypeDropdown => Dropdown.WithLabel("Тип документа");
@@ -36,8 +35,6 @@ namespace FarvaterWeb.Pages.Documents
 
         private SmartLocator CreateButton => ButtonWithText("Создать");
 
-        // Исходящий документ
-
         private SmartLocator AdresseesDropdown => Dropdown.WithLabel("Адресаты");
 
         private SmartLocator SignedByDropdown => Dropdown.WithLabel("Подписал");
@@ -46,18 +43,11 @@ namespace FarvaterWeb.Pages.Documents
 
          
 
-        //private SmartLocator CreatedDocumentInAList => Table.ClickActionInRow()
-
         private CalendarComponent Date (string label) => new(Page, Log, _test, label , GetType().Name);
 
-        //private CalendarComponent FromDate => new()
-
-        //private SmartLocator FromDate =>
         public DocumentsPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)
         {
         }
-
-        // Входящие документы
 
         public async Task ClickCreateDocumentButton()
         {
@@ -124,11 +114,6 @@ namespace FarvaterWeb.Pages.Documents
         {
             await CreateButton.SafeClickAsync();
         }
-
-        /*public async Task OpenCheckAndCloseCreatedDocument()
-        {
-            await 
-        }*/
 
 
 

@@ -15,8 +15,6 @@ namespace FarvaterWeb.Tests.Users
     [Collection("AllureCollection")]
     public class PositionCreationTests : BaseTest
     {        
-        //private readonly SideMenuPage _sideMenuPage;
-        //private readonly UsersPage _usersPage;
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
         private UsersPage Users => new UsersPage(Page, Log, _test);
 
@@ -24,12 +22,9 @@ namespace FarvaterWeb.Tests.Users
 
         public PositionCreationTests(ITestOutputHelper output) : base(output)
         {
-            //_sideMenuPage = new SideMenuPage(Page, Log, _test);
-            //_usersPage = new UsersPage(Page, Log, _test);
-
         }
         [AllureOwner("AlexanderSmirnov")]
-        [AllureSuite("Пользователи")] // Это будет главная папка в отчете
+        [AllureSuite("Пользователи")]       
         [AllureSubSuite("Должности")]
         [Fact(DisplayName = "Проверка успешного создания новой должности")]
         public async Task SouldCreateNewPosition()
@@ -43,15 +38,9 @@ namespace FarvaterWeb.Tests.Users
                 await LoginAsAdmin();
                 await SideMenu.OpenSection("Пользователи", "users");
 
-                // Клик по вкладке "Должности"
-
                 await Users.ClickTab("Должности");
 
-                // Клик по кнопке "Создать должность"
-
                 await Users.ClickCreatePositionButton();
-
-                // Ввод наименования должности
 
                 string postfix = DataPostfixExtensions.GetUniquePostfix();
 
@@ -59,28 +48,16 @@ namespace FarvaterWeb.Tests.Users
 
                 await Users.FillPositionName(positionName);
 
-                // Клик по кнопке "Отмена" и проверка создания должности
-
                 await Users.CancelAndVerify(positionName);
 
 
-                // Клик по кнопке "Создать должность"
-
                 await Users.ClickCreatePositionButton();
-
-                // Ввод наименования должности
 
                 await Users.FillPositionName(positionName);
 
-                // Клик по кнопке "Добавить"
-
                 await Users.ClickAddButton();
 
-                // Проверка наличия созданно должности на странице
-
                 await Users.VerifyPositionCreated(positionName);
-
-                // Удаление должности
 
                 await Users.DeletePosition(positionName);
 
@@ -92,9 +69,8 @@ namespace FarvaterWeb.Tests.Users
             }
             catch (Exception ex)
             {
-                // Передаем текст ошибки прямо в отчет перед тем, как «уронить» тест для xUnit
                 _test.Fail($"<b>Критическая ошибка:</b> {ex.Message}<br>StackTrace: {ex.StackTrace}");
-                throw; // Пробрасываем ошибку дальше, чтобы xUnit пометил тест красным
+                throw;         
             }
 
         }

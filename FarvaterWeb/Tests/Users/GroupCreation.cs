@@ -29,22 +29,14 @@ namespace FarvaterWeb.Tests.Users
             await LoginAsAdmin();
             await SideMenu.OpenSection("Пользователи", "users");
 
-            // Клик по вкладке "Группы"
-
             await Users.ClickTab("Группы");
 
-            // Клик по кнопке "Создать группу"
-
             await Users.ClickCreateGroupButton();
-
-            // Ввод наименования группы
 
             string groupName = "Тестировщики";
 
             await Users.FillGroupName(groupName);
 
-
-            // Клик на чек-боксы
 
             var permissionDetails = new PermissionDetails(
                     IsAdmin: true,
@@ -56,15 +48,9 @@ namespace FarvaterWeb.Tests.Users
 
             await Users.SetPermissions(permissionDetails);
 
-            // Выбор ответственных
-
             await Users.SelectFirstResponsiblePerson();
 
-            // Клик по кнопке "Создать"
-
             await Users.ClickCreateButton();
-
-            // Удаление созданной группы
 
             await Users.DeleteGroup(groupName);
         }

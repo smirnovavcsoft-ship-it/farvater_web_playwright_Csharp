@@ -16,4 +16,14 @@ namespace FarvaterWeb.Data
         (
         string Summary
         );
+
+    public record ContractDetails
+        (
+        string ContractSubject,
+        string Party1Name,
+        string Party2Name,
+        string Cost,
+        string WithNDS,
+        string TotalCost
+        );
 }

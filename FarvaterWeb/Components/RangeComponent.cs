@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace FarvaterWeb.Components
 {
-    public class CalendarComponent : BaseComponent
+    public class RangeComponent : BaseComponent
     {
         private readonly string _label;
         private readonly string _pageName;
 
-        public CalendarComponent(IPage page, ILogger logger, ExtentTest test, string label, string pageName = "Component")
+        public RangeComponent(IPage page, ILogger logger, ExtentTest test, string label, string pageName = "Component")
             : base(page, logger, test)
         {
             _label = label;
@@ -89,3 +89,4 @@ namespace FarvaterWeb.Components
         }
     }
 }
+

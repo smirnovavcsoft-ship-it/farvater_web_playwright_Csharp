@@ -39,6 +39,8 @@ public abstract class BaseComponent
 
     protected DateComponent Date => new DateComponent(Page, Log, _test, _componentName);
 
+    protected RangeComponent Range => new RangeComponent(Page, Log, _test, _componentName);
+
     
     protected CheckboxComponent Checkbox(string label) => new CheckboxComponent(Page, label, _componentName);
 

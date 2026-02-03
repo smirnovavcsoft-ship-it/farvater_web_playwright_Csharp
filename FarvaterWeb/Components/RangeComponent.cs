@@ -36,15 +36,15 @@ namespace FarvaterWeb.Components
 
         //private ILocator RightCalendarPopup => Page.Locator(".react-datepicker");
 
-        public async Task SetDateAsync(ILocator calendarPopup, DateTime date)
+        private async Task SetDateAsync(ILocator calendarPopup, DateTime date)
         {
             await Do($"[{_pageName}] Установка даты '{date:dd.MM.yyyy}' в поле '{_label}'", async () =>
             {
                 // Открываем календарь кликом
-                //await InputField.ClickAsync();
+                await InputField.ClickAsync();
 
                 // Ждем появления окна
-                //await Assertions.Expect(CalendarPopup).ToBeVisibleAsync();
+                await Assertions.Expect(CalendarPopup).ToBeVisibleAsync();
 
                 // Вместо того чтобы мучаться с кнопками «Вперед/Назад», 
                 // используем то, что разработчики дали нам <select> для месяца и <input> для года
@@ -61,28 +61,28 @@ namespace FarvaterWeb.Components
                 var daySelector = $".react-datepicker__day--0{date.Day:D2}:not(.react-datepicker__day--outside-month)";
                 await calendarPopup.Locator(daySelector).First.ClickAsync();
 
+                await Page.Keyboard.PressAsync("Escape");
+
                 // Проверяем, что календарь закрылся
-                //await Assertions.Expect(CalendarPopup).ToBeHiddenAsync();
+                await Assertions.Expect(CalendarPopup).ToBeHiddenAsync();
             });
         }
 
-        public async Task SetStartDateAsync(DateTime startDate)
+        public async Task SetStartDateAsync( DateTime startDate)
         {
-
-            await InputField.ClickAsync();
-            await Assertions.Expect(CalendarPopup).ToBeVisibleAsync();
-            await SetDateAsync(startDate);
+            ILocator calendarPopup = CalendarPopup.First;                        
+            await SetDateAsync(calendarPopup, startDate);
         }
 
-        public async Task SetEndDateAsync(DateTime endDate)
+        public async Task SetEndDateAsync( DateTime endDate)
         {
-            await SetDateAsync(endDate);
-            await Assertions.Expect(CalendarPopup).ToBeHiddenAsync();
+            ILocator calendarPopup = CalendarPopup.Last; // Здесь нужно вписать Last
+            await SetDateAsync(calendarPopup, endDate);            
         }
 
-        public async Task SetTodayAsync()
+        private async Task SetTodayAsync(ILocator calendarPopup)
         {
-            await Do($"Установка сегодняшней даты в поле '{_label}'", async () =>
+            await Do($"[{_pageName}] Установка сегодняшней даты в поле '{_label}'", async () =>
             {
                 // 1. Открываем календарь
                 await InputField.ClickAsync();
@@ -103,6 +103,20 @@ namespace FarvaterWeb.Components
                 await Assertions.Expect(InputField).ToHaveValueAsync(todayStr);
             });
         }
+
+        public async Task SetStartTodayAsync()
+        {
+            ILocator calendarPopup = CalendarPopup.First;
+            await SetTodayAsync(calendarPopup);
+        }
+
+        public async Task SetEndTodayAsync()
+        {
+            ILocator calendarPopup = CalendarPopup.Last;
+            await SetTodayAsync(calendarPopup);
+        }
+
+
     }
 }
 

@@ -20,7 +20,7 @@ namespace FarvaterWeb.Tests.Documents
         {
             Log.Information("--- Запуск сценария: Создание договора---");
             await LoginAsAdmin();
-            await SideMenu.OpenSection("Входящие", "income");
+            await SideMenu.OpenSection("Договоры", "contracts");
 
             // Клик по кнопке "Создать договор"
 
@@ -38,15 +38,27 @@ namespace FarvaterWeb.Tests.Documents
                 "514416541"
                 );
 
-            await Documents.FillContractDetails( contractDetails );
+            // await Documents.FillContractDetails( contractDetails );
 
             // Выбор типа договора
 
+            await Documents.SelectContractType();
+
             // Выбор стороны 1 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
+
+            await Documents.SelectParty1();
 
             // Выбор стороны 2 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
+            await Documents.SelectParty2();
+
             // Назначение сроков по договору
+
+            DateTime startDate = new DateTime(2026, 02, 03);
+
+            DateTime endDate = new DateTime(2026, 03, 03);
+
+            await Documents.AppointContractTerm(startDate, endDate);
 
             // Нажатие кнопки "Отмена"
 

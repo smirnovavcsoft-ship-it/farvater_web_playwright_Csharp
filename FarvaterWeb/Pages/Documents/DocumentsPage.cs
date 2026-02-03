@@ -77,6 +77,8 @@ namespace FarvaterWeb.Pages.Documents
 
         private DateComponent Date (string label) => new(Page, Log, _test, label , GetType().Name);
 
+        private RangeComponent Range (string label) => new(Page, Log, _test, label, GetType().Name);
+
        
         public DocumentsPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)
         {
@@ -189,11 +191,17 @@ namespace FarvaterWeb.Pages.Documents
             await Party2Dropdown.SelectByIndexAndVerifyAsync(1);
         }
 
+        public async Task AppointContractTerm(DateTime startDate, DateTime endDate)
+        {
+            await Range("Сроки по договору").SetStartDateAsync(startDate);
+            await Range("Сроки по договору").SetEndDateAsync(endDate);
+        }
 
 
 
 
-        
+
+
 
     }
 }

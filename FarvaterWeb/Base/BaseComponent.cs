@@ -37,7 +37,7 @@ public abstract class BaseComponent
 
     protected InputComponent Input => new InputComponent(Page, _componentName);
 
-    protected CalendarComponent Date => new CalendarComponent(Page, Log, _test, _componentName);
+    protected DateComponent Date => new DateComponent(Page, Log, _test, _componentName);
 
     
     protected CheckboxComponent Checkbox(string label) => new CheckboxComponent(Page, label, _componentName);

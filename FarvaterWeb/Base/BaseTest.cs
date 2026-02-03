@@ -1,18 +1,22 @@
 ﻿using Allure.Net.Commons;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
+using FarvaterWeb.Configuration;
+using FarvaterWeb.Services;
 using Microsoft.Playwright;
 using Serilog;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 using AllureStatus = Allure.Net.Commons.Status; // Алиас для разрешения конфликта
-using FarvaterWeb.Configuration;
 
 namespace FarvaterWeb.Base;
 
 public abstract class BaseTest : IAsyncLifetime
 {
+    protected IPlaywright PlaywrightInstance;
+    protected IAPIRequestContext ApiRequest;
+    protected ApiService Api;
     //protected AllureLifecycle Allure => AllureLifecycle.Instance;
 
     private static readonly string ProjectRoot =
@@ -135,19 +139,33 @@ public abstract class BaseTest : IAsyncLifetime
         Page = await Context.NewPageAsync();
 
         Log.Information("--- Начало теста: {TestName} ---", GetType().Name);
+
+        PlaywrightInstance = await Playwright.CreateAsync();
+
+        ApiRequest = await PlaywrightInstance.APIRequest.NewContextAsync(new()
+        {
+            BaseURL = "http://твой-адрес-фарватера.ru/",
+            // Сюда можно добавить дефолтные заголовки
+            ExtraHTTPHeaders = new Dictionary<string, string>
+            {
+                { "Accept", "application/json" }
+            }
+        });
+
+        Api = new ApiService(ApiRequest);
     }
 
     protected async Task Step(string name, Func<Task> action)
     {
-        await AllureService.Step(name, action);
+      await AllureService.Step(name, action);
     }
 
     public async Task DisposeAsync()
     {
-        string? videoPath = null;
+            string? videoPath = null;
 
-        try
-        {
+            try
+            {
             // 1. Обработка скриншота при падении
             if (_testFailed && Page != null)
             {
@@ -168,13 +186,13 @@ public abstract class BaseTest : IAsyncLifetime
             {
                 videoPath = await Page.Video.PathAsync();
             }
-        }
-        catch (Exception ex)
-        {
-            Log.Error("[Dispose] Ошибка при сохранении артефактов: {Msg}", ex.Message);
-        }
-        finally
-        {
+            }
+            catch (Exception ex)
+            {
+                Log.Error("[Dispose] Ошибка при сохранении артефактов: {Msg}", ex.Message);
+            }
+            finally
+            {
             // 3. Закрываем браузер (нужно для финализации видеофайла)
             if (Page != null) await Page.CloseAsync();
             if (Context != null) await Context.DisposeAsync();
@@ -193,6 +211,9 @@ public abstract class BaseTest : IAsyncLifetime
 
             Log.Information("--- Завершение работы браузера ---");
         }
+
+        if (ApiRequest != null) await ApiRequest.DisposeAsync();
+        if (PlaywrightInstance != null) PlaywrightInstance.Dispose();
     }
 
     protected void MarkTestAsPassed()

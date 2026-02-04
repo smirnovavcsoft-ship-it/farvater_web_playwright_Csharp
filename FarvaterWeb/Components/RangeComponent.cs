@@ -26,25 +26,34 @@ namespace FarvaterWeb.Components
         /*private ILocator InputContainer => Page.Locator("[data-signature='input-field-wrapper']")
             .Filter(new() { HasText = _label });*/
 
-        private ILocator InputContainer => Page.Locator("[data-signature='input-field-wrapper']")
-            .Filter(new() { Has = Page.GetByText(_label, new() { Exact = true }) });
+        /*private ILocator InputContainer => Page.Locator("[data-signature='input-field-wrapper']")
+            .Filter(new() { Has = Page.GetByText(_label, new() { Exact = true }) });*/
 
-        private ILocator InputField => InputContainer.Locator("[data-signature='dateRange']");
+        private ILocator InputContainer => Page.Locator("[data-signature='input-field-wrapper']")
+            .Filter(new() { Has = Page.GetByText(_label) });
+
+        // private ILocator InputField => InputContainer.Locator("[data-signature='dateRange']");
+
+        private ILocator InputField => InputContainer.Locator("[data-testid='dateRange']");
 
         // 2. Локатор самого всплывающего календаря (он обычно вне контейнера инпута)
         private ILocator CalendarPopup => Page.Locator(".react-datepicker");
 
-        //private ILocator RightCalendarPopup => Page.Locator(".react-datepicker");
+        
 
         private async Task SetDateAsync(ILocator calendarPopup, DateTime date)
         {
             await Do($"[{_pageName}] Установка даты '{date:dd.MM.yyyy}' в поле '{_label}'", async () =>
             {
+                if (!await CalendarPopup.IsVisibleAsync())
+                {
+                    await InputField.ClickAsync();
+                }
                 // Открываем календарь кликом
-                await InputField.ClickAsync();
+                //await InputField.ClickAsync();
 
                 // Ждем появления окна
-                await Assertions.Expect(CalendarPopup).ToBeVisibleAsync();
+                //await Assertions.Expect(CalendarPopup).ToBeVisibleAsync();
 
                 // Вместо того чтобы мучаться с кнопками «Вперед/Назад», 
                 // используем то, что разработчики дали нам <select> для месяца и <input> для года

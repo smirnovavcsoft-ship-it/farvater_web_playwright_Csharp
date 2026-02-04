@@ -3,11 +3,13 @@ using FarvaterWeb.Base;
 using FarvaterWeb.Components;
 using FarvaterWeb.Data;
 using FarvaterWeb.Extensions;
+using FarvaterWeb.Services;
 using FarvaterWeb.Tests.Counterparty;
 using FarvaterWeb.Tests.Users;
 using HarmonyLib;
 using Microsoft.Playwright;
 using Serilog;
+using Serilog.Core;
 using System.Drawing.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Web;
@@ -79,9 +81,12 @@ namespace FarvaterWeb.Pages.Documents
 
         private RangeComponent Range (string label) => new(Page, Log, _test, label, GetType().Name);
 
-       
+        
+
+
         public DocumentsPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)
         {
+            
         }
 
         // Входящие документы
@@ -195,6 +200,38 @@ namespace FarvaterWeb.Pages.Documents
         {
             await Range("Сроки по договору").SetStartDateAsync(startDate);
             await Range("Сроки по договору").SetEndDateAsync(endDate);
+        }
+
+        public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
+        {
+            await Do($"[API] Создание контрагента: {shortTitle} (ИНН: {inn})", async () =>
+            {
+                // Создаем модель. Остальные поля (адрес, телефон и т.д.) 
+                // подтянутся как пустые строки из определений в классе CounterpartyModel.
+                var counterparty = new CounterpartyModel
+                {
+                    inn = inn,
+                    title = title,           // Полное наименование (например, Общество с ограниченной...)
+                    shorttitle = shortTitle, // Краткое наименование (например, ООО "Ромашка")
+                    type = "LEGALENTITY_DEF"
+                };
+
+                var response = await Api.CreateCounterpartyAsync(counterparty);
+
+                if (!response.Ok)
+                {
+                    var errorBody = await response.TextAsync();
+
+                    // Логируем, если контрагент уже есть — для теста это не проблема
+                    if (response.Status == 400 || response.Status == 409)
+                    {
+                        //Logger.Info($"Контрагент с ИНН {inn} уже существует в системе.");
+                        return;
+                    }
+
+                    throw new Exception($"Не удалось создать контрагента через API. Status: {response.Status}, Body: {errorBody}");
+                }
+            });
         }
 
 

@@ -14,10 +14,19 @@ namespace FarvaterWeb.Tests.Documents
 
         public ContractCreationTests (ITestOutputHelper output) : base(output) { }
 
+        
+
         [Fact(DisplayName ="Проверка успешного создания договора")]
 
         public async Task ShouldCreateContract ()
         {
+            var fullTitle = "Общество с ограниченной ответственностью Альфа-Групп";
+            var shortTitle = "ООО Альфа-Групп";
+            var inn = "7701234567";
+
+            // 1. Создаем через API
+            await Documents.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+
             Log.Information("--- Запуск сценария: Создание договора---");
             await LoginAsAdmin();
             await SideMenu.OpenSection("Договоры", "contracts");
@@ -38,7 +47,7 @@ namespace FarvaterWeb.Tests.Documents
                 "514416541"
                 );
 
-            // await Documents.FillContractDetails( contractDetails );
+            await Documents.FillContractDetails( contractDetails );
 
             // Выбор типа договора
 
@@ -62,23 +71,35 @@ namespace FarvaterWeb.Tests.Documents
 
             // Нажатие кнопки "Отмена"
 
+            await Documents.ClickCancelButton();
+
             // Клик по кнопке "Создать договор"
 
-            // Заполнение поля "Предмет договора"
+            await Documents.ClickCreateContractButton();
+
+            //  Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
+
+            await Documents.FillContractDetails(contractDetails);
 
             // Выбор типа договора
 
+            await Documents.SelectContractType();
+
             // Выбор стороны 1
+
+            await Documents.SelectParty1();
 
             // Выбор стороны 2
 
+            await Documents.SelectParty2();
+
             // Назначение сроков по договору
 
-            // Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
-
+            await Documents.AppointContractTerm(startDate, endDate);
+            
             // Нажатие кнопки "Создать"
 
-
+            await Documents.ClickCreateButton();
 
 
         }

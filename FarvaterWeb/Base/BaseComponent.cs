@@ -2,6 +2,7 @@
 using AventStack.ExtentReports.Model;
 using FarvaterWeb.Components;
 using FarvaterWeb.Extensions;
+using FarvaterWeb.Services;
 using Microsoft.Playwright;
 using Serilog;
 using System.Text.RegularExpressions;
@@ -16,6 +17,7 @@ public abstract class BaseComponent
     protected readonly ILocator? Root;
     protected readonly string _componentName;
     protected readonly ExtentTest _test;
+    protected readonly ApiService Api;
 
     private static int _stepCounter = 0;
 
@@ -31,6 +33,7 @@ public abstract class BaseComponent
         _test = test;
         //_componentName = componentName;
         _componentName = GetType().Name; // Автоматически берет имя класса (например, "LoginForm")
+        Api = new ApiService(page.APIRequest);
     }
 
     protected DropdownComponent Dropdown => new DropdownComponent(Page, _componentName);

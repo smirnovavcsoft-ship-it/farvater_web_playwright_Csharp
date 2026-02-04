@@ -8,6 +8,11 @@ namespace FarvaterWeb.Configuration
     {
         private static IConfigurationRoot _configuration;
 
+        /// <summary>
+        /// Получает базовый URL для API запросов
+        /// </summary>
+        public static string ApiBaseUrl => _configuration["PlaywrightSettings:ApiBaseUrl"]!;
+
         // Статический конструктор для инициализации конфигурации один раз
         static ConfigurationReader()
         {

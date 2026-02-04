@@ -1,7 +1,8 @@
-﻿using Microsoft.Playwright;
-using System.Text.Json;
-using FarvaterWeb.Services;
+﻿using FarvaterWeb.Configuration;
 using FarvaterWeb.Data;
+using FarvaterWeb.Services;
+using Microsoft.Playwright;
+using System.Text.Json;
 
 namespace FarvaterWeb.Services
 {
@@ -25,8 +26,11 @@ namespace FarvaterWeb.Services
             formData.Append("client_id", "Web");
             formData.Append("authType", "TDMS");
 
+            // Используем переменную ApiBaseUrl
+            var url = $"{ConfigurationReader.ApiBaseUrl}token?authType=TDMS";
+
             // 2. Передаем его в параметр Form
-            var response = await _request.PostAsync("/token?authType=TDMS", new()
+            var response = await _request.PostAsync("https://farvater.mcad.dev/token?authType=TDMS", new()
             {
                 Form = formData, // Теперь типы совпадают!
                 Headers = new Dictionary<string, string>
@@ -45,16 +49,20 @@ namespace FarvaterWeb.Services
 
         public async Task<IAPIResponse> CreateCounterpartyAsync(CounterpartyModel data)
         {
-            // Если токена нет, сначала логинимся
+            // 1. Проверяем авторизацию
             if (string.IsNullOrEmpty(_accessToken)) await LoginAsync();
 
-            return await _request.PostAsync("api/v1/counterparties", new()
+            // 2. ВОТ ЗДЕСЬ задается URL. 
+            // Если BaseURL в конфиге уже содержит 'https://farvater.mcad.dev/', 
+            // то пишем относительный путь. Если нет — пишем полный.
+            return await _request.PostAsync("https://farvater.mcad.dev/api/farvater/data/v1/contractors/legal", new()
             {
                 DataObject = data,
                 Headers = new Dictionary<string, string>
-                {
-                    { "Authorization", $"Bearer {_accessToken}" }
-                }
+        {
+            { "Authorization", $"Bearer {_accessToken}" },
+            { "Accept", "application/json" }
+        }
             });
         }
     }

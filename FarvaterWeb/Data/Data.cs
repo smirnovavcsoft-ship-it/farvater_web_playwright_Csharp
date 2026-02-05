@@ -26,4 +26,12 @@ namespace FarvaterWeb.Data
         string WithNDS,
         string TotalCost
         );
+
+    public record NoteDetails
+        (
+        string DocumentType,
+        string Topic,
+        string Content,
+        string Adressees    
+        );
 }

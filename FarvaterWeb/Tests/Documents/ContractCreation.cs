@@ -21,11 +21,13 @@ namespace FarvaterWeb.Tests.Documents
         public async Task ShouldCreateContract ()
         {
             var fullTitle = "Общество с ограниченной ответственностью Альфа-Групп";
-            var shortTitle = "ООО Альфа-Групп";
+            string shortTitle = "ООО Альфа-Групп";
             var inn = "7701234567";
 
             // 1. Создаем через API
-            await Documents.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+
+            await Api.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+            //await Documents.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
 
             Log.Information("--- Запуск сценария: Создание договора---");
             await LoginAsAdmin();
@@ -55,7 +57,7 @@ namespace FarvaterWeb.Tests.Documents
 
             // Выбор стороны 1 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-            await Documents.SelectParty1();
+            await Documents.SelectParty1(shortTitle);
 
             // Выбор стороны 2 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
@@ -87,7 +89,7 @@ namespace FarvaterWeb.Tests.Documents
 
             // Выбор стороны 1
 
-            await Documents.SelectParty1();
+            await Documents.SelectParty1(shortTitle);
 
             // Выбор стороны 2
 

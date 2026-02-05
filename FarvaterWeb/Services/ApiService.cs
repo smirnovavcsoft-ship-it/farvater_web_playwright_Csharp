@@ -1,8 +1,10 @@
-﻿using FarvaterWeb.Configuration;
+﻿using FarvaterWeb.Base;
+using FarvaterWeb.Configuration;
 using FarvaterWeb.Data;
 using FarvaterWeb.Services;
 using Microsoft.Playwright;
 using System.Text.Json;
+using Serilog;
 
 namespace FarvaterWeb.Services
 {
@@ -11,6 +13,8 @@ namespace FarvaterWeb.Services
         private readonly IAPIRequestContext _request;
         private string? _accessToken;
 
+        // Поле _api удалено, так как оно вызывало NullReferenceException
+
         public ApiService(IAPIRequestContext request)
         {
             _request = request;
@@ -18,7 +22,6 @@ namespace FarvaterWeb.Services
 
         public async Task LoginAsync()
         {
-            // 1. Создаем специальный объект FormData
             var formData = _request.CreateFormData();
             formData.Append("username", "SYSADMIN");
             formData.Append("password", "");
@@ -26,43 +29,90 @@ namespace FarvaterWeb.Services
             formData.Append("client_id", "Web");
             formData.Append("authType", "TDMS");
 
-            // Используем переменную ApiBaseUrl
             var url = $"{ConfigurationReader.ApiBaseUrl}token?authType=TDMS";
 
-            // 2. Передаем его в параметр Form
-            var response = await _request.PostAsync("https://farvater.mcad.dev/token?authType=TDMS", new()
+            var response = await _request.PostAsync(url, new()
             {
-                Form = formData, // Теперь типы совпадают!
+                Form = formData,
                 Headers = new Dictionary<string, string>
-        {
-            { "Accept", "application/json; charset=utf-8" }
-        }
+                {
+                    { "Accept", "application/json; charset=utf-8" }
+                }
             });
 
             if (!response.Ok)
-                throw new Exception($"Login failed: {response.StatusText}");
+            {
+                var errorText = await response.TextAsync();
+                throw new Exception($"Login failed: {response.Status} {errorText}");
+            }
 
             var json = await response.JsonAsync();
-            // Используем GetProperty и GetString для извлечения токена
             _accessToken = json?.GetProperty("access_token").GetString();
         }
 
         public async Task<IAPIResponse> CreateCounterpartyAsync(CounterpartyModel data)
         {
-            // 1. Проверяем авторизацию
             if (string.IsNullOrEmpty(_accessToken)) await LoginAsync();
 
-            // 2. ВОТ ЗДЕСЬ задается URL. 
-            // Если BaseURL в конфиге уже содержит 'https://farvater.mcad.dev/', 
-            // то пишем относительный путь. Если нет — пишем полный.
-            return await _request.PostAsync("https://farvater.mcad.dev/api/farvater/data/v1/contractors/legal", new()
+            var url = $"{ConfigurationReader.ApiBaseUrl}api/farvater/data/v1/contractors/legal";
+
+            return await _request.PostAsync(url, new()
             {
                 DataObject = data,
                 Headers = new Dictionary<string, string>
-        {
-            { "Authorization", $"Bearer {_accessToken}" },
-            { "Accept", "application/json" }
+                {
+                    { "Authorization", $"Bearer {_accessToken}" },
+                    { "Accept", "application/json" }
+                }
+            });
         }
+
+        /*public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
+        {
+            var model = new CounterpartyModel
+            {
+                inn = inn,
+                title = title,
+                shorttitle = shortTitle,
+                address = "",
+                ogrn = "",
+                kpp = "",
+                phone = "",
+                email = ""
+            };
+
+            // ВЫЗЫВАЕМ МЕТОД ЭТОГО ЖЕ КЛАССА (вместо _api. ...)
+            var response = await CreateCounterpartyAsync(model);
+
+            if (!response.Ok && response.Status != 400 && response.Status != 409)
+            {
+                var details = await response.TextAsync();
+                throw new Exception($"Некорректный ответ сервера API ({response.Status}): {details}");
+            }
+        }*/
+
+        public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
+        {
+            // Используем Page.Do, чтобы это попало в логи и Allure
+            // Внимание: для этого у ApiService должен быть доступ к _page
+            await HelperForReports.Do("API: Создание контрагента", async () =>
+            {
+                var model = new CounterpartyModel
+                {
+                    title = title,
+                    shorttitle = shortTitle,
+                    inn = inn
+                };
+
+                var response = await CreateCounterpartyAsync(model);
+
+                if (!response.Ok && response.Status != 400 && response.Status != 409)
+                {
+                    var details = await response.TextAsync();
+                    throw new Exception($"Ошибка API ({response.Status}): {details}");
+                }
+
+                Log.Information($"[API] Контрагент готов (Status: {response.Status})");
             });
         }
     }

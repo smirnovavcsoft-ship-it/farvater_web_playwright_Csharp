@@ -18,6 +18,7 @@ public abstract class BaseComponent
     protected readonly string _componentName;
     protected readonly ExtentTest _test;
     protected readonly ApiService Api;
+    
 
     private static int _stepCounter = 0;
 

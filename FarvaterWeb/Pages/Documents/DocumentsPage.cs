@@ -186,9 +186,9 @@ namespace FarvaterWeb.Pages.Documents
             await TotalCostInput.ClearAndFillAsync(details.TotalCost);
         }
 
-        public async Task SelectParty1()
+        public async Task SelectParty1(string shortTitle)
         {
-            await Party1Dropdown.SelectByIndexAndVerifyAsync(0);
+            await Party1Dropdown.SelectByTextAndVerifyAsync(shortTitle);
         }
 
         public async Task SelectParty2()
@@ -202,7 +202,7 @@ namespace FarvaterWeb.Pages.Documents
             await Range("Сроки по договору").SetEndDateAsync(endDate);
         }
 
-        public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
+        /*public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
         {
             await Do($"[API] Создание контрагента: {shortTitle} (ИНН: {inn})", async () =>
             {
@@ -232,7 +232,9 @@ namespace FarvaterWeb.Pages.Documents
                     throw new Exception($"Не удалось создать контрагента через API. Status: {response.Status}, Body: {errorBody}");
                 }
             });
-        }
+        }*/
+
+       
 
 
 

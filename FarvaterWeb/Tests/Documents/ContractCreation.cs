@@ -61,7 +61,7 @@ namespace FarvaterWeb.Tests.Documents
 
             // Выбор стороны 2 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-            await Documents.SelectParty2();
+            await Documents.SelectParty2(shortTitle);
 
             // Назначение сроков по договору
 
@@ -73,7 +73,7 @@ namespace FarvaterWeb.Tests.Documents
 
             // Нажатие кнопки "Отмена"
 
-            await Documents.ClickCancelButton();
+            await Documents.ClickCancelButtonAndVarify(shortTitle);
 
             // Клик по кнопке "Создать договор"
 
@@ -93,7 +93,7 @@ namespace FarvaterWeb.Tests.Documents
 
             // Выбор стороны 2
 
-            await Documents.SelectParty2();
+            await Documents.SelectParty2(shortTitle);
 
             // Назначение сроков по договору
 
@@ -102,6 +102,14 @@ namespace FarvaterWeb.Tests.Documents
             // Нажатие кнопки "Создать"
 
             await Documents.ClickCreateButton();
+
+            // Удаление созданного договора
+
+            await Documents.DeleteCreatedContract(shortTitle);
+
+            // Удаление созданного контрагента
+
+
 
 
         }

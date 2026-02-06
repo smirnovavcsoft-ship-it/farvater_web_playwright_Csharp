@@ -1,4 +1,5 @@
 ﻿using Microsoft.Playwright;
+using System.Text.RegularExpressions;
 
 namespace FarvaterWeb.Extensions
 {
@@ -12,7 +13,7 @@ namespace FarvaterWeb.Extensions
         /// </summary>
         /// <param name="dropdown">Локатор самого поля списка</param>
         /// <param name="index">Индекс элемента (0, 1, 2...)</param>
-        
+
         /// <summary>
         /// Выбирает элемент из выпадающего списка по точному текстовому совпадению
         /// </summary>
@@ -39,30 +40,37 @@ namespace FarvaterWeb.Extensions
 
             await smart.Page.Do(stepName, async () =>
             {
+                // 1. Открываем список
                 await smart.Locator.ClickAsync(new() { Force = true });
 
-                // --- УМНАЯ ПАУЗА №1 ---
-                // Ждем, пока контейнер списка станет видимым. 
-                // Если списка нет в DOM, поиск по тексту может вернуть старые/чужие элементы.
-                var listContainer = smart.Page.Locator("[data-testid='dropdown_list-options']").First;
-                await listContainer.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+                // 2. Находим контейнер с опциями (только видимый)
+                var optionsContainer = smart.Page
+                    .Locator("[data-testid='dropdown_list-options']:visible")
+                    .Last;
 
-                // Ищем конкретный пункт по тексту
-                var targetOption = smart.Page
+                await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+                // 3. Выбираем нужный пункт по точному тексту
+                // Здесь оставляем Exact = true, чтобы кликнуть именно туда, куда нужно
+                var targetOption = optionsContainer
                     .Locator("[data-signature='dropdown_list-item']")
-                    .GetByText(text, new() { Exact = true }).Last;
-
-                //.Locator("[data-testid='dropdown_list-options'] [data-signature='dropdown_list-item']")
+                    .GetByText(text, new() { Exact = true })
+                    .Last;
 
                 await targetOption.ClickAsync();
 
+                // 4. ПРОВЕРКА: Простой ToContainText без Regex и без Exact
+                // Он увидит 'ООО Альфа-Групп' внутри 'Сторона 1 *ООО Альфа-Групп' и будет счастлив
                 await Assertions.Expect(smart.Locator).ToContainTextAsync(text);
+
+                // 5. Ждем закрытия списка для стабильности
+                await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
             });
         }
 
-       
 
-       
+
+
 
         public static async Task SelectByIndexAndVerifyAsync(
     this SmartLocator smart,

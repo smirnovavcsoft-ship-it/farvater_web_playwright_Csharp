@@ -69,6 +69,8 @@ namespace FarvaterWeb.Pages.Documents
 
         private SmartLocator TotalCostInput => Input.WithLabel("Полная стоимость, ₽");
 
+        public CancelComponent CancelAction => new CancelComponent(Page, Log, _test);
+
 
 
 
@@ -77,16 +79,16 @@ namespace FarvaterWeb.Pages.Documents
 
         //private SmartLocator CreatedDocumentInAList => Table.ClickActionInRow()
 
-        private DateComponent Date (string label) => new(Page, Log, _test, label , GetType().Name);
+        private DateComponent Date(string label) => new(Page, Log, _test, label, GetType().Name);
 
-        private RangeComponent Range (string label) => new(Page, Log, _test, label, GetType().Name);
+        private RangeComponent Range(string label) => new(Page, Log, _test, label, GetType().Name);
 
-        
+
 
 
         public DocumentsPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)
         {
-            
+
         }
 
         // Входящие документы
@@ -114,7 +116,7 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task SelectProject()
         {
-            await ProjectDropdown.SelectByIndexAndVerifyAsync(0, isMultiSelect:true);
+            await ProjectDropdown.SelectByIndexAndVerifyAsync(0, isMultiSelect: true);
         }
 
         public async Task AppointPlanningResponseDate(DateTime date)
@@ -137,7 +139,7 @@ namespace FarvaterWeb.Pages.Documents
             await AdresseesDropdown.SelectByIndexAndVerifyAsync(0, customVerifyLocator: "td._table_cell_8wkbu_111");
         }
 
-        public async Task SelectSenderSubscriber ()
+        public async Task SelectSenderSubscriber()
         {
             await SenderSubscriberDropdown.SelectByIndexAndVerifyAsync(0);
         }
@@ -174,7 +176,7 @@ namespace FarvaterWeb.Pages.Documents
             await ContractTypeDropdown.SelectByIndexAndVerifyAsync(0);
         }
 
-        
+
 
         public async Task FillContractDetails(ContractDetails details)
         {
@@ -186,20 +188,66 @@ namespace FarvaterWeb.Pages.Documents
             await TotalCostInput.ClearAndFillAsync(details.TotalCost);
         }
 
-        public async Task SelectParty1(string shortTitle)
+        /*public async Task SelectParty1(string shortTitle)
         {
             await Party1Dropdown.SelectByTextAndVerifyAsync(shortTitle);
-        }
+        }*/
 
-        public async Task SelectParty2()
+        public async Task SelectParty2(string shortTitle)
         {
-            await Party2Dropdown.SelectByIndexAndVerifyAsync(1);
+            await Party2Dropdown.SelectByTextAndVerifyAsync(shortTitle);
         }
 
         public async Task AppointContractTerm(DateTime startDate, DateTime endDate)
         {
             await Range("Сроки по договору").SetStartDateAsync(startDate);
             await Range("Сроки по договору").SetEndDateAsync(endDate);
+        }
+
+        public async Task SelectParty1(string shortTitle)
+        {
+            string stepName = $"[DocumentsPage] Выбор Стороны 1: '{shortTitle}'";
+
+            await Do(stepName, async () =>
+            {
+                // 1. Открываем список
+                await Party1Dropdown.Locator.ClickAsync(new() { Force = true });
+
+                // 2. Находим контейнер с опциями (только видимый)
+                var optionsContainer = Page
+                    .Locator("[data-testid='dropdown_list-options']:visible")
+                    .Last;
+
+                await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+                // 3. Выбираем нужный пункт по точному тексту
+                // Здесь оставляем Exact = true, чтобы кликнуть именно туда, куда нужно
+                var targetOption = optionsContainer
+                    .Locator("[data-signature='dropdown_list-item']")
+                    .GetByText(shortTitle, new() { Exact = true })
+                    .Last;
+
+                await targetOption.ClickAsync();
+
+                // 4. СПЕЦПРОВЕРКА: 
+                // Мы берем текст из всего контейнера, но проверяем только наличие искомой строки.
+                // Это игнорирует "Сторона 1 *" и не ломается из-за Regex или Exact Match.
+                await Assertions.Expect(Party1Dropdown.Locator).ToContainTextAsync(shortTitle);
+
+                // 5. Ждем закрытия списка для стабильности
+                await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+            });
+        }
+
+        public async Task ClickCancelButtonAndVarify(string shortTitle)
+        {
+            await CancelAction.CancelAndVerify(shortTitle);
+        }
+
+        public async Task DeleteCreatedContract(string shortTitle)
+        {
+
+            await Table.DeleteRow(shortTitle, "Удалить");
         }
 
         /*public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
@@ -234,7 +282,7 @@ namespace FarvaterWeb.Pages.Documents
             });
         }*/
 
-       
+
 
 
 
@@ -243,4 +291,7 @@ namespace FarvaterWeb.Pages.Documents
 
 
     }
+
 }
+
+

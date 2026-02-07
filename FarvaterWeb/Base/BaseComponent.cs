@@ -2,7 +2,7 @@
 using AventStack.ExtentReports.Model;
 using FarvaterWeb.Components;
 using FarvaterWeb.Extensions;
-using FarvaterWeb.Services;
+using FarvaterWeb.ApiServices;
 using Microsoft.Playwright;
 using Serilog;
 using System.Text.RegularExpressions;
@@ -17,7 +17,7 @@ public abstract class BaseComponent
     protected readonly ILocator? Root;
     protected readonly string _componentName;
     protected readonly ExtentTest _test;
-    protected readonly ApiService Api;
+    protected readonly BaseApiService Api;
     
 
     private static int _stepCounter = 0;
@@ -34,7 +34,7 @@ public abstract class BaseComponent
         _test = test;
         //_componentName = componentName;
         _componentName = GetType().Name; // Автоматически берет имя класса (например, "LoginForm")
-        Api = new ApiService(page.APIRequest);
+        Api = new BaseApiService(page.APIRequest);
     }
 
     protected DropdownComponent Dropdown => new DropdownComponent(Page, _componentName);
@@ -44,6 +44,8 @@ public abstract class BaseComponent
     protected DateComponent Date => new DateComponent(Page, Log, _test, _componentName);
 
     protected RangeComponent Range => new RangeComponent(Page, Log, _test, _componentName);
+
+    protected ButtonComponent Button => new ButtonComponent(Page, _componentName);
 
     
     protected CheckboxComponent Checkbox(string label) => new CheckboxComponent(Page, label, _componentName);
@@ -297,8 +299,8 @@ public abstract class BaseComponent
         Page.GetByLabel(label);
 
     // Универсальный метод для кнопок по CSS/XPath (иконки, классы, ID)
-    protected ILocator Button(string selector) =>
-        Page.Locator(selector);
+    /*protected ILocator Button(string selector) =>
+        Page.Locator(selector);*/
 
 
    

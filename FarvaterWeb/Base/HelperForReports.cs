@@ -1,5 +1,5 @@
 ﻿using Serilog;
-using FarvaterWeb.Services; // Для доступа к AllureService
+using FarvaterWeb.ApiServices; // Для доступа к AllureService
 
 namespace FarvaterWeb.Base
 {

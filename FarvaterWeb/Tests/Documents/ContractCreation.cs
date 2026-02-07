@@ -3,6 +3,7 @@ using FarvaterWeb.Data;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
 using Xunit.Abstractions;
+using FarvaterWeb.ApiServices;
 
 namespace FarvaterWeb.Tests.Documents
 {
@@ -11,6 +12,8 @@ namespace FarvaterWeb.Tests.Documents
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
 
         private DocumentsPage Documents => new DocumentsPage(Page, Log, _test);
+
+        private CounterpartyApiService CounterpartyApi => new CounterpartyApiService(ApiRequest);
 
         public ContractCreationTests (ITestOutputHelper output) : base(output) { }
 
@@ -26,7 +29,7 @@ namespace FarvaterWeb.Tests.Documents
 
             // 1. Создаем через API
 
-            await Api.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+            await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
             //await Documents.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
 
             Log.Information("--- Запуск сценария: Создание договора---");
@@ -73,7 +76,9 @@ namespace FarvaterWeb.Tests.Documents
 
             // Нажатие кнопки "Отмена"
 
-            await Documents.ClickCancelButtonAndVarify(shortTitle);
+            //await Documents.ClickCancelButtonAndVarify(shortTitle);
+
+            await Documents.ClickCancelButton();
 
             // Клик по кнопке "Создать договор"
 

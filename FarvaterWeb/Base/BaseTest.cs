@@ -2,7 +2,7 @@
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using FarvaterWeb.Configuration;
-using FarvaterWeb.Services;
+using FarvaterWeb.ApiServices;
 using Microsoft.Playwright;
 using Serilog;
 using System.IO;
@@ -16,7 +16,7 @@ public abstract class BaseTest : IAsyncLifetime
 {
     protected IPlaywright PlaywrightInstance;
     protected IAPIRequestContext ApiRequest;
-    protected ApiService Api;
+    protected BaseApiService Api;
     //protected AllureLifecycle Allure => AllureLifecycle.Instance;
 
     private static readonly string ProjectRoot =
@@ -152,7 +152,7 @@ public abstract class BaseTest : IAsyncLifetime
             }
         });
 
-        Api = new ApiService(ApiRequest);
+        Api = new BaseApiService(ApiRequest);
     }
 
     protected async Task Step(string name, Func<Task> action)

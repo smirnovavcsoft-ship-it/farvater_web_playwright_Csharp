@@ -1,54 +1,22 @@
 ﻿using FarvaterWeb.Base;
 using FarvaterWeb.Configuration;
 using FarvaterWeb.Data;
-using FarvaterWeb.Services;
 using Microsoft.Playwright;
-using System.Text.Json;
 using Serilog;
 
-namespace FarvaterWeb.Services
+namespace FarvaterWeb.ApiServices
 {
-    public class ApiService
+    public class CounterpartyApiService : BaseApiService
     {
-        private readonly IAPIRequestContext _request;
-        private string? _accessToken;
+        
+        // protected string? _accessToken;
 
         // Поле _api удалено, так как оно вызывало NullReferenceException
 
-        public ApiService(IAPIRequestContext request)
-        {
-            _request = request;
-        }
+        public CounterpartyApiService(IAPIRequestContext request) : base(request) { }
+        
 
-        public async Task LoginAsync()
-        {
-            var formData = _request.CreateFormData();
-            formData.Append("username", "SYSADMIN");
-            formData.Append("password", "");
-            formData.Append("grant_type", "password");
-            formData.Append("client_id", "Web");
-            formData.Append("authType", "TDMS");
-
-            var url = $"{ConfigurationReader.ApiBaseUrl}token?authType=TDMS";
-
-            var response = await _request.PostAsync(url, new()
-            {
-                Form = formData,
-                Headers = new Dictionary<string, string>
-                {
-                    { "Accept", "application/json; charset=utf-8" }
-                }
-            });
-
-            if (!response.Ok)
-            {
-                var errorText = await response.TextAsync();
-                throw new Exception($"Login failed: {response.Status} {errorText}");
-            }
-
-            var json = await response.JsonAsync();
-            _accessToken = json?.GetProperty("access_token").GetString();
-        }
+        
 
         public async Task<IAPIResponse> CreateCounterpartyAsync(CounterpartyModel data)
         {

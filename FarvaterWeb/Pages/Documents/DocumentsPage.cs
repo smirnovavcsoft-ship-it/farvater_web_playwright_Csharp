@@ -3,16 +3,8 @@ using FarvaterWeb.Base;
 using FarvaterWeb.Components;
 using FarvaterWeb.Data;
 using FarvaterWeb.Extensions;
-using FarvaterWeb.Services;
-using FarvaterWeb.Tests.Counterparty;
-using FarvaterWeb.Tests.Users;
-using HarmonyLib;
 using Microsoft.Playwright;
 using Serilog;
-using Serilog.Core;
-using System.Drawing.Text;
-using System.Security.Cryptography.X509Certificates;
-using System.Web;
 
 namespace FarvaterWeb.Pages.Documents
 {
@@ -71,24 +63,14 @@ namespace FarvaterWeb.Pages.Documents
 
         public CancelComponent CancelAction => new CancelComponent(Page, Log, _test);
 
-
-
-
-
-
-
         //private SmartLocator CreatedDocumentInAList => Table.ClickActionInRow()
 
         private DateComponent Date(string label) => new(Page, Log, _test, label, GetType().Name);
 
         private RangeComponent Range(string label) => new(Page, Log, _test, label, GetType().Name);
 
-
-
-
         public DocumentsPage(IPage page, ILogger logger, ExtentTest test) : base(page, logger, test)
         {
-
         }
 
         // Входящие документы
@@ -161,7 +143,7 @@ namespace FarvaterWeb.Pages.Documents
 
         /*public async Task OpenCheckAndCloseCreatedDocument()
         {
-            await 
+            await
         }*/
 
         // Договоры
@@ -175,8 +157,6 @@ namespace FarvaterWeb.Pages.Documents
         {
             await ContractTypeDropdown.SelectByIndexAndVerifyAsync(0);
         }
-
-
 
         public async Task FillContractDetails(ContractDetails details)
         {
@@ -229,7 +209,7 @@ namespace FarvaterWeb.Pages.Documents
 
                 await targetOption.ClickAsync();
 
-                // 4. СПЕЦПРОВЕРКА: 
+                // 4. СПЕЦПРОВЕРКА:
                 // Мы берем текст из всего контейнера, но проверяем только наличие искомой строки.
                 // Это игнорирует "Сторона 1 *" и не ломается из-за Regex или Exact Match.
                 await Assertions.Expect(Party1Dropdown.Locator).ToContainTextAsync(shortTitle);
@@ -246,15 +226,15 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task DeleteCreatedContract(string shortTitle)
         {
-
             await Table.DeleteRow(shortTitle, "Удалить");
+            
         }
 
         /*public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
         {
             await Do($"[API] Создание контрагента: {shortTitle} (ИНН: {inn})", async () =>
             {
-                // Создаем модель. Остальные поля (адрес, телефон и т.д.) 
+                // Создаем модель. Остальные поля (адрес, телефон и т.д.)
                 // подтянутся как пустые строки из определений в классе CounterpartyModel.
                 var counterparty = new CounterpartyModel
                 {
@@ -281,17 +261,5 @@ namespace FarvaterWeb.Pages.Documents
                 }
             });
         }*/
-
-
-
-
-
-
-
-
-
     }
-
 }
-
-

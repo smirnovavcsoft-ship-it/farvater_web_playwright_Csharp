@@ -11,14 +11,36 @@ namespace FarvaterWeb.Components
         private readonly string _componentName;
         private readonly ILocator _root;
 
-        public ButtonComponent(IPage page, string componentName, ILocator root = null)
+        public ButtonComponent(IPage page,  string componentName, ILocator root = null)
         {
             _page = page;
             _root = root ?? page.Locator("html");
             _componentName = componentName;
         }
 
-        public SmartLocator WithLabel(string label)
+        public SmartLocator WithText(string text)
+        {
+
+
+
+            var locator = _page.GetByRole(AriaRole.Button, new() { Name = text });
+          
+            return new SmartLocator(locator, text, "Кнопка с текстом", _componentName, _page);
+        }
+
+        /*public SmartLocator WithText(string text)
+        {
+            //var locator = _page.Locator("div._DropDownSelect_16801_1")
+            var locator = _page.Locator("[data-testid='dropdown_list']")
+                .Filter(new() { Has = _page.Locator($"div:text-is('{text}'), input[placeholder='{text}']") });
+
+            return new SmartLocator(locator, text, "выпадающий список", _componentName, _page);
+        }*/
+
+        public SmartLocator WithLocator(ILocator customLocator, string friendlyName) =>
+            new SmartLocator(customLocator, friendlyName, "Кнопка", _componentName, _page);
+
+        /*public SmartLocator WithLabel(string label)
         {
             // Создаем регулярное выражение: 
             // ^ - начало строки
@@ -44,6 +66,6 @@ namespace FarvaterWeb.Components
             var input = container.Locator("input, textarea").First;
 
             return new SmartLocator(input, label, "Поле ввода", _componentName, _page);
-        }
+        }*/
     }
 }

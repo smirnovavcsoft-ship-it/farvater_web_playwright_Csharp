@@ -29,90 +29,109 @@ namespace FarvaterWeb.Tests.Documents
 
             // 1. Создаем через API
 
-            await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
-            //await Documents.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+            string? counterpartyGuid  = null;
 
-            Log.Information("--- Запуск сценария: Создание договора---");
-            await LoginAsAdmin();
-            await SideMenu.OpenSection("Договоры", "contracts");
+            try
+            {
 
-            // Клик по кнопке "Создать договор"
+                counterpartyGuid = await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+                //await Documents.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
 
-           await Documents.ClickCreateContractButton();
+                Log.Information("--- Запуск сценария: Создание договора---");
+                await LoginAsAdmin();
+                await SideMenu.OpenSection("Договоры", "contracts");
 
-            // Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
+                // Клик по кнопке "Создать договор"
 
-            var contractDetails = new ContractDetails
-                (
-                "Разработка документации",
-                "Сторона 1",
-                "Сторона 2",
-                "12464",
-                "145465",
-                "514416541"
-                );
+                await Documents.ClickCreateContractButton();
 
-            await Documents.FillContractDetails( contractDetails );
+                // Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
 
-            // Выбор типа договора
+                var contractDetails = new ContractDetails
+                    (
+                    "Разработка документации",
+                    "Сторона 1",
+                    "Сторона 2",
+                    "12464",
+                    "145465",
+                    "514416541"
+                    );
 
-            await Documents.SelectContractType();
+                await Documents.FillContractDetails(contractDetails);
 
-            // Выбор стороны 1 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
+                // Выбор типа договора
 
-            await Documents.SelectParty1(shortTitle);
+                await Documents.SelectContractType();
 
-            // Выбор стороны 2 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
+                // Выбор стороны 1 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-            await Documents.SelectParty2(shortTitle);
+                await Documents.SelectParty1(shortTitle);
 
-            // Назначение сроков по договору
+                // Выбор стороны 2 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-            DateTime startDate = new DateTime(2026, 02, 03);
+                await Documents.SelectParty2(shortTitle);
 
-            DateTime endDate = new DateTime(2026, 03, 03);
+                // Назначение сроков по договору
 
-            await Documents.AppointContractTerm(startDate, endDate);
+                DateTime startDate = new DateTime(2026, 02, 03);
 
-            // Нажатие кнопки "Отмена"
+                DateTime endDate = new DateTime(2026, 03, 03);
 
-            //await Documents.ClickCancelButtonAndVarify(shortTitle);
+                await Documents.AppointContractTerm(startDate, endDate);
 
-            await Documents.ClickCancelButton();
+                // Нажатие кнопки "Отмена"
 
-            // Клик по кнопке "Создать договор"
+                //await Documents.ClickCancelButtonAndVarify(shortTitle);
 
-            await Documents.ClickCreateContractButton();
+                await Documents.ClickCancelButton();
 
-            //  Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
+                // Клик по кнопке "Создать договор"
 
-            await Documents.FillContractDetails(contractDetails);
+                await Documents.ClickCreateContractButton();
 
-            // Выбор типа договора
+                //  Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
 
-            await Documents.SelectContractType();
+                await Documents.FillContractDetails(contractDetails);
 
-            // Выбор стороны 1
+                // Выбор типа договора
 
-            await Documents.SelectParty1(shortTitle);
+                await Documents.SelectContractType();
 
-            // Выбор стороны 2
+                // Выбор стороны 1
 
-            await Documents.SelectParty2(shortTitle);
+                await Documents.SelectParty1(shortTitle);
 
-            // Назначение сроков по договору
+                // Выбор стороны 2
 
-            await Documents.AppointContractTerm(startDate, endDate);
-            
-            // Нажатие кнопки "Создать"
+                await Documents.SelectParty2(shortTitle);
 
-            await Documents.ClickCreateButton();
+                // Назначение сроков по договору
 
-            // Удаление созданного договора
+                await Documents.AppointContractTerm(startDate, endDate);
 
-            await Documents.DeleteCreatedContract(shortTitle);
+                // Нажатие кнопки "Создать"
 
-            // Удаление созданного контрагента
+                await Documents.ClickCreateButton();
+
+                // Удаление созданного договора
+
+                await SideMenu.OpenSection("Договоры", "contracts");
+
+                await Documents.DeleteCreatedContract(shortTitle);
+
+            }
+
+            finally
+            {
+                // Если GUID был получен — удаляем
+                if (!string.IsNullOrEmpty(counterpartyGuid))
+                {
+                    await CounterpartyApi.DeleteCounterpartyAsync(counterpartyGuid);
+                }
+
+            }
+
+
 
 
 

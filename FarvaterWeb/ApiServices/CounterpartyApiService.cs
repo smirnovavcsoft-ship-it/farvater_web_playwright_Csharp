@@ -14,9 +14,7 @@ namespace FarvaterWeb.ApiServices
         // Поле _api удалено, так как оно вызывало NullReferenceException
 
         public CounterpartyApiService(IAPIRequestContext request) : base(request) { }
-        
-
-        
+                
 
         public async Task<IAPIResponse> CreateCounterpartyAsync(CounterpartyModel data)
         {

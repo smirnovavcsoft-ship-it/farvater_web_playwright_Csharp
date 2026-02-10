@@ -40,6 +40,7 @@ namespace FarvaterWeb.Pages.Common
         public async Task OpenSection(string name, string urlPart)
         {
             await Menu.ClickItem(name);
+            
         }
 
 

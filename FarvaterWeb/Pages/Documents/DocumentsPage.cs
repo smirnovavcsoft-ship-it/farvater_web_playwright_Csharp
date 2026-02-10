@@ -138,7 +138,15 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task ClickCreateButton()
         {
-            await CreateButton.SafeClickAsync();
+            var creationUrl = Page.Url;
+            await CreateButton.SafeClickAsync();         
+                        
+            // Ждем, пока URL перестанет быть равен creationUrl
+            await Page.WaitForFunctionAsync($"() => window.location.href !== '{creationUrl}'");
+
+            // Теперь мы точно знаем, что редирект случился. 
+            // Можем даже вывести новый URL в лог для интереса:
+            Log.Information($"Система перенаправила нас на: {Page.Url}");
         }
 
         /*public async Task OpenCheckAndCloseCreatedDocument()
@@ -225,41 +233,12 @@ namespace FarvaterWeb.Pages.Documents
         }
 
         public async Task DeleteCreatedContract(string shortTitle)
-        {
-            await Table.DeleteRow(shortTitle, "Удалить");
-            
+        {            
+            string buttonText = "Удалить";
+            await Table.DeleteRow(shortTitle, buttonText);
+
         }
 
-        /*public async Task PrepareCounterpartyAsync(string title, string shortTitle, string inn)
-        {
-            await Do($"[API] Создание контрагента: {shortTitle} (ИНН: {inn})", async () =>
-            {
-                // Создаем модель. Остальные поля (адрес, телефон и т.д.)
-                // подтянутся как пустые строки из определений в классе CounterpartyModel.
-                var counterparty = new CounterpartyModel
-                {
-                    inn = inn,
-                    title = title,           // Полное наименование (например, Общество с ограниченной...)
-                    shorttitle = shortTitle, // Краткое наименование (например, ООО "Ромашка")
-                    type = "LEGALENTITY_DEF"
-                };
-
-                var response = await Api.CreateCounterpartyAsync(counterparty);
-
-                if (!response.Ok)
-                {
-                    var errorBody = await response.TextAsync();
-
-                    // Логируем, если контрагент уже есть — для теста это не проблема
-                    if (response.Status == 400 || response.Status == 409)
-                    {
-                        //Logger.Info($"Контрагент с ИНН {inn} уже существует в системе.");
-                        return;
-                    }
-
-                    throw new Exception($"Не удалось создать контрагента через API. Status: {response.Status}, Body: {errorBody}");
-                }
-            });
-        }*/
+        
     }
 }

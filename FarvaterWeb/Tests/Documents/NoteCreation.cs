@@ -15,6 +15,8 @@ namespace FarvaterWeb.Tests.Documents
 
         private DocumentsPage Documents => new DocumentsPage(Page, Log, _test);
 
+        private NotesPage Notes => new NotesPage(Page, Log, _test);
+
         public NoteCreationTests(ITestOutputHelper output)  : base(output) { }
 
         [Fact(DisplayName ="Проверка успешного создания записки")]
@@ -30,15 +32,45 @@ namespace FarvaterWeb.Tests.Documents
 
             // Нажатие кнопки "Создание документа"
 
-            // Выбор типа документа
+            await Notes.ClickCreateDocumentButton();
+
 
             // Ввод и выбор данных (Тип документа, Тема, Содержание, Адресаты, ). Проект пока выбирать не буду. Потом добавлю, когда разберусь с API
-                        
+
+            var noteDetails = new NoteDetails
+                (
+                "Служебная",
+                "Тема служебной записки",
+                "Содержание служебной записки",
+                "Адресат"
+                 );
+
+            await Notes.FillNoteDetails(noteDetails);
+
             // Нажатие кнопки "Отмена"
 
-            // Нажатие кнопки "Создать
+            await Notes.CancelAndVerify(noteDetails.Topic);
+
+
+            // Нажатие кнопки "Создание документа"
+
+
+            // Ввод и выбор данных (Тип документа, Тема, Содержание, Адресаты, ). Проект пока выбирать не буду. Потом добавлю, когда разберусь с API
+
+            await Notes.FillNoteDetails(noteDetails);
+
+            // Нажатие кнопки "Создать"
+
+            await Notes.ClickCreateButton();
+
+            // Удаление записки
+
+
+
 
             // Удалить адресата из базы
+
+
 
             // Удалить проект из базы
         }

@@ -8,6 +8,8 @@ namespace FarvaterWeb.Components
 {
     public class TableComponent : BaseComponent
     {
+
+        public ModalDialogComponent Dialog => new ModalDialogComponent(Page, Log, _test);
         public TableComponent(IPage page, ILogger logger, ExtentTest test)
             : base(page, logger, test, "Table")
         {
@@ -30,7 +32,10 @@ namespace FarvaterWeb.Components
         public async Task DeleteRow(string rowText, string buttonText)
         {
             await ClickActionInRow(rowText, "div[class*='menuItemDelete']", "Удаление");
-            await DoClickByText(buttonText);
+            //await DoClickByText(buttonText);
+
+            await Dialog.ClickButtonAsync(buttonText);
+            
         }
 
         private async Task DeleteRow(ILocator rowLocator)

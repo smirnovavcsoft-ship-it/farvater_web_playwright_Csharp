@@ -1,13 +1,14 @@
 ﻿using AventStack.ExtentReports;
 using FarvaterWeb.Base;
+using FarvaterWeb.Extensions;
 using Microsoft.Playwright;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using FarvaterWeb.Extensions;
 
 namespace FarvaterWeb.Components
 {
@@ -46,6 +47,9 @@ namespace FarvaterWeb.Components
                 // Берем наш SmartLocator и вызываем клик
                 // Используем First, чтобы Playwright не ругался на строгость внутри меню
                 await MenuItem(name).Locator.First.ClickAsync();
+                string newUrl = Page.Url;
+                Log.Information($"Переход на страницу: {newUrl}");
+
             });
         }
     }

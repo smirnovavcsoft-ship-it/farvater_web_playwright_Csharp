@@ -10,6 +10,7 @@ namespace FarvaterWeb.Pages.Documents
 {
     public class NotesPage : BasePage
     {
+        private TableComponent Table => new TableComponent(Page, Log, _test);
         private SmartLocator CreateDocumentButton => ButtonWithText("Создать документ");
         private SmartLocator DocumentTypeDropdown => Dropdown.WithLabel("Тип документа");
 
@@ -32,7 +33,26 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task FillNoteDetails (NoteDetails details)
         {
-            //await DocumentTypeDropdown.
+            await DocumentTypeDropdown.SelectByTextAndVerifyAsync(details.DocumentType);
+            await TopicInput.ClearAndFillAsync(details.Topic);
+            await ContentInput.ClearAndFillAsync(details.Content);
+            await AdresseesDropdown.SelectByTextAndVerifyAsync(details.Adressees);
+        }
+
+        public async Task CancelAndVerify(string topic)
+        {
+            await CancelAction.CancelAndVerify(topic);
+        }
+
+        public async Task ClickCreateButton()
+        {
+            await CreateButton.SafeClickAsync();
+        }
+
+        public async Task DeleteCreatedNote(string topic)
+        {
+            string buttonText = "Удалить";
+            await Table.DeleteRow(topic, buttonText);
         }
     }
 }

@@ -29,14 +29,13 @@ namespace FarvaterWeb.Tests.Documents
 
             // 1. Создаем через API
 
-            string? counterpartyGuid  = null;
+            string? counterpartyHandle  = null;
 
             try
             {
 
-                counterpartyGuid = await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
-                //await Documents.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
-
+                counterpartyHandle = await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+                
                 Log.Information("--- Запуск сценария: Создание договора---");
                 await LoginAsAdmin();
                 await SideMenu.OpenSection("Договоры", "contracts");
@@ -124,9 +123,9 @@ namespace FarvaterWeb.Tests.Documents
             finally
             {
                 // Если GUID был получен — удаляем
-                if (!string.IsNullOrEmpty(counterpartyGuid))
+                if (!string.IsNullOrEmpty(counterpartyHandle))
                 {
-                    await CounterpartyApi.DeleteCounterpartyAsync(counterpartyGuid);
+                    await CounterpartyApi.DeleteCounterpartyAsync(counterpartyHandle);
                 }
 
             }

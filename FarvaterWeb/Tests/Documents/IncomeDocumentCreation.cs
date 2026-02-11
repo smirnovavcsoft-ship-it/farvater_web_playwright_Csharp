@@ -20,6 +20,7 @@ namespace FarvaterWeb.Tests.Documents
         [Fact(DisplayName ="Проверка успешного создания входящего документа")]
         public async Task ShouldCreateIncomeDocument ()
         {
+
             Log.Information("--- Запуск сценария: Создание входящего документа---");
             await LoginAsAdmin();
             await SideMenu.OpenSection("Входящие", "income");

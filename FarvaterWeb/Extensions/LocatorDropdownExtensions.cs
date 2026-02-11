@@ -90,7 +90,7 @@ namespace FarvaterWeb.Extensions
 
                 // 2. Находим контейнер с опциями (только видимый)
                 var optionsContainer = smart.Page
-                    .Locator("[data-testid='dropdown_list-options']:visible")
+                    .Locator("[data-testid='dropdown_list-options']:visible, [data-signature='names-list']:visible")
                     .Last;
 
                 await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Visible });

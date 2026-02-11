@@ -16,9 +16,9 @@ namespace FarvaterWeb.Pages.Documents
 
         private SmartLocator TopicInput => Input.WithLabel("Тема");
 
-        private SmartLocator ContentInput => Input.WithLabel("Содержание");
+        private SmartLocator ContentInput => Input.DescriptionField("Содержание *");
 
-        private SmartLocator AdresseesDropdown => Dropdown.WithLabel("Адресаты");
+        private SmartLocator AdresseesDropdown => Dropdown.WithInputAndLabel("Адресаты");
 
         private SmartLocator CancelButton => ButtonWithText("Отмена");
 

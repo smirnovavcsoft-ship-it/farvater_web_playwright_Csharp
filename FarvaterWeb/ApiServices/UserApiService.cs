@@ -2,12 +2,6 @@
 using Microsoft.Playwright;
 using FarvaterWeb.Data;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using FarvaterWeb.Base;
 
 namespace FarvaterWeb.ApiServices

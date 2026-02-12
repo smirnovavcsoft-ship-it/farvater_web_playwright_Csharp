@@ -98,7 +98,7 @@ namespace FarvaterWeb.Extensions
                 // 3. Выбираем нужный пункт по точному тексту
                 // Здесь оставляем Exact = true, чтобы кликнуть именно туда, куда нужно
                 var targetOption = optionsContainer
-                    .Locator("[data-signature='dropdown_list-item']")
+                    .Locator("[data-signature='dropdown_list-item'], [data-signature='checkbox-selector-wrapper']")
                     .GetByText(text, new() { Exact = true })
                     .Last;
 

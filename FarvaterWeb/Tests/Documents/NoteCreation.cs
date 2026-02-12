@@ -1,6 +1,7 @@
 ﻿using FarvaterWeb.ApiServices;
 using FarvaterWeb.Base;
 using FarvaterWeb.Data;
+using FarvaterWeb.Extensions;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
 using Microsoft.Playwright;
@@ -28,9 +29,11 @@ namespace FarvaterWeb.Tests.Documents
         {
             // Создание пользователя через API
 
+            string postfix = DataPostfixExtensions.GetUniquePostfix();
+
             string lastName = "Тестерович";
             string firstName = "Андрей";
-            string login = lastName;
+            string login = $"lastName{postfix}";
 
             string? userHandle = null;
 
@@ -56,7 +59,7 @@ namespace FarvaterWeb.Tests.Documents
                     "Служебная",
                     "Тема служебной записки",
                     "Содержание служебной записки",
-                    "Адресат"
+                    lastName
                      );
 
                 await Notes.FillNoteDetails(noteDetails);
@@ -96,7 +99,7 @@ namespace FarvaterWeb.Tests.Documents
 
 
 
-            // Удалить проект из базы
+            // Удалить проект из базы ( пока проект в записку не добавляю, нужно разбираться с созданием проекта через api
 
 
         }

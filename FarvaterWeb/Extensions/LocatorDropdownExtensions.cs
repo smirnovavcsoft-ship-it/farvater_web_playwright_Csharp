@@ -1,5 +1,7 @@
-﻿using Microsoft.Playwright;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.Playwright;
 using System.Text.RegularExpressions;
+using static Microsoft.Playwright.Assertions;
 
 namespace FarvaterWeb.Extensions
 {
@@ -112,5 +114,67 @@ namespace FarvaterWeb.Extensions
                 await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
             });
         }
+
+        public static async Task SelectUserAndVerifyAsync(this SmartLocator smart, string lastName, string firstName /*bool isMultiSelect = true*/)
+        {
+            string stepName = $"[{smart.ComponentName}] Выбор пункта '{lastName}' в {smart.Type} '{smart.Name}'";
+
+            await smart.Page.Do(stepName, async () =>
+            {
+                // 1. Открываем список
+                await smart.Locator.ClickAsync(new() { Force = true });
+
+                // 2. Находим контейнер с опциями (только видимый)
+                /*var optionsContainer = smart.Page
+                    .Locator("[data-testid='dropdown_list-options']:visible, [data-signature='names-list']:visible")
+                    .Last;*/
+
+         var optionsContainer = smart.Page
+         .Locator("[data-testid='dropdown_list-options']:visible, [data-signature='names-list']:visible");                 ;
+
+        // 2. Ждем появления хотя бы одного видимого элемента из этого списка.
+        // В Playwright селектор :visible уже гарантирует, что мы ждем видимый объект.
+        await optionsContainer.First.WaitForAsync(new() { State = WaitForSelectorState.Visible });
+
+        // 3. Теперь, когда мы уверены, что список есть, берем активный.
+        // Если их несколько (старый закрывается, новый открылся), .Last возьмет самый свежий.
+        var activeContainer = optionsContainer.Last;
+
+        // 3. Выбираем нужный пункт по точному тексту
+       //  Здесь оставляем Exact = true, чтобы кликнуть именно туда, куда нужно
+         string text = $"{lastName} {firstName[0]}.";
+         var targetOption = optionsContainer                
+            .Locator("[data-signature='dropdown_list-item'], [data-signature='checkbox-selector-wrapper']")
+            .GetByText(text, new() { Exact = true })
+             .Last;
+
+            await targetOption.ClickAsync();
+
+            await smart.Page.Keyboard.PressAsync("Escape");
+
+
+                // 4. ПРОВЕРКА: Простой ToContainText без Regex и без Exact
+                //  Он увидит 'ООО Альфа-Групп' внутри 'Сторона 1 *ООО Альфа-Групп' и будет счастлив
+               // await Assertions.Expect(smart.Locator).ToContainTextAsync(text);
+
+        // 5. Ждем закрытия списка для стабильности
+          await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+         });
+         }
+
+        /*public static async Task SelectUserAndVerifyAsync(this SmartLocator smart, string lastName, string firstName)
+        {
+            var formattedText = $"{lastName} {firstName[0]}.";
+
+            // Находим и кликаем
+            var list = smart.Page.Locator("[data-signature='names-list']:visible");
+            await list.GetByText(formattedText, new() { Exact = false }).Last.ClickAsync();
+
+            // ХИТРОСТЬ: Кликаем в заголовок или нажимаем Escape, чтобы список закрылся
+            await smart.Page.Keyboard.PressAsync("Escape");
+
+            // Или кликаем по названию поля, чтобы фокус ушел
+            await smart.Locator.ClickAsync();
+        }*/
     }
 }

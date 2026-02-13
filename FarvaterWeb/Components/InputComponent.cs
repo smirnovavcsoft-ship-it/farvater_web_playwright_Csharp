@@ -41,6 +41,28 @@ namespace FarvaterWeb.Components
             return new SmartLocator(interactiveElement, label, "Поле ввода", _componentName, _page);
         }
 
+        public SmartLocator DescriptionFieldWithPlacholder(string label)
+        {
+            // 1. Ищем контейнер (тот самый div class="_shortDescription_...")
+            // Мы ищем его по наличию текста заголовка внутри.
+            // Exact = false позволяет игнорировать звездочку и лишние пробелы.
+            var container = _page.Locator("div")
+                .Filter(new()
+                {
+                    Has = _page.GetByText(label, new() { Exact = false })
+                })
+                .Last;
+
+            // 2. Ищем поле ввода внутри этого контейнера.
+            // В твоей верстке это div с role="textbox" и contenteditable="true".
+            // Мы перечисляем варианты через запятую (селектор "или").
+            var interactiveElement = container
+                .Locator("div[contenteditable='true'], textarea, input:not([type='file'])")
+                .First;
+
+            return new SmartLocator(interactiveElement, label, "Поле ввода", _componentName, _page);
+        }
+
         // Поиск по подсказке (placeholder) внутри самого поля
         public SmartLocator WithText(string text)
         {

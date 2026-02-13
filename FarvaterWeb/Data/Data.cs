@@ -32,6 +32,19 @@ namespace FarvaterWeb.Data
         string DocumentType,
         string Topic,
         string Content,
-        string Adressees    
+        //string Adressees,
+        string LastName,
+        string FirstName
+        );
+
+    public record OrderDetails
+        (
+        string DocumentType,
+        string OrderName,
+        string OrderContent,
+        //string Adressees,
+        string LastName,
+        string FirstName
+        //DateTime SigningDate
         );
 }

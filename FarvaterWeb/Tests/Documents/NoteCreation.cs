@@ -4,8 +4,9 @@ using FarvaterWeb.Data;
 using FarvaterWeb.Extensions;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
-using Microsoft.Playwright;
 using Xunit.Abstractions;
+using Microsoft.Playwright;
+
 
 namespace FarvaterWeb.Tests.Documents
 {
@@ -59,7 +60,8 @@ namespace FarvaterWeb.Tests.Documents
                     "Служебная",
                     "Тема служебной записки",
                     "Содержание служебной записки",
-                    lastName
+                    lastName,
+                    firstName
                      );
 
                 await Notes.FillNoteDetails(noteDetails);
@@ -70,6 +72,8 @@ namespace FarvaterWeb.Tests.Documents
 
 
                 // Нажатие кнопки "Создание документа"
+
+                await Notes.ClickCreateDocumentButton();
 
 
                 // Ввод и выбор данных (Тип документа, Тема, Содержание, Адресаты, ). Проект пока выбирать не буду. Потом добавлю, когда разберусь с API
@@ -82,7 +86,7 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Удаление записки
 
-
+                await SideMenu.OpenSection("Записки", "notes");
                 await Notes.DeleteCreatedNote(noteDetails.Topic);
             }
 

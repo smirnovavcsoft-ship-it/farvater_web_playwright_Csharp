@@ -41,6 +41,8 @@ public abstract class BaseComponent
 
     protected InputComponent Input => new InputComponent(Page, _componentName);
 
+    protected DescriptionComponent Description => new DescriptionComponent(Page, _componentName);
+
     protected DateComponent Date => new DateComponent(Page, Log, _test, _componentName);
 
     protected RangeComponent Range => new RangeComponent(Page, Log, _test, _componentName);

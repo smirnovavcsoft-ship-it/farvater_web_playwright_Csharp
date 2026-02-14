@@ -40,6 +40,7 @@
   <ItemGroup>
     <PackageReference Include="Allure.Net.Commons" Version="2.12.1" />
     <PackageReference Include="Allure.Xunit" Version="2.12.1" />
+    <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="ExtentReports" Version="5.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />

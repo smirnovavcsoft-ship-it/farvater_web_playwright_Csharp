@@ -2,10 +2,11 @@
 using FarvaterWeb.Base;
 using FarvaterWeb.Data;
 using FarvaterWeb.Extensions;
+using FarvaterWeb.Generators;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
-using Xunit.Abstractions;
 using Microsoft.Playwright;
+using Xunit.Abstractions;
 
 
 namespace FarvaterWeb.Tests.Documents
@@ -14,6 +15,7 @@ namespace FarvaterWeb.Tests.Documents
 
     public class NoteCreationTests : BaseTest
     {
+        private LoginPage LoginForm => new LoginPage(Page, Log, _test);
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
 
         private DocumentsPage Documents => new DocumentsPage(Page, Log, _test);
@@ -22,7 +24,12 @@ namespace FarvaterWeb.Tests.Documents
 
         private UserApiService UserApi => new UserApiService(ApiRequest);
 
-        public NoteCreationTests(ITestOutputHelper output) : base(output) { }
+        private readonly UserModel _user;
+
+        public NoteCreationTests(ITestOutputHelper output) : base(output)
+        {
+            _user = DataFactory.GenerateUser();
+        }
 
         [Fact(DisplayName = "Проверка успешного создания записки")]
 
@@ -32,9 +39,9 @@ namespace FarvaterWeb.Tests.Documents
 
             string postfix = DataPostfixExtensions.GetUniquePostfix();
 
-            string lastName = "Тестерович";
-            string firstName = "Андрей";
-            string login = $"lastName{postfix}";
+            string lastName = _user.lastName!;
+            string firstName = _user.firstName!;
+            string login = $"{lastName}{postfix}";
 
             string? userHandle = null;
 
@@ -45,7 +52,15 @@ namespace FarvaterWeb.Tests.Documents
 
 
                 Log.Information("--- Запуск сценария: Создание записки---");
-                await LoginAsAdmin();
+
+                try
+                {
+                  await LoginAs(login);
+                }
+                catch
+                {
+                  await LoginAsAdmin();
+                }
                 await SideMenu.OpenSection("Записки", "notes");
 
                 // Нажатие кнопки "Создание документа"

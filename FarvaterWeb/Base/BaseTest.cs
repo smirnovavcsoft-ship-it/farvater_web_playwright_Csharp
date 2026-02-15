@@ -237,4 +237,20 @@ public abstract class BaseTest : IAsyncLifetime
         _test.Info("Авторизация выполнена успешно");
         Log.Information("[Setup] Авторизация успешна");
     }
+
+    protected async Task LoginAs(string login, string? password = null)
+    {
+        Log.Information($"[Setup] Начало авторизации под {login}");
+
+        await Page.GotoAsync(ConfigurationReader.BaseUrl);
+
+        await Page.GetByPlaceholder("Пользователь").FillAsync(login);
+        await Page.GetByPlaceholder("Пароль").FillAsync(password??"");
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Войти" }).ClickAsync();
+
+        await Page.WaitForURLAsync("**/dashboard");
+
+        _test.Info("Авторизация выполнена успешно");
+        Log.Information("[Setup] Авторизация успешна");
+    }
 }

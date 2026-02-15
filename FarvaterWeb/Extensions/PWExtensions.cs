@@ -52,6 +52,23 @@ namespace FarvaterWeb.Extensions
             await locator.PressAsync("Enter");
         }
 
+        public static async Task ClickCreateButtonAndWait(this SmartLocator smart)
+        {
+            string stepName = $"[{smart.ComponentName}] Клик по элементу: {smart.Type} '{smart.Name}'";
+            await smart.Page.Do(stepName, async () =>
+            {
+                var creationUrl = smart.Page.Url;
+                await smart.SafeClickAsync();
+
+                // Ждем, пока URL перестанет быть равен creationUrl
+                await smart.Page.WaitForFunctionAsync($"() => window.location.href !== '{creationUrl}'");
+
+                // Теперь мы точно знаем, что редирект случился. 
+                // Можем даже вывести новый URL в лог для интереса:
+                //Log.Information($"Система перенаправила нас на: {Page.Url}");
+            });
+        }
+
         // --- Группа 2: Кнопки и клики ---
 
         /*public static async Task ClickWithWaitAsync(this ILocator locator, float timeout = 5000)

@@ -28,7 +28,7 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task ClickCreateDocumentButton ()
         {
-            await CreateDocumentButton.SafeClickAsync();
+            await CreateDocumentButton.ClickCreateButtonAndWait();
         }
 
         public async Task FillNoteDetails (NoteDetails details)

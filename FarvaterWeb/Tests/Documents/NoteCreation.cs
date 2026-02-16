@@ -6,6 +6,7 @@ using FarvaterWeb.Generators;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
 using Microsoft.Playwright;
+using Xunit;
 using Xunit.Abstractions;
 
 
@@ -72,9 +73,9 @@ namespace FarvaterWeb.Tests.Documents
 
                 var noteDetails = new NoteDetails
                     (
-                    "Служебная",
-                    "Тема служебной записки",
-                    "Содержание служебной записки",
+                    documentType,
+                    topic,
+                    content,
                     lastName,
                     firstName
                      );

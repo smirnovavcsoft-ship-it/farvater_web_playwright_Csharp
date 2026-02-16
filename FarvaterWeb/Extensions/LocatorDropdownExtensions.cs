@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using AventStack.ExtentReports.Model;
+using Microsoft.CodeAnalysis;
 using Microsoft.Playwright;
 using System.Text.RegularExpressions;
 using static Microsoft.Playwright.Assertions;
@@ -51,7 +52,7 @@ namespace FarvaterWeb.Extensions
 
                 // 2. Находим контейнер списка (Last решает проблему нескольких списков в DOM)
                 var optionsContainer = smart.Page
-                    .Locator("[data-testid='dropdown_list-options']:visible")
+                    .Locator("[data-testid='dropdown_list-options']:visible, [data-testid = 'names-list']:visible")
                     .Last;
 
                 await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Visible });
@@ -81,9 +82,9 @@ namespace FarvaterWeb.Extensions
             });
         }
 
-        public static async Task SelectByTextAndVerifyAsync(this SmartLocator smart, string text)
+        public static async Task SelectByTextAndVerifyAsync(this SmartLocator smart, string optionText, bool isMultiSelect = false, string? customVerifyLocator = null)
         {
-            string stepName = $"[{smart.ComponentName}] Выбор пункта '{text}' в {smart.Type} '{smart.Name}'";
+            string stepName = $"[{smart.ComponentName}] Выбор пункта '{optionText}' в {smart.Type} '{smart.Name}'";
 
             await smart.Page.Do(stepName, async () =>
             {
@@ -101,14 +102,37 @@ namespace FarvaterWeb.Extensions
                 // Здесь оставляем Exact = true, чтобы кликнуть именно туда, куда нужно
                 var targetOption = optionsContainer
                     .Locator("[data-signature='dropdown_list-item'], [data-signature='checkbox-selector-wrapper']")
-                    .GetByText(text, new() { Exact = true })
+                    .GetByText(optionText, new() { Exact = true })
                     .Last;
 
                 await targetOption.ClickAsync();
 
+                // 4. Логика для мультиселектора
+                if (isMultiSelect)
+                {
+                    await smart.Page.Keyboard.PressAsync("Escape");
+                    // Ждем закрытия, чтобы не "споткнуться" в следующем шаге
+                    await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Hidden });
+                }
+
+                // 5. Проверка результата
+                var baseLocator = !string.IsNullOrEmpty(customVerifyLocator)
+                    ? smart.Page.Locator(customVerifyLocator)
+                        : isMultiSelect
+                            ? smart.Page.Locator("[data-signature='mutliselect-list']") //локатор выбранного пункта, который появляется ниже выпадающего списка
+                            : smart.Locator;
+
+                //await Assertions.Expect(verifyLocator).ToContainTextAsync(optionText);
+
+                var verifyLocator = baseLocator.Filter(new() { HasText = optionText }).Last;
+
+                await Assertions.Expect(verifyLocator).ToContainTextAsync(optionText);
+
                 // 4. ПРОВЕРКА: Простой ToContainText без Regex и без Exact
                 // Он увидит 'ООО Альфа-Групп' внутри 'Сторона 1 *ООО Альфа-Групп' и будет счастлив
-                await Assertions.Expect(smart.Locator).ToContainTextAsync(text);
+                // await Assertions.Expect(smart.Locator).ToContainTextAsync(optionText);
+
+
 
                 // 5. Ждем закрытия списка для стабильности
                 await optionsContainer.WaitForAsync(new() { State = WaitForSelectorState.Hidden });

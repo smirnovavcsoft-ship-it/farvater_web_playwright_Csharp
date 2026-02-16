@@ -36,24 +36,29 @@ namespace FarvaterWeb.Generators
         /// Генерирует модель контрагента (организации)
         /// </summary>
         public static CounterpartyModel GenerateCounterparty()
-        {
-            var companyName = FakerRu.Company.CompanyName();
+{
+            // Генерируем "голый" бренд без ООО/ИП
+            // Можно использовать CatchPhrase для более креативных названий
+            //var brandName = FakerRu.Company.CatchPhrase(); 
+            var brandName = FakerRu.Company.CompanyName();
 
-            return new CounterpartyModel
-            {
-                // ИНН для юрлиц (10 цифр)
-                inn = FakerRu.Random.ReplaceNumbers("##########"),
-                // КПП (9 цифр)
-                kpp = FakerRu.Random.ReplaceNumbers("#########"),
-                // ОГРН (13 цифр)
-                ogrn = FakerRu.Random.ReplaceNumbers("#############"),
-                shorttitle = companyName,
-                title = $"ООО {companyName}",
-                address = FakerRu.Address.FullAddress(),
-                phone = FakerRu.Phone.PhoneNumber("+7 (812) ###-##-##"),
-                email = FakerRu.Internet.Email(),
-                type = "LEGALENTITY_DEF"
-            };
-        }
+    return new CounterpartyModel
+    {
+        inn = FakerRu.Random.ReplaceNumbers("##########"),
+        kpp = FakerRu.Random.ReplaceNumbers("#########"),
+        ogrn = FakerRu.Random.ReplaceNumbers("#############"),
+        
+        // Краткое название: "ТехноПром"
+        shorttitle = brandName, 
+        
+        // Полное название: "ООО ТехноПром"
+        title = $"ООО {brandName}", 
+        
+        address = FakerRu.Address.FullAddress(),
+        phone = FakerRu.Phone.PhoneNumber("+7 (812) ###-##-##"),
+        email = FakerRu.Internet.Email(),
+        type = "LEGALENTITY_DEF"
+    };
+}
     }
 }

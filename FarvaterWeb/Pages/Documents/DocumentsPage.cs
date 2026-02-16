@@ -33,7 +33,7 @@ namespace FarvaterWeb.Pages.Documents
 
         // Исходящий документ
 
-        private SmartLocator AdresseesDropdown => Dropdown.WithLabel("Адресаты");
+        private SmartLocator ResipientsDropdown => Dropdown.WithLabel("Адресаты");
 
         private SmartLocator SignedByDropdown => Dropdown.WithLabel("Подписал");
 
@@ -116,9 +116,10 @@ namespace FarvaterWeb.Pages.Documents
             await SenderDropdown.SelectByIndexAndVerifyAsync(0);
         }
 
-        public async Task SelectAdressee()
+        public async Task SelectResipient(string shortTitle)
         {
-            await AdresseesDropdown.SelectByIndexAndVerifyAsync(0, customVerifyLocator: "td._table_cell_8wkbu_111");
+            // await ResipientsDropdown.SelectByIndexAndVerifyAsync(0, customVerifyLocator: "td._table_cell_8wkbu_111");
+            await ResipientsDropdown.SelectByTextAndVerifyAsync(shortTitle, customVerifyLocator: "td._table_cell_8wkbu_111");
         }
 
         public async Task SelectSenderSubscriber()
@@ -126,9 +127,9 @@ namespace FarvaterWeb.Pages.Documents
             await SenderSubscriberDropdown.SelectByIndexAndVerifyAsync(0);
         }
 
-        public async Task SelectPerformer()
+        public async Task SelectPerformer(string lastName, string firstName)
         {
-            await PerformerDropdown.SelectByIndexAndVerifyAsync(0);
+            await PerformerDropdown.SelectUserAndVerifyAsync(lastName, firstName);
         }
 
         public async Task ClickCancelButton()
@@ -238,6 +239,12 @@ namespace FarvaterWeb.Pages.Documents
             await Table.DeleteRow(shortTitle, buttonText);
 
         }
+
+        /*public async Task DeleteCreatedOutcomeDocument(string shortTitle)
+        {
+            string buttonText = "Удалить";
+            await Table.DeleteRow(shortTitle, buttonText);
+        }*/
 
         
     }

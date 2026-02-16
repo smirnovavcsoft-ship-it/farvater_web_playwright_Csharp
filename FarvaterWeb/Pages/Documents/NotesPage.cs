@@ -47,7 +47,7 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task ClickCreateButton()
         {
-            await CreateButton.SafeClickAsync();
+            await CreateButton.ClickCreateButtonAndWait();
         }
 
         public async Task DeleteCreatedNote(string topic)

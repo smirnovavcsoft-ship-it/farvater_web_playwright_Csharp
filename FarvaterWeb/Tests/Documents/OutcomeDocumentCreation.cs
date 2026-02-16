@@ -1,5 +1,8 @@
-﻿using FarvaterWeb.Base;
+﻿using FarvaterWeb.ApiServices;
+using FarvaterWeb.Base;
 using FarvaterWeb.Data;
+using FarvaterWeb.Extensions;
+using FarvaterWeb.Generators;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
 using Xunit.Abstractions;
@@ -8,84 +11,137 @@ namespace FarvaterWeb.Tests.Documents
 {
     public class OutcomeDocumentCreationTests : BaseTest
     {
+        private CounterpartyApiService CounterpartyApi => new CounterpartyApiService(ApiRequest);
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
 
-        private DocumentsPage Documents => new DocumentsPage(Page, Log, _test); 
-        public OutcomeDocumentCreationTests(ITestOutputHelper output) : base(output) { }
-        
-        [Fact(DisplayName ="Проверка успешного создания исходящего документа")]
+        private DocumentsPage Documents => new DocumentsPage(Page, Log, _test);
 
-        public async Task ShouldCreateOutcomeDocment ()
+        private readonly CounterpartyModel _counterparty;
+
+        private UserApiService UserApi => new UserApiService(ApiRequest);
+
+        private readonly UserModel _user;
+        public OutcomeDocumentCreationTests(ITestOutputHelper output) : base(output)
         {
-            Log.Information("--- Запуск сценария: Создание исходящего документа---");
-            await LoginAsAdmin();
-            await SideMenu.OpenSection("Исходящие", "outcome");
+            _counterparty = DataFactory.GenerateCounterparty();
+            _user = DataFactory.GenerateUser();
+        }
 
-            // Клик по кнопке "Создать документ"
+        [Fact(DisplayName = "Проверка успешного создания исходящего документа")]
 
-            await Documents.ClickCreateDocumentButton();
+        public async Task ShouldCreateOutcomeDocment()
+        {
+            var fullTitle = _counterparty.title;
+            string shortTitle = _counterparty.shorttitle;
+            var inn = _counterparty.inn;
 
-            // Ввести текст в краткое описание
+            string postfix = DataPostfixExtensions.GetUniquePostfix();
 
-            var outcomedocumentDetails = new OutcomeDocumentDetails("Кратакое описание краткое описание");
+            string lastName = _user.lastName!;
+            string firstName = _user.firstName!;
+            string login = $"{lastName}{postfix}";
 
-            await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
+            string? userHandle = null;
 
-            // Выбор адресата
+            string? counterpartyHandle = null;
 
-            await Documents.SelectAdressee();
+            // Создание контрагента и пользователя через API
 
-            // Выбор исполнителя
+            try
+            {
+                userHandle = await UserApi.PrepareUserAsync(lastName, firstName, login);
 
-            await Documents.SelectPerformer();
+                counterpartyHandle = await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
 
-            // Нажатие кнопки "Отмена"
+                Log.Information("--- Запуск сценария: Создание исходящего документа---");
+                await LoginAsAdmin();
+                await SideMenu.OpenSection("Исходящие", "outcome");
 
-            await Documents.ClickCancelButton();
+                // Клик по кнопке "Создать документ"
 
-            // Проверка несоздания документа (сейчас не сделать, потому что нет краткого описания документа в столбце описания, поэтому не к чему прицепиться)
+                await Documents.ClickCreateDocumentButton();
 
-            // Клик по кнопке "Создать документ"
+                // Ввести текст в краткое описание
 
-            await Documents.ClickCreateDocumentButton();
+                var outcomedocumentDetails = new OutcomeDocumentDetails("Кратакое описание краткое описание");
+
+                await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
+
+                // Выбор адресата
+
+                await Documents.SelectResipient(shortTitle);
+
+                // Выбор исполнителя
+
+                await Documents.SelectPerformer(lastName, firstName);
+
+                // Нажатие кнопки "Отмена"
+
+                await Documents.ClickCancelButton();
+
+                // Проверка несоздания документа (сейчас не сделать, потому что нет краткого описания документа в столбце описания, поэтому не к чему прицепиться)
+
+                // Клик по кнопке "Создать документ"
+
+                await Documents.ClickCreateDocumentButton();
 
 
-            // Ввести текст в краткое описание
+                // Ввести текст в краткое описание
 
-            await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
+                await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
 
-            // Выбор адресата
+                // Выбор адресата
 
-            await Documents.SelectAdressee();
+                await Documents.SelectResipient(shortTitle);
 
-            // Выбор исполнителя
+                // Выбор исполнителя
 
-            await Documents.SelectPerformer();
+                await Documents.SelectPerformer(lastName, firstName);
 
-            // Заполнение полей адресата (пока не буду здесь заполнять, потому что какая-то таблица, которой возможно больше нигде не будет, если где-то встречу такую-же, то напишу)
+                // Заполнение полей адресата (пока не буду здесь заполнять, потому что какая-то таблица, которой возможно больше нигде не будет, если где-то встречу такую-же, то напишу)
 
-            // Выбор проекта 
+                // Выбор проекта 
 
-            await Documents.SelectProject();
+                await Documents.SelectProject();
 
-            // Выбор пользователя в поле "Подписал"
+                // Выбор пользователя в поле "Подписал"
 
-            await Documents.SelectProject();
+                await Documents.SelectProject();
 
-            // Нажатие кнопки "Создать"
+                // Нажатие кнопки "Создать"
 
-            await Documents.ClickCreateButton();
+                await Documents.ClickCreateButton();
 
-            // Обновление страницы и проверка создания документа в списке (пока не сделать из-за отсутствия краткого описания в списке)
+                // Удаление документа (пока не сделать из-за отсутствия краткого описания в списке)
 
-            // Удаление документа (пока не сделать из-за отсутствия краткого описания в списке)
 
-            // Обмновление страницы и проверка отсутствия документа (пока не сделать из-за отсутствия краткого описания в списке)
 
+                // Обмновление страницы и проверка отсутствия документа (пока не сделать из-за отсутствия краткого описания в списке)
+
+
+            }
+
+            finally
+            {
+                // Если GUID был получен — удаляем
+                if (!string.IsNullOrEmpty(counterpartyHandle))
+                {
+                    await CounterpartyApi.DeleteCounterpartyAsync(counterpartyHandle);
+                }
+
+                if (!string.IsNullOrEmpty(userHandle))
+                {
+                    await CounterpartyApi.DeleteCounterpartyAsync(userHandle);
+                }
+            }
 
         }
 
-
-
     }
+
 }
+
+
+
+        
+

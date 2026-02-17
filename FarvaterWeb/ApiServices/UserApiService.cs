@@ -60,11 +60,11 @@ namespace FarvaterWeb.ApiServices
             {
                 var model = new UserModel
                 {
-                    lastName = lastName,
-                    firstName = firstName,
-                    login = login,
-                    isDomainUser = isDomainUser,
-                    language = language
+                    LastName = lastName,
+                    FirstName = firstName,
+                    Login = login,
+                    IsDomainUser = isDomainUser,
+                    Language = language
                 };
 
                 var response = await CreateUserAsync(model);

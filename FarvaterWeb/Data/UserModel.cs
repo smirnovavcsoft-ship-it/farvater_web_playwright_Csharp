@@ -8,20 +8,20 @@ namespace FarvaterWeb.Data
 {
     public class UserModel
     {
-        public string? firstName { get; set; }
-        public string? lastName { get; set; }
-        public string? middleName { get; set; } = "";
-        public string? description { get; set; } // Обычно lastName + firstName
-        public string? login { get; set; }
-        public string? mail { get; set; } = "";
-        public string? phone { get; set; } = "";
-        public string? personnelNumber { get; set; } = "";
-        public bool isDisabled { get; set; } = false;
-        public bool isLeader { get; set; } = false;
-        public bool isDomainUser { get; set; } = false;
-        public bool isSysadmin { get; set; } = false;
-        public bool isExternal { get; set; } = false;
-        public string? language { get; set; } = "ru";
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? MiddleName { get; set; } = "";
+        public string? Description { get; set; } // Обычно lastName + firstName
+        public string? Login { get; set; }
+        public string? Mail { get; set; } = "";
+        public string? Phone { get; set; } = "";
+        public string? PersonnelNumber { get; set; } = "";
+        public bool IsDisabled { get; set; } = false;
+        public bool IsLeader { get; set; } = false;
+        public bool IsDomainUser { get; set; } = false;
+        public bool IsSysadmin { get; set; } = false;
+        public bool IsExternal { get; set; } = false;
+        public string? Language { get; set; } = "ru";
 
         // Правила (права доступа)
         public Dictionary<string, UserRuleDto> rules { get; set; } = new();
@@ -29,8 +29,8 @@ namespace FarvaterWeb.Data
 
     public class UserRuleDto
     {
-        public bool value { get; set; } = false;
-        public bool byGroup { get; set; } = false;
+        public bool Value { get; set; } = false;
+        public bool ByGroup { get; set; } = false;
         public List<string> groups { get; set; } = new();
     }
 }

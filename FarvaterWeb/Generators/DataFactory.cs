@@ -1,6 +1,7 @@
-﻿using System;
-using Bogus;
+﻿using Bogus;
 using FarvaterWeb.Data;
+using FarvaterWeb.Extensions;
+using System;
 
 namespace FarvaterWeb.Generators
 {
@@ -16,19 +17,20 @@ namespace FarvaterWeb.Generators
             var gender = FakerRu.PickRandom<Bogus.DataSets.Name.Gender>();
             var firstName = FakerRu.Name.FirstName(gender);
             var lastName = FakerRu.Name.LastName(gender);
+            string postfix = DataPostfixExtensions.GetUniquePostfix();
 
             return new UserModel
             {
-                firstName = firstName,
-                lastName = lastName,
-                description = $"{lastName} {firstName}",
-                login = FakerRu.Internet.UserName(lastName, firstName).Replace(".", "_"),
-                mail = FakerRu.Internet.Email(lastName, firstName),
-                phone = FakerRu.Phone.PhoneNumber("+79#########"),
-                personnelNumber = FakerRu.Random.ReplaceNumbers("####"),
-                isDisabled = false,
-                isLeader = false,
-                language = "ru"
+                FirstName = firstName,
+                LastName = lastName,
+                Description = $"{lastName} {firstName}",
+                Login = FakerRu.Internet.UserName(lastName, $"{firstName}{postfix}").Replace(".", "_"),
+                Mail = FakerRu.Internet.Email(lastName, firstName),
+                Phone = FakerRu.Phone.PhoneNumber("+79#########"),
+                PersonnelNumber = FakerRu.Random.ReplaceNumbers("####"),
+                IsDisabled = false,
+                IsLeader = false,
+                Language = "ru"
             };
         }
 

@@ -37,8 +37,8 @@ namespace FarvaterWeb.Tests.Documents
 
             string postfix = DataPostfixExtensions.GetUniquePostfix();
 
-            string lastName = _user.lastName!;
-            string firstName = _user.firstName!;
+            string lastName = _user.LastName!;
+            string firstName = _user.FirstName!;
             string login = $"{lastName}{postfix}";
 
             string? userHandle = null;

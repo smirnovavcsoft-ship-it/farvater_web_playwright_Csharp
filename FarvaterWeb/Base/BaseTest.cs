@@ -222,7 +222,7 @@ public abstract class BaseTest : IAsyncLifetime
         _test.Pass("Тест завершен успешно");
     }
 
-    protected async Task LoginAsAdmin()
+    public async Task LoginAsAdmin()
     {
         Log.Information("[Setup] Начало авторизации под SYSADMIN");
 

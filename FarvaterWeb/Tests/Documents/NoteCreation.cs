@@ -5,6 +5,7 @@ using FarvaterWeb.Extensions;
 using FarvaterWeb.Generators;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
+using FarvaterWeb.TestData;
 using Microsoft.Playwright;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,38 +26,39 @@ namespace FarvaterWeb.Tests.Documents
 
         private UserApiService UserApi => new UserApiService(ApiRequest);
 
-        private readonly UserModel _user;
+        //private readonly UserModel _user;
 
         public NoteCreationTests(ITestOutputHelper output) : base(output)
         {
-            _user = DataFactory.GenerateUser();
+            //_user = DataFactory.GenerateUser();
         }
 
-        [Fact(DisplayName = "Проверка успешного создания записки")]
-
-        public async Task ShouldCreateNote()
+        //[Fact(DisplayName = "Проверка успешного создания записки")]
+        [Theory(DisplayName = "Проверка успешного создания записки")]
+        [MemberData(nameof(NoteTestData.GetUniversalNoteCases), MemberType = typeof(NoteTestData))]
+        public async Task ShouldCreateNote(UserModel actor, UserModel newUser, NoteDetails note, string expectedResult)
         {
             // Создание пользователя через API
 
-            string postfix = DataPostfixExtensions.GetUniquePostfix();
+            //string postfix = DataPostfixExtensions.GetUniquePostfix();
 
-            string lastName = _user.lastName!;
-            string firstName = _user.firstName!;
-            string login = $"{lastName}{postfix}";
+            //string lastName = _user.LastName!;
+            //string firstName = _user.FirstName!;
+            //string login = $"{lastName}{postfix}";
 
             string? userHandle = null;
 
             try
 
             {
-                userHandle = await UserApi.PrepareUserAsync(lastName, firstName, login);
+                userHandle = await UserApi.PrepareUserAsync(newUser.LastName!, newUser.FirstName!, newUser.Login!);
 
 
                 Log.Information("--- Запуск сценария: Создание записки---");
 
                 try
                 {
-                  await LoginAs(login);
+                  await LoginAs(actor.Login!);
                 }
                 catch
                 {
@@ -71,20 +73,20 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Ввод и выбор данных (Тип документа, Тема, Содержание, Адресаты, ). Проект пока выбирать не буду. Потом добавлю, когда разберусь с API
 
-                var noteDetails = new NoteDetails
+                /*var noteDetails = new NoteDetails
                     (
-                    documentType,
-                    topic,
-                    content,
-                    lastName,
-                    firstName
-                     );
+                    note.DocumentType,
+                    note.Topic,
+                    note.Content,
+                    user.LastName,
+                    user.FirstName
+                     );*/
 
-                await Notes.FillNoteDetails(noteDetails);
+                await Notes.FillNoteDetails(note);
 
                 // Нажатие кнопки "Отмена"
 
-                await Notes.CancelAndVerify(noteDetails.Topic);
+                await Notes.CancelAndVerify(note.Topic);
 
 
                 // Нажатие кнопки "Создание документа"
@@ -94,7 +96,7 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Ввод и выбор данных (Тип документа, Тема, Содержание, Адресаты, ). Проект пока выбирать не буду. Потом добавлю, когда разберусь с API
 
-                await Notes.FillNoteDetails(noteDetails);
+                await Notes.FillNoteDetails(note);
 
                 // Нажатие кнопки "Создать"
 
@@ -103,7 +105,7 @@ namespace FarvaterWeb.Tests.Documents
                 // Удаление записки
 
                 await SideMenu.OpenSection("Записки", "notes");
-                await Notes.DeleteCreatedNote(noteDetails.Topic);
+                await Notes.DeleteCreatedNote(note.Topic);
             }
 
             // Удалить адресата из базы

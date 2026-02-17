@@ -43,9 +43,9 @@ namespace FarvaterWeb.ApiServices
             {
                 var model = new CounterpartyModel
                 {
-                    title = title,
-                    shorttitle = shortTitle,
-                    inn = inn
+                    FullTitle = title,
+                    ShortTitle = shortTitle,
+                    Inn = inn
                 };
 
                 var response = await CreateCounterpartyAsync(model);

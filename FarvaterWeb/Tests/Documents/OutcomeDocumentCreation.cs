@@ -31,9 +31,9 @@ namespace FarvaterWeb.Tests.Documents
 
         public async Task ShouldCreateOutcomeDocment()
         {
-            var fullTitle = _counterparty.title;
-            string shortTitle = _counterparty.shorttitle;
-            var inn = _counterparty.inn;
+            var fullTitle = _counterparty.FullTitle;
+            string shortTitle = _counterparty.ShortTitle;
+            var inn = _counterparty.Inn;
 
             string postfix = DataPostfixExtensions.GetUniquePostfix();
 

@@ -8,14 +8,14 @@ namespace FarvaterWeb.Data
 {
     public class CounterpartyModel
     {
-        public string inn { get; set; }
-        public string shorttitle { get; set; }
-        public string title { get; set; }
-        public string address { get; set; } = "";
-        public string ogrn { get; set; } = "";
-        public string kpp { get; set; } = "";
-        public string phone { get; set; } = "";
-        public string email { get; set; } = "";
-        public string type { get; set; } = "LEGALENTITY_DEF";
+        public string Inn { get; set; }
+        public string ShortTitle { get; set; }
+        public string FullTitle { get; set; }
+        public string Address { get; set; } = "";
+        public string Ogrn { get; set; } = "";
+        public string Kpp { get; set; } = "";
+        public string Phone { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Type { get; set; } = "LEGALENTITY_DEF";
     }
 }

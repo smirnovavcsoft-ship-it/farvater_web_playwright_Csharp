@@ -1,9 +1,10 @@
-﻿using FarvaterWeb.Base;
+﻿using FarvaterWeb.ApiServices;
+using FarvaterWeb.Base;
 using FarvaterWeb.Data;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
+using FarvaterWeb.TestData;
 using Xunit.Abstractions;
-using FarvaterWeb.ApiServices;
 
 namespace FarvaterWeb.Tests.Documents
 {
@@ -19,13 +20,15 @@ namespace FarvaterWeb.Tests.Documents
 
         
 
-        [Fact(DisplayName ="Проверка успешного создания договора")]
+        //[Fact(DisplayName ="Проверка успешного создания договора")]
+        [Theory(DisplayName = "Проверка успешного создания договора")]
+        [MemberData(nameof(ContractTestData.GetUniversalContractCases), MemberType = typeof(ContractTestData))]
 
-        public async Task ShouldCreateContract ()
+        public async Task ShouldCreateContract (UserModel actor, CounterpartyModel counterparty, ContractDetails contract, string expectedResult)
         {
-            var fullTitle = "Общество с ограниченной ответственностью Альфа-Групп";
-            string shortTitle = "ООО Альфа-Групп";
-            var inn = "7701234567";
+            //var fullTitle = "Общество с ограниченной ответственностью Альфа-Групп";
+            //string shortTitle = "ООО Альфа-Групп";
+            //var inn = "7701234567";
 
             // 1. Создаем через API
 
@@ -34,10 +37,11 @@ namespace FarvaterWeb.Tests.Documents
             try
             {
 
-                counterpartyHandle = await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+                counterpartyHandle = await CounterpartyApi.PrepareCounterpartyAsync(counterparty.FullTitle, counterparty.ShortTitle, counterparty.Inn);
                 
                 Log.Information("--- Запуск сценария: Создание договора---");
-                await LoginAsAdmin();
+                //await LoginAsAdmin();
+                await LoginAs(actor.Login!);
                 await SideMenu.OpenSection("Договоры", "contracts");
 
                 // Клик по кнопке "Создать договор"
@@ -46,7 +50,7 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
 
-                var contractDetails = new ContractDetails
+                /*var contractDetails = new ContractDetails
                     (
                     "Разработка документации",
                     "Сторона 1",
@@ -54,9 +58,9 @@ namespace FarvaterWeb.Tests.Documents
                     "12464",
                     "145465",
                     "514416541"
-                    );
+                    );*/
 
-                await Documents.FillContractDetails(contractDetails);
+                await Documents.FillContractDetails(contract);
 
                 // Выбор типа договора
 
@@ -64,11 +68,11 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Выбор стороны 1 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-                await Documents.SelectParty1(shortTitle);
+                await Documents.SelectParty1(counterparty.ShortTitle);
 
                 // Выбор стороны 2 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-                await Documents.SelectParty2(shortTitle);
+                await Documents.SelectParty2(counterparty.ShortTitle);
 
                 // Назначение сроков по договору
 
@@ -90,7 +94,7 @@ namespace FarvaterWeb.Tests.Documents
 
                 //  Заполнение полей ввода ("Предмет договора", "Стоимость", "В том числе НДС", "Полная стоимость", "Именуемая в дальнейшем", "Именуемая в дальнейшем")
 
-                await Documents.FillContractDetails(contractDetails);
+                await Documents.FillContractDetails(contract);
 
                 // Выбор типа договора
 
@@ -98,11 +102,11 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Выбор стороны 1
 
-                await Documents.SelectParty1(shortTitle);
+                await Documents.SelectParty1(counterparty.ShortTitle);
 
                 // Выбор стороны 2
 
-                await Documents.SelectParty2(shortTitle);
+                await Documents.SelectParty2(counterparty.ShortTitle);
 
                 // Назначение сроков по договору
 
@@ -116,7 +120,7 @@ namespace FarvaterWeb.Tests.Documents
 
                 await SideMenu.OpenSection("Договоры", "contracts");
 
-                await Documents.DeleteCreatedContract(shortTitle);
+                await Documents.DeleteCreatedContract(counterparty.ShortTitle);
 
             }
 

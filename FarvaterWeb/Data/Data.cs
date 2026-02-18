@@ -8,13 +8,17 @@ namespace FarvaterWeb.Data
 {
     public record IncomeDocumentDetails
     (
+        string DocumentType,
         string Summary,
-        string SenderNumber
+        string SenderNumber,
+        string Sender
     );
 
     public record OutcomeDocumentDetails
         (
-        string Summary
+        string Summary,
+        string Resipient,
+        string Performer
         );
 
     public record ContractDetails

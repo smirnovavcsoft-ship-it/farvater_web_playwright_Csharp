@@ -78,13 +78,26 @@ namespace FarvaterWeb.Generators
             );
         }
 
-        public static IncomeDocumentDetails GenerateIncomeDocumentDetails()
+        public static IncomeDocumentDetails GenerateIncomeDocumentDetails(string shortTitle = "")
         {
             return new IncomeDocumentDetails
             (
+                DocumentType: "Письмо",
                 Summary: FakerRu.Lorem.Sentence(5, 10),
-                SenderNumber: FakerRu.Random.Replace("###-###")
+                SenderNumber: FakerRu.Random.Replace("###-###"),
+                Sender: shortTitle
             );
         }
-}
+
+        public static OutcomeDocumentDetails GenerateOutcomeDocumentDetails(string lastName, string firstName, string shortTitle = "")
+        {
+            return new OutcomeDocumentDetails
+            (
+                Summary: FakerRu.Lorem.Sentence(5, 10),
+                Resipient: shortTitle,
+                Performer: $"{lastName} {firstName[0]}."
+
+            );
+        }
+    }
 }

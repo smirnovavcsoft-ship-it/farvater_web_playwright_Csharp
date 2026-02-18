@@ -5,6 +5,7 @@ using FarvaterWeb.Extensions;
 using FarvaterWeb.Generators;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Documents;
+using FarvaterWeb.TestData;
 using Xunit.Abstractions;
 
 namespace FarvaterWeb.Tests.Documents
@@ -27,11 +28,13 @@ namespace FarvaterWeb.Tests.Documents
             _user = DataFactory.GenerateUser();
         }
 
-        [Fact(DisplayName = "Проверка успешного создания исходящего документа")]
+        //[Fact(DisplayName = "Проверка успешного создания исходящего документа")]
+        [Theory(DisplayName = "Проверка успешного создания исходящего документа")]
+        [MemberData(nameof(OutcomeDocumentTestData.GetUniversalContractCases), MemberType = typeof(OutcomeDocumentTestData))]
 
-        public async Task ShouldCreateOutcomeDocment()
+        public async Task ShouldCreateOutcomeDocment(UserModel actor, UserModel newUser, CounterpartyModel counterparty, OutcomeDocumentDetails outcomeDocument, string expectedResult)
         {
-            var fullTitle = _counterparty.FullTitle;
+            /*var fullTitle = _counterparty.FullTitle;
             string shortTitle = _counterparty.ShortTitle;
             var inn = _counterparty.Inn;
 
@@ -39,7 +42,7 @@ namespace FarvaterWeb.Tests.Documents
 
             string lastName = _user.LastName!;
             string firstName = _user.FirstName!;
-            string login = $"{lastName}{postfix}";
+            string login = $"{lastName}{postfix}";*/
 
             string? userHandle = null;
 
@@ -49,12 +52,12 @@ namespace FarvaterWeb.Tests.Documents
 
             try
             {
-                userHandle = await UserApi.PrepareUserAsync(lastName, firstName, login);
+                userHandle = await UserApi.PrepareUserAsync(newUser.LastName!, newUser.FirstName!, newUser.Login!);
 
-                counterpartyHandle = await CounterpartyApi.PrepareCounterpartyAsync(fullTitle, shortTitle, inn);
+                counterpartyHandle = await CounterpartyApi.PrepareCounterpartyAsync(counterparty.FullTitle, counterparty.ShortTitle, counterparty.Inn);
 
                 Log.Information("--- Запуск сценария: Создание исходящего документа---");
-                await LoginAsAdmin();
+                await LoginAs(actor.Login!);
                 await SideMenu.OpenSection("Исходящие", "outcome");
 
                 // Клик по кнопке "Создать документ"
@@ -63,17 +66,17 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Ввести текст в краткое описание
 
-                var outcomedocumentDetails = new OutcomeDocumentDetails("Кратакое описание краткое описание");
+               // var outcomedocumentDetails = new OutcomeDocumentDetails("Кратакое описание краткое описание");
 
-                await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
+                await Documents.FillOutcomeDocumentDetails(outcomeDocument, newUser);
 
                 // Выбор адресата
 
-                await Documents.SelectResipient(shortTitle);
+                //await Documents.SelectResipient(shortTitle);
 
                 // Выбор исполнителя
 
-                await Documents.SelectPerformer(lastName, firstName);
+               // await Documents.SelectPerformer(lastName, firstName);
 
                 // Нажатие кнопки "Отмена"
 
@@ -88,15 +91,15 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Ввести текст в краткое описание
 
-                await Documents.FillSummaryInOutcomeDocument(outcomedocumentDetails);
+                await Documents.FillOutcomeDocumentDetails(outcomeDocument, newUser);
 
                 // Выбор адресата
 
-                await Documents.SelectResipient(shortTitle);
+               // await Documents.SelectResipient(shortTitle);
 
                 // Выбор исполнителя
 
-                await Documents.SelectPerformer(lastName, firstName);
+               // await Documents.SelectPerformer(lastName, firstName);
 
                 // Заполнение полей адресата (пока не буду здесь заполнять, потому что какая-то таблица, которой возможно больше нигде не будет, если где-то встречу такую-же, то напишу)
 

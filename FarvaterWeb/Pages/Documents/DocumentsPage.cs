@@ -87,13 +87,18 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task FillIncomeDocumetDetails(IncomeDocumentDetails details)
         {
+            await DocumentTypeDropdown.SelectByTextAndVerifyAsync(details.DocumentType);
             await SummaryInputInIncomeDocument.ClearAndFillAsync(details.Summary);
             await SenderNumberInput.ClearAndFillAsync(details.SenderNumber);
+            await SenderDropdown.SelectByTextAndVerifyAsync(details.Sender);
         }
 
-        public async Task FillSummaryInOutcomeDocument(OutcomeDocumentDetails details)
+        public async Task FillOutcomeDocumentDetails(OutcomeDocumentDetails details, UserModel newUser)
         {
+
             await SummaryInputInOutcomeDocument.ClearAndFillAsync(details.Summary);
+            await ResipientsDropdown.SelectByTextAndVerifyAsync(details.Resipient);
+            await PerformerDropdown.SelectUserAndVerifyAsync(newUser.LastName!, newUser.FirstName!);
         }
 
         public async Task SelectProject()

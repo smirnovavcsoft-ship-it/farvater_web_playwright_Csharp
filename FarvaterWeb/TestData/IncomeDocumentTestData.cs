@@ -11,11 +11,20 @@ namespace FarvaterWeb.TestData
 {
     public static class IncomeDocumentTestData
     {
-        public static IncomeDocumentDetails GenerateIncomeDocumentDetails()
+        public static IEnumerable<object[]> GetUniversalContractCases()
         {
-            string content = DataFactory.FakerRu.Lorem.Sentence(5, 10);
-            string number = DataFactory.FakerRu.Random.Replace("####");
-            return new IncomeDocumentDetails(content, number);
+
+            var actor = CommonTestData.GetAdmin();
+
+            var newUser = DataFactory.GenerateUser();
+
+            var counterparty = DataFactory.GenerateCounterparty();
+
+            var incomeDocument = DataFactory.GenerateIncomeDocumentDetails();
+            //string content = DataFactory.FakerRu.Lorem.Sentence(5, 10);
+            //string number = DataFactory.FakerRu.Random.Replace("####");
+            //return new IncomeDocumentDetails(content, number);
+            yield return new object[] { actor, counterparty, new IncomeDocumentDetails("Письмо", incomeDocument.Summary, incomeDocument.SenderNumber, counterparty.ShortTitle), "Успешно" };
         }
     }
 }

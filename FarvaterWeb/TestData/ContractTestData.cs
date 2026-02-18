@@ -31,11 +31,23 @@ namespace FarvaterWeb.TestData
                 , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
 
             counterparty = DataFactory.GenerateCounterparty();
-            // Кейс 2: Негативный под админом (пустой предмет договора)
+            // Кейс 3: Негативный под админом (пустой предмет договора)
             yield return new object[] { newUser, new ContractDetails(""
                 , "Описание контракта", counterparty.ShortTitle, counterparty.ShortTitle
                 , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
-            
+
+            counterparty = DataFactory.GenerateCounterparty();
+            // Кейс 4: Негативный под админом (пустая сторона 1)
+            yield return new object[] { newUser, new ContractDetails(""
+                , "Описание контракта", "", counterparty.ShortTitle
+                , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
+
+            counterparty = DataFactory.GenerateCounterparty();
+            // Кейс 5: Негативный под админом (пустой предмет договора)
+            yield return new object[] { newUser, new ContractDetails(""
+                , "Описание контракта", counterparty.ShortTitle, ""
+                , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
+
         }
     }
 }

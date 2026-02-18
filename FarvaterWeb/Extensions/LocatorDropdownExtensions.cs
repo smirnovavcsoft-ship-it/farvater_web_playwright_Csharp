@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Playwright;
 using System.Text.RegularExpressions;
 using static Microsoft.Playwright.Assertions;
+using Serilog;
+
 
 namespace FarvaterWeb.Extensions
 {
@@ -82,8 +84,20 @@ namespace FarvaterWeb.Extensions
             });
         }
 
-        public static async Task SelectByTextAndVerifyAsync(this SmartLocator smart, string optionText, bool isMultiSelect = false, string? customVerifyLocator = null)
+        public static async Task SelectByTextAndVerifyAsync(this SmartLocator smart, string? optionText, bool isMultiSelect = false, string? customVerifyLocator = null)
         {
+            if (string.IsNullOrWhiteSpace(optionText))
+            {
+                // Логируем, что поле пропускается намеренно
+                             
+                string skipStepName = $"[{smart.ComponentName}] Параметр выбора пуст в {smart.Type} '{smart.Name}', шаг пропускается.";
+                await smart.Page.Do(skipStepName, async () =>
+                {
+                    // Просто логируем и ничего не делаем
+                   // Log.Information("Параметр выбора пуст, шаг пропускается.");
+                });
+                return;
+            }
             string stepName = $"[{smart.ComponentName}] Выбор пункта '{optionText}' в {smart.Type} '{smart.Name}'";
 
             await smart.Page.Do(stepName, async () =>
@@ -139,8 +153,21 @@ namespace FarvaterWeb.Extensions
             });
         }
 
-        public static async Task SelectUserAndVerifyAsync(this SmartLocator smart, string lastName, string firstName /*bool isMultiSelect = true*/)
+        public static async Task SelectUserAndVerifyAsync(this SmartLocator smart, string? lastName, string? firstName, /*bool isMultiSelect = true*/ string? value = null)
         {
+            
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                // Логируем, что поле пропускается намеренно
+
+                string skipStepName = $"[{smart.ComponentName}] Параметр выбора пуст в {smart.Type} '{smart.Name}', шаг пропускается.";
+                await smart.Page.Do(skipStepName, async () =>
+                {
+                    // Просто логируем и ничего не делаем
+                    // Log.Information("Параметр выбора пуст, шаг пропускается.");
+                });
+                return;
+            }
             string stepName = $"[{smart.ComponentName}] Выбор пункта '{lastName}' в {smart.Type} '{smart.Name}'";
 
             await smart.Page.Do(stepName, async () =>

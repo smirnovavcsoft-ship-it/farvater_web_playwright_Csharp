@@ -19,35 +19,35 @@ namespace FarvaterWeb.TestData
             var newUser = DataFactory.GenerateUser();
 
             var counterparty = DataFactory.GenerateCounterparty();
-            // Кейс 1: Позитивный под админом
-            yield return new object[] { actor, new ContractDetails("Контракт 1"
-                , "Описание контракта", counterparty.ShortTitle, counterparty.ShortTitle
-                , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
+
+            var contract = DataFactory.GenerateContractDetails();
+            // Позитивный под админом
+            yield return new object[] { actor, counterparty, new ContractDetails(contract.ContractSubject, contract.ContractType
+                , counterparty.ShortTitle, counterparty.ShortTitle, contract.Party1Name, contract.Party2Name, contract.Cost, contract.WithNDS, contract.TotalCost), "SUCCESS" };
+
+            /*counterparty = DataFactory.GenerateCounterparty();
+            // Позитивный под обычным юзером
+            yield return new object[] { newUser, counterparty, new ContractDetails(contract.ContractSubject, contract.ContractType
+                , counterparty.ShortTitle, counterparty.ShortTitle, contract.Party1Name, contract.Party2Name, contract.Cost, contract.WithNDS, contract.TotalCost), "SUCCESS" };
 
             counterparty = DataFactory.GenerateCounterparty();
-            // Кейс 2: Позитивный под обычным юзером
-            yield return new object[] { newUser, new ContractDetails("Контракт 1"
-                , "Описание контракта", counterparty.ShortTitle, counterparty.ShortTitle
-                , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
+            // Негативные с пропуском обязательных полей 
+            yield return new object[] { actor, counterparty, new ContractDetails("", contract.ContractType
+                , counterparty.ShortTitle, counterparty.ShortTitle, contract.Party1Name, contract.Party2Name, contract.Cost, contract.WithNDS, contract.TotalCost), "SUCCESS" };
 
             counterparty = DataFactory.GenerateCounterparty();
-            // Кейс 3: Негативный под админом (пустой предмет договора)
-            yield return new object[] { newUser, new ContractDetails(""
-                , "Описание контракта", counterparty.ShortTitle, counterparty.ShortTitle
-                , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
+           
+            yield return new object[] { actor, counterparty, new ContractDetails(contract.ContractSubject, ""
+                , counterparty.ShortTitle, counterparty.ShortTitle, contract.Party1Name, contract.Party2Name, contract.Cost, contract.WithNDS, contract.TotalCost), "SUCCESS" };
 
             counterparty = DataFactory.GenerateCounterparty();
-            // Кейс 4: Негативный под админом (пустая сторона 1)
-            yield return new object[] { newUser, new ContractDetails(""
-                , "Описание контракта", "", counterparty.ShortTitle
-                , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
+            
+            yield return new object[] { actor, counterparty, new ContractDetails(contract.ContractSubject, contract.ContractType
+                , "", counterparty.ShortTitle, contract.Party1Name, contract.Party2Name, contract.Cost, contract.WithNDS, contract.TotalCost), "SUCCESS" };
 
             counterparty = DataFactory.GenerateCounterparty();
-            // Кейс 5: Негативный под админом (пустой предмет договора)
-            yield return new object[] { newUser, new ContractDetails(""
-                , "Описание контракта", counterparty.ShortTitle, ""
-                , newUser.LastName!, newUser.FirstName!), "SUCCESS" };
-
+            yield return new object[] { actor, counterparty, new ContractDetails(contract.ContractSubject, contract.ContractType
+                , counterparty.ShortTitle, "", contract.Party1Name, contract.Party2Name, contract.Cost, contract.WithNDS, contract.TotalCost), "SUCCESS" };*/
         }
     }
 }

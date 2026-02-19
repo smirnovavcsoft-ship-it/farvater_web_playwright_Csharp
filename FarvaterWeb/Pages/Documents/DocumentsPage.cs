@@ -25,7 +25,7 @@ namespace FarvaterWeb.Pages.Documents
 
         private SmartLocator SenderSubscriberDropdown => Dropdown.WithLabel("От отправителя подписал");
 
-        private SmartLocator PerformerDropdown => Dropdown.WithLabel("Исполнитель");
+        private SmartLocator PerformerDropdown => Dropdown.WithInputAndLabel("Исполнитель");
 
         private SmartLocator CancelButton => ButtonWithText("Отмена");
 
@@ -97,7 +97,7 @@ namespace FarvaterWeb.Pages.Documents
         {
 
             await SummaryInputInOutcomeDocument.ClearAndFillAsync(details.Summary);
-            await ResipientsDropdown.SelectByTextAndVerifyAsync(details.Resipient);
+            await ResipientsDropdown.SelectByTextAndVerifyAsync(details.Resipient, customVerifyLocator: "td._table_cell_8wkbu_111");
             await PerformerDropdown.SelectUserAndVerifyAsync(newUser.LastName!, newUser.FirstName!);
         }
 
@@ -175,11 +175,15 @@ namespace FarvaterWeb.Pages.Documents
         public async Task FillContractDetails(ContractDetails details)
         {
             await ContractSubjectInput.ClearAndFillAsync(details.ContractSubject);
+            await ContractTypeDropdown.SelectByTextAndVerifyAsync(details.ContractType);
+            await Party1Dropdown.SelectByTextAndVerifyAsync(details.Party1);
+            await Party2Dropdown.SelectByTextAndVerifyAsync(details.Party2);
             await Party1NameInput.ClearAndFillAsync(details.Party1Name);
             await Party2NameInput.ClearAndFillAsync(details.Party2Name);
             await CostInput.ClearAndFillAsync(details.Cost);
             await WithNDSInput.ClearAndFillAsync(details.WithNDS);
             await TotalCostInput.ClearAndFillAsync(details.TotalCost);
+
         }
 
         /*public async Task SelectParty1(string shortTitle)
@@ -194,8 +198,8 @@ namespace FarvaterWeb.Pages.Documents
 
         public async Task AppointContractTerm(DateTime startDate, DateTime endDate)
         {
-            await Range("Сроки по договору").SetStartDateAsync(startDate);
-            await Range("Сроки по договору").SetEndDateAsync(endDate);
+            await Range("Сроки начала и окончания").SetStartDateAsync(startDate);
+            await Range("Сроки начала и окончания").SetEndDateAsync(endDate);
         }
 
         public async Task SelectParty1(string shortTitle)

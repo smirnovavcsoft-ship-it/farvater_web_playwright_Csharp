@@ -39,20 +39,22 @@ namespace FarvaterWeb.Tests.Users
 
             // Ввод наименования группы
 
-            string groupName = "Тестировщики";
+           // string groupName = "Тестировщики";
 
             await Users.FillGroupName(groupName);
 
 
-            // Клик на чек-боксы
+            // Заполнение Details
 
-            var permissionDetails = new PermissionDetails(
+           /* var permissionDetails = new PermissionDetails(
                     IsAdmin: true,
                     IsGip: true,
                     IsArchive: true,
                     IsContracts: true,
                     IsOrd: true                    
-             );
+             );*/
+
+
 
             await Users.SetPermissions(permissionDetails);
 

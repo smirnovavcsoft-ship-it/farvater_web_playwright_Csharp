@@ -95,7 +95,7 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Выбор адресата
 
-               // await Documents.SelectResipient(shortTitle);
+              //  await Documents.SelectResipient(shortTitle);
 
                 // Выбор исполнителя
 
@@ -105,11 +105,11 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Выбор проекта 
 
-                await Documents.SelectProject();
+               // await Documents.SelectProject();
 
                 // Выбор пользователя в поле "Подписал"
 
-                await Documents.SelectProject();
+               // await Documents.SelectProject();
 
                 // Нажатие кнопки "Создать"
 

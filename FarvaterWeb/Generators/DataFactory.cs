@@ -63,13 +63,17 @@ namespace FarvaterWeb.Generators
             };
         }
 
-        public static ContractDetails GenerateContractDetails()
+        public static ContractDetails GenerateContractDetails(string shortTitle = "")
         {
+            
             return new ContractDetails
             (
-                ContractSubject: FakerRu.Company.CatchPhrase(),
-                Party1Name: FakerRu.Company.CompanyName(),
-                Party2Name: FakerRu.Company.CompanyName(),
+                ContractSubject: "Предмет договора",
+                ContractType: "Договор подряда",
+                Party1: shortTitle,
+                Party2: shortTitle,
+                Party1Name: "Сторона 1",
+                Party2Name: "Сторона 2",
                 Cost: FakerRu.Finance.Amount(10000, 1000000).ToString("F2"),
                 WithNDS: FakerRu.Finance.Amount(1000, 100000).ToString("F2"),
                 TotalCost: FakerRu.Finance.Amount(11000, 1100000).ToString("F2")

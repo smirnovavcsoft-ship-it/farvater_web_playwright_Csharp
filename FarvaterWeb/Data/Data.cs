@@ -24,6 +24,9 @@ namespace FarvaterWeb.Data
     public record ContractDetails
         (
         string ContractSubject,
+        string ContractType,
+        string Party1,
+        string Party2,
         string Party1Name,
         string Party2Name,
         string Cost,
@@ -50,5 +53,16 @@ namespace FarvaterWeb.Data
         string LastName,
         string FirstName
         //DateTime SigningDate
+        );
+
+    public record GroupDetails
+        (
+        string GroupName,
+        string Responsible,
+        bool IsAdmin = true,
+        bool IsGip = true,
+        bool IsArchive = true,
+        bool IsContracts = true,
+        bool IsOrd = true        
         );
 }

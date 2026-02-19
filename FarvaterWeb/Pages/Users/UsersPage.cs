@@ -1,6 +1,7 @@
 ﻿using AventStack.ExtentReports;
 using FarvaterWeb.Base;
 using FarvaterWeb.Components;
+using FarvaterWeb.Data;
 using FarvaterWeb.Extensions;
 using FarvaterWeb.Tests.Counterparty;
 using FarvaterWeb.Tests.Users;
@@ -38,6 +39,12 @@ namespace FarvaterWeb.Pages.Users
         
 
         private SmartLocator PositionInput => Input.WithText("Введите наименование");
+
+        // Группы
+
+        private SmartLocator GroupNameInput => Input.WithLabel("Название");
+
+        private SmartLocator ResponsibleDropdown => Dropdown.WithInputAndLabel("Ответственные");
 
         //private SmartLocator DepartmentNameInput => Input.WithText("Введите наименование");
         // private SmartLocator DepartmentNameInput => Input.WithLocator(Page.Locator("input[placeholder*='Введите наименование']")
@@ -204,16 +211,18 @@ namespace FarvaterWeb.Pages.Users
             await DoFillByLabel("Название", name);
         }
 
-        public async Task SetPermissions(PermissionDetails permissions)
+        public async Task FillGroupDetails(GroupDetails details)
         {
             await Do("Установка прав доступа для роли", async () =>
             {
                 // Вызываем твой универсальный метод для каждого права
-                await SetCheckboxByText("Администратор", permissions.IsAdmin);
-                await SetCheckboxByText("ГИП", permissions.IsGip);
-                await SetCheckboxByText("Архив", permissions.IsArchive);
-                await SetCheckboxByText("Работа с договорами", permissions.IsContracts);
-                await SetCheckboxByText("Работа с ОРД", permissions.IsOrd);
+                await GroupNameInput.ClearAndFillAsync(details.GroupName);
+                await ResponsibleDropdown.SelectUserAndVerifyAsync(details., firstName);
+                await SetCheckboxByText("Администратор", details.IsAdmin);
+                await SetCheckboxByText("ГИП", details.IsGip);
+                await SetCheckboxByText("Архив", details.IsArchive);
+                await SetCheckboxByText("Работа с договорами", details.IsContracts);
+                await SetCheckboxByText("Работа с ОРД", details.IsOrd);
             });
         }
 

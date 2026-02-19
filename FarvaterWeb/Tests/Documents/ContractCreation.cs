@@ -64,15 +64,15 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Выбор типа договора
 
-                await Documents.SelectContractType();
+                //await Documents.SelectContractType();
 
                 // Выбор стороны 1 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-                await Documents.SelectParty1(counterparty.ShortTitle);
+                //await Documents.SelectParty1(counterparty.ShortTitle);
 
                 // Выбор стороны 2 (нет плюсцов для создания контрагента прямо из формы создания договора, сложно будет создавать контагента)
 
-                await Documents.SelectParty2(counterparty.ShortTitle);
+               // await Documents.SelectParty2(counterparty.ShortTitle);
 
                 // Назначение сроков по договору
 
@@ -98,15 +98,15 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Выбор типа договора
 
-                await Documents.SelectContractType();
+                //await Documents.SelectContractType();
 
                 // Выбор стороны 1
 
-                await Documents.SelectParty1(counterparty.ShortTitle);
+               // await Documents.SelectParty1(counterparty.ShortTitle);
 
                 // Выбор стороны 2
 
-                await Documents.SelectParty2(counterparty.ShortTitle);
+              //  await Documents.SelectParty2(counterparty.ShortTitle);
 
                 // Назначение сроков по договору
 

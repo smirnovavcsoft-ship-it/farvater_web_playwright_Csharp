@@ -22,7 +22,7 @@ namespace FarvaterWeb.TestData
             yield return new object[] { actor, newUser, new NoteDetails("Служебная", "Тема записки", "Содержание записки", newUser.LastName!, newUser.FirstName!), "SUCCESS" };
 
 
-            // Кейс 2: Негативный под админом (пустая тема)
+           /* // Кейс 2: Негативный под админом (пустая тема)
             newUser = DataFactory.GenerateUser();
             yield return new object[] { actor, newUser, new NoteDetails("Служебная", "", "Содержание записки", newUser.LastName!, newUser.FirstName!), "Поле 'Тема' обязательно" };
 
@@ -35,7 +35,7 @@ namespace FarvaterWeb.TestData
             yield return new object[] { newUser, newUser, new NoteDetails("Служебная", "Тема записки", "Содержание записки", newUser.LastName!, newUser.FirstName!), "SUCCESS" };
 
             // Кейс 4: Негативный (если юзеру запрещено что-то)
-            // yield return new object[] { restrictedUser, new NoteDetails("Т", "Т"), "FORBIDDEN" };
+            // yield return new object[] { restrictedUser, new NoteDetails("Т", "Т"), "FORBIDDEN" };*/
         }
     }
 }

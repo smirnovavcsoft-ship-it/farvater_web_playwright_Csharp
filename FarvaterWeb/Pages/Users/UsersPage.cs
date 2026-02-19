@@ -211,19 +211,16 @@ namespace FarvaterWeb.Pages.Users
             await DoFillByLabel("Название", name);
         }
 
-        public async Task FillGroupDetails(GroupDetails details)
-        {
-            await Do("Установка прав доступа для роли", async () =>
-            {
-                // Вызываем твой универсальный метод для каждого права
+        public async Task FillGroupDetails(GroupDetails details, UserModel newUser)
+        {           
+          
                 await GroupNameInput.ClearAndFillAsync(details.GroupName);
-                await ResponsibleDropdown.SelectUserAndVerifyAsync(details., firstName);
+                await ResponsibleDropdown.SelectUserAndVerifyAsync(newUser.LastName, newUser.FirstName);
                 await SetCheckboxByText("Администратор", details.IsAdmin);
                 await SetCheckboxByText("ГИП", details.IsGip);
                 await SetCheckboxByText("Архив", details.IsArchive);
                 await SetCheckboxByText("Работа с договорами", details.IsContracts);
-                await SetCheckboxByText("Работа с ОРД", details.IsOrd);
-            });
+                await SetCheckboxByText("Работа с ОРД", details.IsOrd);            
         }
 
 

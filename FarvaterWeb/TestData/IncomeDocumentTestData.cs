@@ -11,7 +11,7 @@ namespace FarvaterWeb.TestData
 {
     public static class IncomeDocumentTestData
     {
-        public static IEnumerable<object[]> GetUniversalContractCases()
+        public static IEnumerable<object[]> GetUniversalIncomeDocumentCases()
         {
 
             var actor = CommonTestData.GetAdmin();

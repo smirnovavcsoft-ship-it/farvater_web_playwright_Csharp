@@ -10,7 +10,7 @@ namespace FarvaterWeb.TestData
 {
     public static class OutcomeDocumentTestData
     {
-        public static IEnumerable<object[]> GetUniversalContractCases()
+        public static IEnumerable<object[]> GetUniversalOutcomeDocumentCases()
         {
 
             var actor = CommonTestData.GetAdmin();

@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace FarvaterWeb.Tests.Documents
 {
-    [Collection("AllureCollection")]
+    //[Collection("AllureCollection")]
     public class IncomeDocumentCreationTests : BaseTest
     {
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
@@ -23,7 +23,7 @@ namespace FarvaterWeb.Tests.Documents
 
         //[Fact(DisplayName ="Проверка успешного создания входящего документа")]
         [Theory(DisplayName = "Проверка успешного создания входящего документа")]
-        [MemberData(nameof(IncomeDocumentTestData.GetUniversalContractCases), MemberType = typeof(IncomeDocumentTestData))]
+        [MemberData(nameof(IncomeDocumentTestData.GetUniversalIncomeDocumentCases), MemberType = typeof(IncomeDocumentTestData))]
         public async Task ShouldCreateIncomeDocument(UserModel actor, CounterpartyModel counterparty, IncomeDocumentDetails incomeDocument, string expectedResult)
         {
             // 1. Создаем через API

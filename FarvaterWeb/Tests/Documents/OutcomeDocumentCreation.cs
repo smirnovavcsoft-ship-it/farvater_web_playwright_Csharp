@@ -24,13 +24,13 @@ namespace FarvaterWeb.Tests.Documents
         private readonly UserModel _user;
         public OutcomeDocumentCreationTests(ITestOutputHelper output) : base(output)
         {
-            _counterparty = DataFactory.GenerateCounterparty();
-            _user = DataFactory.GenerateUser();
+           // _counterparty = DataFactory.GenerateCounterparty();
+           // _user = DataFactory.GenerateUser();
         }
 
         //[Fact(DisplayName = "Проверка успешного создания исходящего документа")]
         [Theory(DisplayName = "Проверка успешного создания исходящего документа")]
-        [MemberData(nameof(OutcomeDocumentTestData.GetUniversalContractCases), MemberType = typeof(OutcomeDocumentTestData))]
+        [MemberData(nameof(OutcomeDocumentTestData.GetUniversalOutcomeDocumentCases), MemberType = typeof(OutcomeDocumentTestData))]
 
         public async Task ShouldCreateOutcomeDocment(UserModel actor, UserModel newUser, CounterpartyModel counterparty, OutcomeDocumentDetails outcomeDocument, string expectedResult)
         {
@@ -134,7 +134,7 @@ namespace FarvaterWeb.Tests.Documents
 
                 if (!string.IsNullOrEmpty(userHandle))
                 {
-                    await CounterpartyApi.DeleteCounterpartyAsync(userHandle);
+                    await UserApi.DismissUserAsync(userHandle);
                 }
             }
 

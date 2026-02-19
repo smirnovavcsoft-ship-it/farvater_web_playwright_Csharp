@@ -59,10 +59,10 @@ namespace FarvaterWeb.Data
         (
         string GroupName,
         string Responsible,
-        bool IsAdmin = true,
-        bool IsGip = true,
-        bool IsArchive = true,
-        bool IsContracts = true,
-        bool IsOrd = true        
+        bool IsAdmin,
+        bool IsGip,
+        bool IsArchive,
+        bool IsContracts,
+        bool IsOrd        
         );
 }

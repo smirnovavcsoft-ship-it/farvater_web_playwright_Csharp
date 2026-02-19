@@ -2,6 +2,7 @@
 using FarvaterWeb.Data;
 using FarvaterWeb.Extensions;
 using System;
+using System.IO.Compression;
 
 namespace FarvaterWeb.Generators
 {
@@ -102,6 +103,20 @@ namespace FarvaterWeb.Generators
                 Performer: $"{lastName} {firstName[0]}."
 
             );
+        }
+
+        public static GroupDetails GenerateGroupDetails(string lastName, string firstName)
+        {
+            return new GroupDetails
+            (
+                GroupName: "Тестировщики",
+                Responsible: $"{lastName} {firstName[0]}.",
+                IsAdmin: true,
+                IsGip: true,
+                IsArchive: true,
+                IsContracts: true,
+                IsOrd: true
+            ); 
         }
     }
 }

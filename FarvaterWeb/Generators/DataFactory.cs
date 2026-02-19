@@ -88,9 +88,12 @@ namespace FarvaterWeb.Generators
             return new IncomeDocumentDetails
             (
                 DocumentType: "Письмо",
+                PlanningResponseDate: DateTime.Now.AddDays(FakerRu.Random.Int(1, 30)),
+               // Project: "Проект 1",
                 Summary: FakerRu.Lorem.Sentence(5, 10),
                 SenderNumber: FakerRu.Random.Replace("###-###"),
-                Sender: shortTitle
+                Sender: shortTitle,
+                FromDate: DateTime.Now.AddDays(-FakerRu.Random.Int(1, 30))
             );
         }
 

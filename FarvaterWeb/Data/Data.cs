@@ -9,9 +9,12 @@ namespace FarvaterWeb.Data
     public record IncomeDocumentDetails
     (
         string DocumentType,
+        DateTime PlanningResponseDate,
         string Summary,
+       // string Project,
         string SenderNumber,
-        string Sender
+        string Sender,
+        DateTime FromDate
     );
 
     public record OutcomeDocumentDetails

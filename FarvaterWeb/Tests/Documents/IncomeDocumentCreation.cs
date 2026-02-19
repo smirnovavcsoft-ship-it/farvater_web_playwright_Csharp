@@ -42,15 +42,8 @@ namespace FarvaterWeb.Tests.Documents
 
                 await Documents.ClickCreateDocumentButton();
 
-                // Выбор типа документа
-
-
-
-                // await Documents.SelectDocumentType();
-
+               
                 // Заполнение полей документа 
-
-                // var incomeDocumentsDetails = new IncomeDocumentDetails(incomeDocument);
 
                 await Documents.FillIncomeDocumetDetails(incomeDocument);
 
@@ -62,15 +55,12 @@ namespace FarvaterWeb.Tests.Documents
 
                 await Documents.ClickCreateDocumentButton();
 
-                // Выбор типа документа
+                
+               // Выбор планируемой даты ответа
 
-                // await Documents.SelectDocumentType();
+                DateTime planningResponseDate = new DateTime(2026, 02, 05);
 
-                // Выбор планируемой даты ответа
-
-                DateTime date = new DateTime(2026, 02, 05);
-
-                await Documents.AppointPlanningResponseDate(date);
+                await Documents.AppointPlanningResponseDate(planningResponseDate);
 
                 // Заполнение полей документа
 
@@ -78,17 +68,17 @@ namespace FarvaterWeb.Tests.Documents
 
                 // Выбор проекта в выпадающем списке "Проект"
 
-                await Documents.SelectProject();
+              //  await Documents.SelectProject();
 
                 // Выбор отправителья в выпадающем списке "Отправитель*"
 
                 //   await Documents.SelectSender();
 
-                // Выбор даты "От"
+                // Выбор д/аты "От"
 
-                DateTime fromDate = new DateTime(2026, 01, 31);
+              //  DateTime fromDate = new DateTime(2026, 01, 31);
 
-                await Documents.AppointFromDate(fromDate);
+              //  await Documents.AppointFromDate(fromDate);
 
                 // Выбор "От отправителья подписал"
 

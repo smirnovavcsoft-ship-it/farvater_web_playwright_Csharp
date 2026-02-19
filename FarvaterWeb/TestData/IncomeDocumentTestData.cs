@@ -24,7 +24,7 @@ namespace FarvaterWeb.TestData
             //string content = DataFactory.FakerRu.Lorem.Sentence(5, 10);
             //string number = DataFactory.FakerRu.Random.Replace("####");
             //return new IncomeDocumentDetails(content, number);
-            yield return new object[] { actor, counterparty, new IncomeDocumentDetails("Письмо", incomeDocument.Summary, incomeDocument.SenderNumber, counterparty.ShortTitle), "Успешно" };
+            yield return new object[] { actor, counterparty, new IncomeDocumentDetails("Письмо", incomeDocument.PlanningResponseDate, incomeDocument.Summary, incomeDocument.SenderNumber, counterparty.ShortTitle, incomeDocument.FromDate), "Успешно" };
         }
     }
 }

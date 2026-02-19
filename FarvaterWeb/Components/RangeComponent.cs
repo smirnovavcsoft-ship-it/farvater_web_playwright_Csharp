@@ -41,8 +41,17 @@ namespace FarvaterWeb.Components
 
         
 
-        private async Task SetDateAsync(ILocator calendarPopup, DateTime date)
+        private async Task SetDateAsync(ILocator calendarPopup, DateTime? date)
         {
+            if (date == null || !date.HasValue)
+            {
+                string skipStepName = $"[{_pageName}] Дата в поле '{_label}' не указана, шаг пропускается.";
+                await Do(skipStepName, async () => { await Task.CompletedTask; });
+                return;
+            }
+
+            // 3. Извлекаем чистое значение DateTime для дальнейшей работы
+            var targetDate = date.Value;
             await Do($"[{_pageName}] Установка даты '{date:dd.MM.yyyy}' в поле '{_label}'", async () =>
             {
                 if (!await CalendarPopup.IsVisibleAsync())
@@ -59,15 +68,15 @@ namespace FarvaterWeb.Components
                 // используем то, что разработчики дали нам <select> для месяца и <input> для года
 
                 // Выбираем год (в твоем HTML это input type="number")
-                await calendarPopup.Locator("input[type='number']").FillAsync(date.Year.ToString());
+                await calendarPopup.Locator("input[type='number']").FillAsync(targetDate.Year.ToString());
 
                 // Выбираем месяц (в твоем HTML это <select>)
                 // Значение в селекте начинается с 0 (Январь = 0)
-                await calendarPopup.Locator("select").SelectOptionAsync(new[] { (date.Month - 1).ToString() });
+                await calendarPopup.Locator("select").SelectOptionAsync(new[] { (targetDate.Month - 1).ToString() });
 
                 // Выбираем день. В твоем HTML у дней есть отличный aria-label: "Choose вторник, 27 января 2026 г."
                 // Мы можем искать по числу, игнорируя соседние месяцы (outside-month)
-                var daySelector = $".react-datepicker__day--0{date.Day:D2}:not(.react-datepicker__day--outside-month)";
+                var daySelector = $".react-datepicker__day--0{targetDate.Day:D2}:not(.react-datepicker__day--outside-month)";
                 await calendarPopup.Locator(daySelector).First.ClickAsync();
 
                 await Page.Keyboard.PressAsync("Escape");

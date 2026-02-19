@@ -88,9 +88,11 @@ namespace FarvaterWeb.Pages.Documents
         public async Task FillIncomeDocumetDetails(IncomeDocumentDetails details)
         {
             await DocumentTypeDropdown.SelectByTextAndVerifyAsync(details.DocumentType);
+            await AppointPlanningResponseDate(details.PlanningResponseDate);
             await SummaryInputInIncomeDocument.ClearAndFillAsync(details.Summary);
             await SenderNumberInput.ClearAndFillAsync(details.SenderNumber);
             await SenderDropdown.SelectByTextAndVerifyAsync(details.Sender);
+            await AppointFromDate(details.FromDate);
         }
 
         public async Task FillOutcomeDocumentDetails(OutcomeDocumentDetails details, UserModel newUser)

@@ -11,7 +11,7 @@ using FarvaterWeb.Base;
 
 namespace FarvaterWeb.ApiServices
 {
-    /*public class ProjectApiService : BaseApiService
+    public class ProjectApiService : BaseApiService
     {
         public ProjectApiService(IAPIRequestContext request) : base(request) { }
 
@@ -34,7 +34,7 @@ namespace FarvaterWeb.ApiServices
 
         public async Task<string?> PrepareProjectAsync() { }
 
-    }*/
+    }
 
 
 }

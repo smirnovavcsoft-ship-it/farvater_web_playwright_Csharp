@@ -6,42 +6,30 @@ using System.Threading.Tasks;
 
 namespace FarvaterWeb.Data
 {
-    /*public class ProjectModel
+    public class ProjectModel
     {
-        public string title { get; set; } = null!;   // Фабрика "Красная заря"
-        public string code { get; set; } = "14561";  // 1466
-        public string notation { get; set; } = ""; // Обычно совпадает с code
+        public string Code { get; set; }
+        public string Title { get; set; }
+        public string ProjectsObject { get; set; }
 
-        public ProjectModel()
-        {
-            projectsObject = title;
-            notation = code;
-        }
+        // Системные списки (уже заполнены по умолчанию)
+        public CapitalConstructionType CapitalConstructionType { get; set; } = new();
+        public ProjectType ProjectType { get; set; } = new();
 
-        public string? projectsObject { get; set; } // Здание столовой
+        // ГИП (сюда мы передадим handle нового пользователя)
+        public Gip Gip { get; set; } = new();
 
-        // Сложные объекты упрощаем до сокращенных моделей
-        public ClassifierDto capitalConstructionType { get; set; } = new();
-        public ClassifierDto projectType { get; set; } = new();
-        public ReferenceDto gip { get; set; } = new();
-
-        public string startDate { get; set; } = "";
-        public string finishDate { get; set; } = "";
-
-        // Handle нам нужен для поиска и удаления
-        public string? handle { get; set; }
+        public string StartDate { get; set; }
+        public string FinishDate { get; set; }
+        public string DiskLetter { get; set; } = "N";
+        public long MaxSize { get; set; } = 50000000000;
     }
 
-    // Вспомогательные классы (общие для многих моделей Фарватера)
-    public class ClassifierDto
-    {
-        public string? handle { get; set; }
-        public string? description { get; set; }
-    }
+    // Эти два класса просто "держат" константы
+    public class CapitalConstructionType { public string SysId { get; set; } = "NODE_CAPITALCONSTRUCTION_LINEAR_COMMONSTRUCT"; }
+    public class ProjectType { public string SysId { get; set; } = "NODE_PROJECTTYPE_CONSTRUCTION"; }
 
-    public class ReferenceDto
-    {
-        public string? handle { get; set; }
-        public string? description { get; set; }
-    }*/
+    // А этот класс мы будем наполнять динамически
+    public class Gip { public string Handle { get; set; } }
 }
+

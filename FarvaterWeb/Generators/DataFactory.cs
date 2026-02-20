@@ -68,7 +68,7 @@ namespace FarvaterWeb.Generators
 
         public static ContractDetails GenerateContractDetails(string shortTitle = "")
         {
-            
+
             return new ContractDetails
             (
                 ContractSubject: "Предмет договора",
@@ -91,7 +91,7 @@ namespace FarvaterWeb.Generators
             (
                 DocumentType: "Письмо",
                 PlanningResponseDate: DateTime.Now.AddDays(FakerRu.Random.Int(1, 30)),
-               // Project: "Проект 1",
+                // Project: "Проект 1",
                 Summary: FakerRu.Lorem.Sentence(5, 10),
                 SenderNumber: FakerRu.Random.Replace("###-###"),
                 Sender: shortTitle,
@@ -121,7 +121,7 @@ namespace FarvaterWeb.Generators
                 IsArchive: true,
                 IsContracts: true,
                 IsOrd: true
-            ); 
+            );
         }
 
         public static DepartmentDetails GenerateDepartmentDetails()
@@ -136,7 +136,7 @@ namespace FarvaterWeb.Generators
             return new DepartmentDetails
             (
                 Name: name,
-                Code : code
+                Code: code
             );
         }
 
@@ -157,19 +157,30 @@ namespace FarvaterWeb.Generators
                 IsLeader: false,
                 HasARightToSign: false,
                 IsDomainUser: true,
-                AuthenticationType:"Аутентицификация TDMS",
+                AuthenticationType: "Аутентицификация TDMS",
                 Login: FakerRu.Internet.UserName(lastName, $"{firstName}{postfix}").Replace(".", "_"),
                 Language: "Русский",
                 Phone: FakerRu.Phone.PhoneNumber("+79#########"),
-                Email: FakerRu.Internet.Email(lastName, firstName)                
-             
+                Email: FakerRu.Internet.Email(lastName, firstName)
+
             );
         }
-        
-       
-       
-        
-        
-      
+
+        public static ProjectModel GenerateProjectModel()
+        {
+            var projectName = FakerRu.Company.CatchPhrase();
+            return new ProjectModel
+            {
+                Code = FakerRu.Random.Replace("PRJ-####"),
+                Title = projectName,
+                ProjectsObject = projectName
+            };
+
+
+
+
+
+
+        }
     }
 }

@@ -5,34 +5,31 @@ using FarvaterWeb.Pages.Users;
 using System.Xml.Linq;
 using Xunit.Abstractions;
 using FarvaterWeb.Tests;
+using FarvaterWeb.TestData;
+using FarvaterWeb.Data;
+using FarvaterWeb.ApiServices;
 
 namespace FarvaterWeb.Tests.Users
 {
-    public record UserDetails(
-        string Lastname,
-        string Name,
-        string Middlename,
-        string IDnumber,
-        string UserLogin,
-        string Phone,
-        string Email        
-        );
+    
 
     /*public record DepartmentDetails(
         string Name,
-        string code
+        string Code
         );*/
 
     
 
-    
 
-    [Collection("AllureCollection")]
+
+    //[Collection("AllureCollection")]
     public class UserCreationTests : BaseTest
     {
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
 
         private UsersPage Users => new UsersPage(Page, Log, _test);
+
+        private DepartmentApiService DepartmentApi => new DepartmentApiService(ApiRequest);
 
         public UserCreationTests(ITestOutputHelper output) : base(output) { } 
 
@@ -76,10 +73,10 @@ namespace FarvaterWeb.Tests.Users
 
   
 
-            var newDepartmentDetails = new DepartmentDetails(
+            /*var newDepartmentDetails = new DepartmentDetails(
                Name: $"Тестовое подразделение {postfix}",
                Code: $"{postfix}"
-               );
+               );*/
 
          
 

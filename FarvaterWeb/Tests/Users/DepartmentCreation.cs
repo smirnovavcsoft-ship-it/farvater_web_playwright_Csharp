@@ -1,13 +1,17 @@
 ﻿using FarvaterWeb.Base;
-using FarvaterWeb.Extensions;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
 using Xunit.Abstractions;
+using FarvaterWeb.TestData;
+using FarvaterWeb.Data;
+using FarvaterWeb.ApiServices;
+using FarvaterWeb.Extensions;
+using FarvaterWeb.Generators;
 
 namespace FarvaterWeb.Tests.Users
 {
-    public record DepartmentDetails(string Name, string Code);
-    [Collection("AllureCollection")]
+    //public record DepartmentDetails(string Name, string Code);
+    //[Collection("AllureCollection")]
     public class DepartmentCreationTests : BaseTest
     {
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
@@ -19,11 +23,13 @@ namespace FarvaterWeb.Tests.Users
 
         }
 
-        [Fact(DisplayName = "Проверка успешного создания нового подразделения")]
-        public async Task SouldCreateNewDepartment()
+        //[Fact(DisplayName = "Проверка успешного создания нового подразделения")]
+        [Theory(DisplayName = "Проверка успешного создания нового подразделения")]
+        [MemberData(nameof(DepartmentTestData.GetUniversalDepartmentCases), MemberType = typeof(DepartmentTestData))]
+        public async Task ShouldCreateNewDepartment(UserModel actor, DepartmentDetails department)
         {
             Log.Information("--- Запуск сценария: Создание нового подразделения---");
-            await LoginAsAdmin();
+            await LoginAs(actor.Login!);
             await SideMenu.OpenSection("Пользователи", "users");
 
             // Клик по вкладке "Подразделения"
@@ -35,14 +41,9 @@ namespace FarvaterWeb.Tests.Users
             await Users.ClickCreateDepartmentButton();
 
             // Ввод наименования и кода подразделения
-            string postfix = DataPostfixExtensions.GetUniquePostfix();
+            
 
-            var newDepartmentDetails = new DepartmentDetails(
-               Name: $"Тестовое подразделение {postfix}",
-               Code: $"{postfix}"
-               );
-
-            await Users.FillDepartmentDetails(newDepartmentDetails);
+            await Users.FillDepartmentDetails(department);
 
             // Клик по кнопке "Добавить"
 
@@ -50,7 +51,7 @@ namespace FarvaterWeb.Tests.Users
 
             // Удаление созданного подразделения
 
-            await Users.DeleteDepartment(newDepartmentDetails.Name);
+            await Users.DeleteDepartment(department.Name);
 
 
 

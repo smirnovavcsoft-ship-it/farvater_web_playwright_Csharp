@@ -17,7 +17,7 @@ namespace FarvaterWeb.TestData
             var group = DataFactory.GenerateGroupDetails(newUser.LastName!,newUser.FirstName!);
 
             // Пример возврата одного тестового случая
-            yield return new object[] { actor, newUser, new GroupDetails(group.GroupName, group.Responsible, group.IsAdmin, group.IsGip, group.IsArchive, group.IsContracts, group.IsOrd) };
+            yield return new object[] { actor, newUser, new GroupDetails(group.GroupName, group.Responsible, group.IsAdmin, group.IsGip, group.IsArchive, group.IsContracts, group.IsOrd), "success" };
         }
     }
 }

@@ -68,4 +68,39 @@ namespace FarvaterWeb.Data
         bool IsContracts,
         bool IsOrd        
         );
+
+    public record DepartmentDetails
+        (
+        string Name,
+        string Code
+        );
+
+    public record UserDetails(
+        string LastName,
+        string FirstName,
+        string IDnumber,
+        string Department,
+        string Position,
+        bool IsLeader,
+        bool HasARightToSign,
+        bool IsDomainUser,
+        string AuthenticationType,
+        string Login,
+        string Language,
+        string Phone,
+        string Email
+        );
+
+    public record LegalDetails
+     (
+         string Inn,
+         string ShortName,
+         string FullName,
+         string Address,
+         string Ogrn,
+         string Kpp,
+         string Phone,
+         string Email
+     );
+     
 }

@@ -10,6 +10,8 @@ using Microsoft.Playwright;
 using Serilog;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
+using FarvaterWeb.TestData;
+using FarvaterWeb.Generators;
 
 namespace FarvaterWeb.Pages.Users
 {

@@ -1,6 +1,8 @@
 ﻿using Bogus;
 using FarvaterWeb.Data;
 using FarvaterWeb.Extensions;
+using Microsoft.Playwright;
+using RazorEngine;
 using System;
 using System.IO.Compression;
 
@@ -121,5 +123,53 @@ namespace FarvaterWeb.Generators
                 IsOrd: true
             ); 
         }
+
+        public static DepartmentDetails GenerateDepartmentDetails()
+        {
+            var name = "Отдел Тестирования";
+
+            // 1. Разбиваем строку по пробелам
+            // 2. Убираем пустые элементы (если случайно поставили два пробела)
+            // 3. Берем первую букву каждого слова
+            var code = string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                         .Select(word => word[0]));
+            return new DepartmentDetails
+            (
+                Name: name,
+                Code : code
+            );
+        }
+
+        public static UserDetails GenerateUserDetails(string department, string position)
+        {
+            var gender = FakerRu.PickRandom<Bogus.DataSets.Name.Gender>();
+            var firstName = FakerRu.Name.FirstName(gender);
+            var lastName = FakerRu.Name.LastName(gender);
+            string postfix = DataPostfixExtensions.GetUniquePostfix();
+
+            return new UserDetails
+            (
+                LastName: lastName,
+                FirstName: firstName,
+                IDnumber: FakerRu.Random.ReplaceNumbers("##########"),
+                Department: department,
+                Position: position,
+                IsLeader: false,
+                HasARightToSign: false,
+                IsDomainUser: true,
+                AuthenticationType:"Аутентицификация TDMS",
+                Login: FakerRu.Internet.UserName(lastName, $"{firstName}{postfix}").Replace(".", "_"),
+                Language: "Русский",
+                Phone: FakerRu.Phone.PhoneNumber("+79#########"),
+                Email: FakerRu.Internet.Email(lastName, firstName)                
+             
+            );
+        }
+        
+       
+       
+        
+        
+      
     }
 }

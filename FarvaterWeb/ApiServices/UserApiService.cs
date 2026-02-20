@@ -8,7 +8,9 @@ namespace FarvaterWeb.ApiServices
 {
     public class UserApiService : BaseApiService
     {
+
         public UserApiService(IAPIRequestContext request) : base(request) { }
+
 
         public async Task<string?> GetCurrentUserInfoAsync()
         {

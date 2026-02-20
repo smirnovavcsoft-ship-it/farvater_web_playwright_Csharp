@@ -38,6 +38,8 @@ namespace FarvaterWeb.Tests.Users
 
             try
             {
+                userHandle = await UserApi.PrepareUserAsync(newUser.LastName!, newUser.FirstName!, newUser.Login!);
+
                 Log.Information("--- Запуск сценария: Создание новой группы---");
                 await LoginAs(actor.Login!);
                 await SideMenu.OpenSection("Пользователи", "users");
@@ -50,25 +52,10 @@ namespace FarvaterWeb.Tests.Users
 
                 await Users.ClickCreateGroupButton();
 
-                // Ввод наименования группы
-
-                // string groupName = "Тестировщики";
-
-                // await Users.FillGroupName(groupName);
-
-
+                
                 // Заполнение Details
 
-                /* var permissionDetails = new PermissionDetails(
-                         IsAdmin: true,
-                         IsGip: true,
-                         IsArchive: true,
-                         IsContracts: true,
-                         IsOrd: true                    
-                  );*/
-
-
-
+                
                 await Users.FillGroupDetails(group, newUser);
 
                 // Выбор ответственных
@@ -81,6 +68,7 @@ namespace FarvaterWeb.Tests.Users
 
                 // Удаление созданной группы
 
+                await SideMenu.OpenSection("Пользователи", "users");
                 await Users.DeleteGroup(group.GroupName);
             }
             finally

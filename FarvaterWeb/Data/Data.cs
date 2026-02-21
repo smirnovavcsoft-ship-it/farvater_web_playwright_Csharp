@@ -78,7 +78,7 @@ namespace FarvaterWeb.Data
     public record UserDetails(
         string LastName,
         string FirstName,
-        string IDnumber,
+        string IdNumber,
         string Department,
         string Position,
         bool IsLeader,
@@ -102,5 +102,11 @@ namespace FarvaterWeb.Data
          string Phone,
          string Email
      );
-     
+
+    public record PositionDetails
+    (
+        string Name
+        );
+
+
 }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System;
+
 namespace FarvaterWeb.Data
 {
     public class ProjectModel
@@ -12,11 +14,9 @@ namespace FarvaterWeb.Data
         public string Title { get; set; }
         public string ProjectsObject { get; set; }
 
-        // Системные списки (уже заполнены по умолчанию)
+        // Это СВОЙСТВА (объекты). Именно к ним мы обращаемся в сервисе через точку.
         public CapitalConstructionType CapitalConstructionType { get; set; } = new();
         public ProjectType ProjectType { get; set; } = new();
-
-        // ГИП (сюда мы передадим handle нового пользователя)
         public Gip Gip { get; set; } = new();
 
         public string StartDate { get; set; }
@@ -25,11 +25,22 @@ namespace FarvaterWeb.Data
         public long MaxSize { get; set; } = 50000000000;
     }
 
-    // Эти два класса просто "держат" константы
-    public class CapitalConstructionType { public string SysId { get; set; } = "NODE_CAPITALCONSTRUCTION_LINEAR_COMMONSTRUCT"; }
-    public class ProjectType { public string SysId { get; set; } = "NODE_PROJECTTYPE_CONSTRUCTION"; }
+    // Описания классов (чертежи) выносим ЗА пределы ProjectModel
+    public class CapitalConstructionType
+    {
+        public string? SysId { get; set; } = "NODE_CAPITALCONSTRUCTION_LINEAR_COMMONSTRUCT";
+        public string? Handle { get; set; }
+    }
 
-    // А этот класс мы будем наполнять динамически
-    public class Gip { public string Handle { get; set; } }
+    public class ProjectType
+    {
+        public string? SysId { get; set; } = "NODE_PROJECTTYPE_CONSTRUCTION";
+        public string? Handle { get; set; }
+    }
+
+    public class Gip
+    {
+        public string? Handle { get; set; }
+    }
 }
 

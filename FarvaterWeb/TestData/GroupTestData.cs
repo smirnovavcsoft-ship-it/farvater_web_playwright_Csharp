@@ -13,7 +13,7 @@ namespace FarvaterWeb.TestData
         public static IEnumerable<object[]> GetUniversalGroupCases()
         {
             var actor = CommonTestData.GetAdmin();
-            var newUser = DataFactory.GenerateUser();
+            var newUser = DataFactory.GenerateUserModel();
             var group = DataFactory.GenerateGroupDetails(newUser.LastName!,newUser.FirstName!);
 
             // Пример возврата одного тестового случая

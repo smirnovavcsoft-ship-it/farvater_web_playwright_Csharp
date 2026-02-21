@@ -1,24 +1,20 @@
 ﻿using FarvaterWeb.Base;
 using FarvaterWeb.Extensions;
+//using FarvaterWeb.Base;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
-using System.Xml.Linq;
 using Xunit.Abstractions;
-using FarvaterWeb.Tests;
 using FarvaterWeb.TestData;
 using FarvaterWeb.Data;
 using FarvaterWeb.ApiServices;
 
 namespace FarvaterWeb.Tests.Users
 {
-    
 
-    /*public record DepartmentDetails(
-        string Name,
-        string Code
-        );*/
 
-    
+
+
+
 
 
 
@@ -31,106 +27,133 @@ namespace FarvaterWeb.Tests.Users
 
         private DepartmentApiService DepartmentApi => new DepartmentApiService(ApiRequest);
 
-        public UserCreationTests(ITestOutputHelper output) : base(output) { } 
+        private PositionApiService PositionApi => new PositionApiService(ApiRequest);
 
-        [Fact(DisplayName ="Проверка успешного создания пользователя")]
+        public UserCreationTests(ITestOutputHelper output) : base(output) { }
 
-        public async Task ShouldCreateUser ()
+        //[Fact(DisplayName ="Проверка успешного создания пользователя")]
+        [Theory(DisplayName = "Проверка успешного создания пользователя")]
+        [MemberData(nameof(UserTestData.GetUniversalUserCases), MemberType = typeof(UserTestData))]
+        public async Task ShouldCreateUser(UserModel actor, DepartmentModel department, PositionModel position, UserDetails user)
         {
-            Log.Information("--- Запуск сценария: Создание нового пользователя---");
-            await LoginAsAdmin();
-            await SideMenu.OpenSection("Пользователи", "users");
+            string? departmentHandle = null;
+            string? positionHandle = null;
+            string? userHandle = null;
 
-            // Клик по вкладке "Пользователи"
+            try
+            {
+                departmentHandle = await DepartmentApi.PrepareDepartmentAsync(department.Name!, department.Code!);
+                Log.Information("--- Запуск сценария: Создание нового пользователя---");
+                await LoginAs(actor.Login!);
+                await SideMenu.OpenSection("Пользователи", "users");
 
-            await Users.ClickUsersTab();
-            // Клик по кнопке "Добавить пользователя"
+                // Клик по вкладке "Пользователи"
 
-            await Users.ClickAddUser();
+                await Users.ClickUsersTab();
+                // Клик по кнопке "Добавить пользователя"
 
-            // Заполнение полей нового пользователя
+                await Users.ClickAddUser();
 
-           string postfix = DataPostfixExtensions.GetUniquePostfix();
+                // Заполнение полей нового пользователя
 
-            //  Данные создаваемого пользователя
-            var userDetails = new UserDetails(
-                Lastname: "Тестеренко",
-                Name: "Анатолий",
-                Middlename: "Владимирович",
-                IDnumber: $"{postfix}",                
-                UserLogin: $"testerenko{postfix}",         
-                Phone: $"+7(812)123-{postfix.Substring(0, 2)}-{postfix.Substring(2, 2)}", 
-                Email: $"testirenko{postfix}@company.ru"         
-            );
+                //string postfix = DataPostfixExtensions.GetUniquePostfix();
 
-            await Users.FillUserDetails(userDetails);
+                //  Данные создаваемого пользователя
+                /*var userDetails = new UserDetails(
+                    LastName: "Тестеренко",
+                    FirstName: "Анатолий",
+                    //Middlename: "Владимирович",
+                    IDnumber: $"{postfix}",                
+                    Login: $"testerenko{postfix}",         
+                    Phone: $"+7(812)123-{postfix.Substring(0, 2)}-{postfix.Substring(2, 2)}", 
+                    Email: $"testirenko{postfix}@company.ru"         
+                );*/
 
-            // Выбор первого подразделения из списка
+                await Users.FillUserDetails(user);
 
-            await Users.SelectFirstDepartment();
+                // Выбор первого подразделения из списка
 
-            // Создание и выбор подразделения
+                await Users.SelectDepartment(department.Name);
 
-  
+                // Создание и выбор подразделения
 
-            /*var newDepartmentDetails = new DepartmentDetails(
-               Name: $"Тестовое подразделение {postfix}",
-               Code: $"{postfix}"
-               );*/
 
-         
 
-            //await Users.CreateDepartmentInUserCard(newDepartmentDetails);
+                /*var newDepartmentDetails = new DepartmentDetails(
+                   Name: $"Тестовое подразделение {postfix}",
+                   Code: $"{postfix}"
+                   );*/
 
-            // Выбор первой должности из списка
 
-            await Users.SelectFirstPosition();
 
-            // Создание и выбор должности
-            string positionName = "Тестовая должность {postfix}";
+                //await Users.CreateDepartmentInUserCard(newDepartmentDetails);
 
-           //  await Users.CreatePositionInUserCard(positionName);
+                // Выбор первой должности из списка
 
-     
+                await Users.SelectPosition();
 
-            // Клик по чек-боксу "Является руководителем" и "Имеет право подписи"
+                // Создание и выбор должности
+                // string positionName = "Тестовая должность {postfix}";
 
-            await Users.IsABoss();
+                //  await Users.CreatePositionInUserCard(positionName);
 
-            await Users.HaveARightToSign();
 
-            // Клик по кнопке "Создать"
 
-            await Users.ClickCreateButton();
+                // Клик по чек-боксу "Является руководителем" и "Имеет право подписи"
 
-            // Открытие карточки созданного пользователя
-            await SideMenu.OpenSection("Пользователи", "users");
-            await Users.VerifyUserCreated(userDetails.Email);
+                await Users.IsABoss();
 
-            // Откритие карточки созданного пользователя
+                await Users.HaveARightToSign();
 
-            await Users.OpenUserCard(userDetails.Email);
+                // Клик по кнопке "Создать"
 
-            // Клик по кнопке "Уволить"
+                await Users.ClickCreateButton();
 
-            await Users.ClickFireButton1();
+                // Открытие карточки созданного пользователя
+                await SideMenu.OpenSection("Пользователи", "users");
+                //  await Users.VerifyUserCreated(userDetails.Email);
 
-            // Выбор сотрудника, которому передаются задачи
+                // Откритие карточки созданного пользователя
 
-            await Users.SelectReplacementEmployee();
+                //  await Users.OpenUserCard(userDetails.Email);
 
-            //Нажатие кнопки "Уволить"
+                // Клик по кнопке "Уволить"
 
-            await Users.ClickFireButton2();
+                await Users.ClickFireButton1();
 
-            // Переход в раздел "Пользователи
+                // Выбор сотрудника, которому передаются задачи
 
-            await SideMenu.OpenSection("Пользователи", "users");
+                await Users.SelectReplacementEmployee();
 
-            // Переход во вкладку "Неакивные пользователи" и проверка наличия удаленного пользователя.
+                //Нажатие кнопки "Уволить"
 
-            await Users.ClickTab("Неактивные пользователи");
-            await Users.VerifyUserCreated(userDetails.Email);
+                await Users.ClickFireButton2();
+
+                // Переход в раздел "Пользователи
+
+                await SideMenu.OpenSection("Пользователи", "users");
+
+                // Переход во вкладку "Неакивные пользователи" и проверка наличия удаленного пользователя.
+
+                await Users.ClickTab("Неактивные пользователи");
+                //  await Users.VerifyUserCreated(userDetails.Email);
+
+            }
+            finally
+            {
+                if (userHandle != null)
+                {
+                    await UsersApi.DeleteUserAsync(userHandle);
+                }
+                if (departmentHandle != null)
+                {
+                    await DepartmentApi.DeleteDepartmentAsync(departmentHandle);
+                }
+                if (positionHandle != null)
+                {
+                    await PositionApi.DeletePositionAsync(positionHandle);
+                }
+            }
 
         }
     }

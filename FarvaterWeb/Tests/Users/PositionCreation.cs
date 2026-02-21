@@ -1,24 +1,22 @@
-﻿using Allure.Net.Commons;
-using Allure.Xunit.Attributes;
-using Allure.Xunit.Attributes.Steps;
-using FarvaterWeb.Base;
-using FarvaterWeb.Extensions;
-using FarvaterWeb.Pages;
+﻿using FarvaterWeb.Base;
 using FarvaterWeb.Pages.Common;
 using FarvaterWeb.Pages.Users;
-using Microsoft.Playwright;
-using Xunit;
 using Xunit.Abstractions;
+using FarvaterWeb.TestData;
+using FarvaterWeb.Data;
+using FarvaterWeb.ApiServices;
 
 namespace FarvaterWeb.Tests.Users
 {
-    [Collection("AllureCollection")]
+    //[Collection("AllureCollection")]
     public class PositionCreationTests : BaseTest
     {        
         //private readonly SideMenuPage _sideMenuPage;
         //private readonly UsersPage _usersPage;
         private SideMenuPage SideMenu => new SideMenuPage(Page, Log, _test);
         private UsersPage Users => new UsersPage(Page, Log, _test);
+
+        private UserApiService UserApi => new UserApiService(ApiRequest);
 
 
 
@@ -28,19 +26,22 @@ namespace FarvaterWeb.Tests.Users
             //_usersPage = new UsersPage(Page, Log, _test);
 
         }
-        [AllureOwner("AlexanderSmirnov")]
-        [AllureSuite("Пользователи")] // Это будет главная папка в отчете
-        [AllureSubSuite("Должности")]
-        [Fact(DisplayName = "Проверка успешного создания новой должности")]
-        public async Task SouldCreateNewPosition()
+        //[AllureOwner("AlexanderSmirnov")]
+        //[AllureSuite("Пользователи")] // Это будет главная папка в отчете
+        // [AllureSubSuite("Должности")]
+        // [Fact(DisplayName = "Проверка успешного создания новой должности")]
+        [Theory(DisplayName = "Проверка успешного создания новой должности")]
+        [MemberData(nameof(PositionTestData.GetUniversalPositionCases), MemberType = typeof(PositionTestData))]
+
+        public async Task ShouldCreateNewPosition(UserModel actor, PositionDetails position)
         {
-            var allureResultsPath = AllureLifecycle.Instance.ResultsDirectory;
-            Log.Information($"Allure results path: {allureResultsPath}");
+            //var allureResultsPath = AllureLifecycle.Instance.ResultsDirectory;
+           // Log.Information($"Allure results path: {allureResultsPath}");
 
             try
             {
                 Log.Information("--- Запуск сценария: Создание новой должности---");
-                await LoginAsAdmin();
+                await LoginAs(actor.Login!);
                 await SideMenu.OpenSection("Пользователи", "users");
 
                 // Клик по вкладке "Должности"
@@ -53,15 +54,12 @@ namespace FarvaterWeb.Tests.Users
 
                 // Ввод наименования должности
 
-                string postfix = DataPostfixExtensions.GetUniquePostfix();
-
-                string positionName = $"Тестовая должность {postfix}";
-
-                await Users.FillPositionName(positionName);
+                
+                await Users.FillPositionName(position.Name);
 
                 // Клик по кнопке "Отмена" и проверка создания должности
 
-                await Users.CancelAndVerify(positionName);
+                await Users.CancelAndVerify(position.Name);
 
 
                 // Клик по кнопке "Создать должность"
@@ -70,7 +68,7 @@ namespace FarvaterWeb.Tests.Users
 
                 // Ввод наименования должности
 
-                await Users.FillPositionName(positionName);
+                await Users.FillPositionName(position.Name);
 
                 // Клик по кнопке "Добавить"
 
@@ -78,11 +76,11 @@ namespace FarvaterWeb.Tests.Users
 
                 // Проверка наличия созданно должности на странице
 
-                await Users.VerifyPositionCreated(positionName);
+                await Users.VerifyPositionCreated(position.Name);
 
                 // Удаление должности
 
-                await Users.DeletePosition(positionName);
+                await Users.DeletePosition(position.Name);
 
 
 

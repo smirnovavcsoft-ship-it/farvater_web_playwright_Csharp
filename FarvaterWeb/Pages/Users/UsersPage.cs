@@ -161,22 +161,22 @@ namespace FarvaterWeb.Pages.Users
         public async Task FillUserDetails(UserDetails details)
         {
             Log.Information("[UsersPage] Заполнение формы по заголовкам");
-            await DoFillByLabel("Фамилия", details.Lastname);
-            await DoFillByLabel("Имя", details.Name);
-            await DoFillByLabel("Отчество", details.Middlename);
-            await DoFillByLabel("Таб. \u2116", details.IDnumber);
-            await DoFillByLabel("Логин", details.UserLogin);
+            await DoFillByLabel("Фамилия", details.LastName);
+            await DoFillByLabel("Имя", details.FirstName);
+           // await DoFillByLabel("Отчество", details.Middlename);
+            await DoFillByLabel("Таб. \u2116", details.IdNumber);
+            await DoFillByLabel("Логин", details.Login);
             await DoFillByLabel("Телефон", details.Phone);
             await DoFillByLabel("E-mail", details.Email);            
 
         }
 
-        public async Task SelectFirstDepartment()
+        public async Task SelectDepartment(departmentName)
         {
-            await DepartmentDropdown.SelectByIndexAndVerifyAsync(0);
+            await DepartmentDropdown.SelectByTextAndVerifyAsync(departmentName);
         }
 
-        public async Task SelectFirstPosition()
+        public async Task SelectPosition()
         {
             await PositionDropdown.SelectByIndexAndVerifyAsync(0);
         }

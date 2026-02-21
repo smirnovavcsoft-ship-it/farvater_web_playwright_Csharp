@@ -16,9 +16,9 @@ namespace FarvaterWeb.TestData
             // Берем админа из общего файла
             var actor = CommonTestData.GetAdmin();
             // Генерируем обычного юзера
-            var newUser = DataFactory.GenerateUser();
+            var newUser = DataFactory.GenerateUserModel();
 
-            var counterparty = DataFactory.GenerateCounterparty();
+            var counterparty = DataFactory.GenerateCounterpartyModel();
 
             var contract = DataFactory.GenerateContractDetails();
             // Позитивный под админом

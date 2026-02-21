@@ -15,7 +15,7 @@ namespace FarvaterWeb.Generators
         /// <summary>
         /// Генерирует модель пользователя для API
         /// </summary>
-        public static UserModel GenerateUser()
+        public static UserModel GenerateUserModel()
         {
             var gender = FakerRu.PickRandom<Bogus.DataSets.Name.Gender>();
             var firstName = FakerRu.Name.FirstName(gender);
@@ -40,7 +40,7 @@ namespace FarvaterWeb.Generators
         /// <summary>
         /// Генерирует модель контрагента (организации)
         /// </summary>
-        public static CounterpartyModel GenerateCounterparty()
+        public static CounterpartyModel GenerateCounterpartyModel()
         {
             // Генерируем "голый" бренд без ООО/ИП
             // Можно использовать CatchPhrase для более креативных названий
@@ -151,7 +151,7 @@ namespace FarvaterWeb.Generators
             (
                 LastName: lastName,
                 FirstName: firstName,
-                IDnumber: FakerRu.Random.ReplaceNumbers("##########"),
+                IdNumber: FakerRu.Random.ReplaceNumbers("##########"),
                 Department: department,
                 Position: position,
                 IsLeader: false,
@@ -176,11 +176,35 @@ namespace FarvaterWeb.Generators
                 ProjectsObject = projectName
             };
 
+        }
 
+        public static DepartmentModel GenerateDepartmentModel()
+        {
+            var departmentName = "Отдел Тестирования";
+            var code = string.Concat(departmentName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                         .Select(word => word[0]));
+            return new DepartmentModel
+            {
+                Name = departmentName,
+                Code = code
+            };
+        }
 
+        public static PositionModel GeneratePositionModel()
+        {
+            return new PositionModel
+            {
+                Description = "Тестировщик"
+            };
+        }
 
+        public static PositionDetails GeneratePositionDetails()
+        {
+            return new PositionDetails
+            (
+                Name: "Тестировщик"
 
-
+            );
         }
     }
 }
